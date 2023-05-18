@@ -1,44 +1,64 @@
-/* Header file defining the IMac class.
-
-IMac is a map of dynamics which uses an independent Markov chain at each grid
-cell.
-
-Author: Charlie Street
-Owner: Charlie Street
-
-*/
+/**
+ * Header file defining the IMac class.
+ * IMac is a map of dynamics which uses an independent Markov chain at each grid
+ * cell.
+ * @author Charlie Street
+ */
 #ifndef IMAC_H
 #define IMAC_H
 
 #include <Eigen/Dense>
 #include <memory>
 
-/* Interactive Markov chain map of dynamics (IMac).
- * This class contains a 3D matrix which represents 2 state Markov chains at
- * every cell on a grid.
+/**
+ * Interactive Markov chain map of dynamics (IMac).
+ * This class contains 2 matrices representing the transitions in 2 state Markov
+ * chains at every cell on a grid.
  *
  * Members:
- *  _transitionMatrix: A 3D transitionMatrix, where _transitionMatrix(x,y,0)
- * represents lambda_entry (free->occupied), and _transitionMatrix(x,y,1)
- * represents lambda_exit (occupied->free). _initialBelief: A 2D matrix
- * representing the initial belief over each cell being occupied.
+ * _entryMatrix: A matrix where _entryMatrix(x,y) is the (free->occupied)
+ * probability for (x,y)
+ * _exitMatrix: A matrix where _exitMatrix(x,y) is the (occupied->free)
+ * probability for (x,y)
+ * _initialBelief: A 2D matrix representing the initial
+ * belief over each cell being occupied.
  */
 class IMac {
 private:
-  std::unique_ptr<Eigen::MatrixXd> _transitionMatrix{};
+  std::unique_ptr<Eigen::MatrixXd> _entryMatrix{};
+  std::unique_ptr<Eigen::MatrixXd> _exitMatrix{};
   std::unique_ptr<Eigen::MatrixXd> _initialBelief{};
 
 public:
-  /* Constructor initialises the member variables and asserts _transitionMatrix
-   * is 3D.
-   * Args:
-   *  transitionMatrix: A ptr to a transition matrix
+  /**
+   * Constructor initialises the member variables.
+   *
+   * @param entryMatrix A ptr to the entry matrix
+   * @param exitMatrix A ptr to the exit matrix
    */
-  IMac(std::unique_ptr<Eigen::MatrixXd> transitionMatrix)
-      : _transitionMatrix{std::move(transitionMatrix)}, _initialBelief{} {}
+  IMac(std::unique_ptr<Eigen::MatrixXd> entryMatrix,
+       std::unique_ptr<Eigen::MatrixXd> exitMatrix)
+      : _entryMatrix{std::move(entryMatrix)},
+        _exitMatrix{std::move(exitMatrix)}, _initialBelief{} {}
 
+  /**
+   * Computes the initial belief over the map of dynamics for timestep 0.
+   *
+   * Here the probability in each cell represents the probability of occupation.
+   *
+   * @return initialBelief The initial belief over the map
+   */
   std::unique_ptr<Eigen::MatrixXd> computeInitialBelief();
 
+  /**
+   * Runs a given state through iMac to get the distribution for the next
+   * timestep.
+   *
+   * Here the probability in each cell represents the probability of occupation.
+   *
+   * @param currentState a 2D matrix of the current map state
+   * @return nextState a 2D matrix of the subsequent map state
+   */
   std::unique_ptr<Eigen::MatrixXd>
   forwardStep(std::unique_ptr<Eigen::MatrixXd> currentState);
 };
