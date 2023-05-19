@@ -6,7 +6,9 @@ project(CoveragePlan VERSION 1.0
 
 # 3rd party packages
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Catch2 REQUIRED)
 
 # Add the subdirectories
 add_subdirectory(src)
 add_subdirectory(apps)
+add_subdirectory(tests)

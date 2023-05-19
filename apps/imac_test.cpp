@@ -7,7 +7,6 @@
 #include "coverage-plan/mod/imac.h"
 #include <Eigen/Dense>
 #include <iostream>
-#include <memory>
 
 int main() {
 
