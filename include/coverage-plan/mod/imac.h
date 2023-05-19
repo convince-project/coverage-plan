@@ -27,7 +27,7 @@ class IMac {
 private:
   std::unique_ptr<Eigen::MatrixXd> _entryMatrix{};
   std::unique_ptr<Eigen::MatrixXd> _exitMatrix{};
-  std::unique_ptr<Eigen::MatrixXd> _initialBelief{};
+  std::shared_ptr<Eigen::MatrixXd> _initialBelief{};
 
 public:
   /**
@@ -48,7 +48,7 @@ public:
    *
    * @return initialBelief The initial belief over the map
    */
-  std::unique_ptr<Eigen::MatrixXd> computeInitialBelief();
+  std::shared_ptr<Eigen::MatrixXd> computeInitialBelief();
 
   /**
    * Runs a given state through iMac to get the distribution for the next
