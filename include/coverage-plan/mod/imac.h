@@ -22,24 +22,26 @@
  * probability for (x,y)
  * _initialBelief: A 2D matrix representing the initial
  * belief over each cell being occupied.
+ * _initialBeliefComputed: Has the initial belief been computed? If so, return
+ * cached matrix
  */
 class IMac {
 private:
-  std::unique_ptr<Eigen::MatrixXd> _entryMatrix{};
-  std::unique_ptr<Eigen::MatrixXd> _exitMatrix{};
-  std::shared_ptr<Eigen::MatrixXd> _initialBelief{};
+  Eigen::MatrixXd _entryMatrix{};
+  Eigen::MatrixXd _exitMatrix{};
+  Eigen::MatrixXd _initialBelief{};
+  bool _initialBeliefComputed{};
 
 public:
   /**
    * Constructor initialises the member variables.
    *
-   * @param entryMatrix A ptr to the entry matrix
-   * @param exitMatrix A ptr to the exit matrix
+   * @param entryMatrix The entry matrix
+   * @param exitMatrix The exit matrix
    */
-  IMac(std::unique_ptr<Eigen::MatrixXd> entryMatrix,
-       std::unique_ptr<Eigen::MatrixXd> exitMatrix)
-      : _entryMatrix{std::move(entryMatrix)},
-        _exitMatrix{std::move(exitMatrix)}, _initialBelief{} {}
+  IMac(Eigen::MatrixXd entryMatrix, Eigen::MatrixXd exitMatrix)
+      : _entryMatrix{entryMatrix}, _exitMatrix{exitMatrix}, _initialBelief{},
+        _initialBeliefComputed{false} {}
 
   /**
    * Computes the initial belief over the map of dynamics for timestep 0.
@@ -48,7 +50,7 @@ public:
    *
    * @return initialBelief The initial belief over the map
    */
-  std::shared_ptr<Eigen::MatrixXd> computeInitialBelief();
+  Eigen::MatrixXd computeInitialBelief();
 
   /**
    * Runs a given state through iMac to get the distribution for the next
@@ -59,8 +61,7 @@ public:
    * @param currentState a 2D matrix of the current map state
    * @return nextState a 2D matrix of the subsequent map state
    */
-  std::unique_ptr<Eigen::MatrixXd>
-  forwardStep(std::unique_ptr<Eigen::MatrixXd> currentState);
+  Eigen::MatrixXd forwardStep(Eigen::MatrixXd currentState);
 };
 
 #endif
