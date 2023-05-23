@@ -4,7 +4,7 @@
  * @author Charlie Street
  */
 
-#include "coverage-plan/mod/imac.h"
+#include "coverage_plan/mod/imac.h"
 #include <Eigen/Dense>
 #include <memory>
 
