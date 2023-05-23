@@ -18,7 +18,13 @@ sudo ln -sf eigen3/unsupported unsupported
 
 
 ## Installation
-**TODO: Fill in**
+
+In repo root dir, run the following:
+
+```
+cmake -S . -B build
+cmake --build build
+```
 
 ## Examples
 **TODO: Fill in**
