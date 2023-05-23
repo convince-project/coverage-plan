@@ -22,15 +22,12 @@
  * probability for (x,y)
  * _initialBelief: A 2D matrix representing the initial
  * belief over each cell being occupied.
- * _initialBeliefComputed: Has the initial belief been computed? If so, return
- * cached matrix
  */
 class IMac {
 private:
   Eigen::MatrixXd _entryMatrix{};
   Eigen::MatrixXd _exitMatrix{};
   Eigen::MatrixXd _initialBelief{};
-  bool _initialBeliefComputed{};
 
 public:
   /**
@@ -40,8 +37,7 @@ public:
    * @param exitMatrix The exit matrix
    */
   IMac(Eigen::MatrixXd entryMatrix, Eigen::MatrixXd exitMatrix)
-      : _entryMatrix{entryMatrix}, _exitMatrix{exitMatrix}, _initialBelief{},
-        _initialBeliefComputed{false} {}
+      : _entryMatrix{entryMatrix}, _exitMatrix{exitMatrix}, _initialBelief{} {}
 
   /**
    * Computes the initial belief over the map of dynamics for timestep 0.

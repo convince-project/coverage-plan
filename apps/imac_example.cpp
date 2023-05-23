@@ -1,5 +1,5 @@
 /**
- * Test of IMac class.
+ * Example for IMac class.
  *
  * @author Charlie Street
  */

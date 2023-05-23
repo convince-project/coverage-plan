@@ -12,13 +12,12 @@
  * Returns initial belief over IMac map of dynamics.
  */
 Eigen::MatrixXd IMac::computeInitialBelief() {
-  // Check if already cached
-  if (!this->_initialBeliefComputed) {
+  // Check if already cached - if it isn't, the matrix will be empty
+  if (this->_initialBelief.size() == 0) {
     Eigen::MatrixXd ones{Eigen::MatrixXd::Ones(this->_entryMatrix.rows(),
                                                this->_entryMatrix.cols())};
     this->_initialBelief =
         (0.5 * this->_entryMatrix) + (0.5 * (ones - this->_exitMatrix));
-    this->_initialBeliefComputed = true;
   }
   return this->_initialBelief;
 }

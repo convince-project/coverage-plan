@@ -1,4 +1,4 @@
 
-# Add executable for IMac test
-add_executable(imacTest imac_example.cpp)
-target_link_libraries(imacTest PUBLIC mod)
+# Add executable for IMac example
+add_executable(imacExample imac_example.cpp)
+target_link_libraries(imacExample PUBLIC mod)
