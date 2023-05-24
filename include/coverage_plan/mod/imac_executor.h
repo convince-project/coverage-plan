@@ -22,7 +22,7 @@
  */
 class IMacExecutor {
 private:
-  std::unique_ptr<IMac> _imac{};
+  std::shared_ptr<IMac> _imac{};
   Eigen::MatrixXd _currentState{};
 
   /**
@@ -41,8 +41,7 @@ public:
    *
    * @param imac The IMac model
    */
-  IMacExecutor(std::unique_ptr<IMac> imac)
-      : _imac{std::move(imac)}, _currentState{} {}
+  IMacExecutor(std::shared_ptr<IMac> imac) : _imac{imac}, _currentState{} {}
 
   /**
    * Restart the simulation and return the new initial state.

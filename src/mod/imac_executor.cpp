@@ -11,7 +11,6 @@
 #include <random>
 #include <tuple>
 #include <vector>
-
 /**
  * Samples a state from a matrix of bernoulli random variables
  */
@@ -19,14 +18,15 @@ Eigen::MatrixXd IMacExecutor::_sampleState(Eigen::MatrixXd distMatrix) {
 
   // Generate a uniform rng between 0 and 1
   std::random_device rd{};
-  std::mt19937 gen{rd};
+  std::mt19937 gen{rd()};
   std::uniform_real_distribution<double> sampler{0.0, 1.0};
 
   // Return 1 if sampled double is <= value in distMatrix, else 0
   // A value of 1 means the cell is occupied
-  return Eigen::MatrixXd::NullaryExpr([&](Eigen::Index i) {
-    return (sampler(gen) <= distMatrix(i)) ? 1.0 : 0.0;
-  });
+  return Eigen::MatrixXd::NullaryExpr(
+      distMatrix.rows(), distMatrix.cols(), [&](Eigen::Index i) {
+        return (sampler(gen) <= distMatrix(i)) ? 1.0 : 0.0;
+      });
 }
 
 /**
