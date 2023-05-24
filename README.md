@@ -17,7 +17,7 @@ sudo ln -sf eigen3/unsupported unsupported
 ```
 
 
-## Installation
+## Building & Installation
 
 In repo root dir, run the following:
 
@@ -27,4 +27,5 @@ cmake --build build
 ```
 
 ## Examples
-**TODO: Fill in**
+
+Upon building, example files can be found in the `build/apps` directory.
