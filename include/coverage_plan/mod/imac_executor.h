@@ -19,6 +19,11 @@
  * @see mod/imac.h
  * This class retains an IMac model and samples from it to generate runs of
  * the dynamics.
+ *
+ * Members:
+ * _imac: A shared ptr to an IMac model
+ * _currentState: The current MoD state (deterministic, i.e. just 0s and 1s)
+ *
  */
 class IMacExecutor {
 private:

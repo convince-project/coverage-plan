@@ -33,7 +33,8 @@ Eigen::MatrixXd IMacExecutor::_sampleState(Eigen::MatrixXd distMatrix) {
  * Restarts the MoD execution
  */
 Eigen::MatrixXd IMacExecutor::restart() {
-  return this->_sampleState(this->_imac->computeInitialBelief());
+  this->_currentState = this->_sampleState(this->_imac->computeInitialBelief());
+  return this->_currentState;
 }
 
 /**
@@ -41,13 +42,14 @@ Eigen::MatrixXd IMacExecutor::restart() {
  */
 Eigen::MatrixXd
 IMacExecutor::updateState(std::vector<std::tuple<int, int, int>> observations) {
-  // First, sample through the IMac model
-  Eigen::MatrixXd nextState{this->_imac->forwardStep(this->_currentState)};
+  // First, sample through the next belief in the iMac model
+  this->_currentState =
+      this->_sampleState(_imac->forwardStep(this->_currentState));
 
   // Explicitly set the values in the observation list
   for (std::tuple<int, int, int> obs : observations) {
-    nextState(std::get<0>(obs), std::get<1>(obs)) = std::get<2>(obs);
+    this->_currentState(std::get<0>(obs), std::get<1>(obs)) = std::get<2>(obs);
   }
 
-  return nextState;
+  return this->_currentState;
 }
