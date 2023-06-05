@@ -11,8 +11,21 @@
 #include "coverage_plan/mod/imac.h"
 #include <Eigen/Dense>
 #include <memory>
-#include <tuple>
 #include <vector>
+
+/**
+ * Struct for storing IMac observations.
+ *
+ * Members:
+ * x: X position on grid
+ * y: Y position on grid
+ * occupied: 1 if cell is occupied, otherwise 0
+ */
+struct IMacObservation {
+  int x{};
+  int y{};
+  int occupied{};
+};
 
 /**
  * An executor class for an IMac model.
@@ -59,11 +72,11 @@ public:
    * Update the current MoD state based on the iMac model, where successor
    * values are constrained to match the observations we have made.
    *
-   * @param observations A vector of <x,y,occ_value (0 or 1)> values
-   * representing the occupancy at grid cell (x,y)
+   * @param observations A vector of IMacObservations
+   *
+   * @return nextState The successor IMac state
    */
-  Eigen::MatrixXd
-  updateState(std::vector<std::tuple<int, int, int>> observations);
+  Eigen::MatrixXd updateState(std::vector<IMacObservation> observations);
 };
 
 #endif

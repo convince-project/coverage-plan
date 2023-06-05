@@ -9,7 +9,6 @@
 #include <Eigen/Dense>
 #include <catch2/catch.hpp>
 #include <memory>
-#include <tuple>
 #include <vector>
 
 TEST_CASE("Tests for restart function in IMacExecutor", "[restart]") {
@@ -100,10 +99,10 @@ TEST_CASE("Tests for the updateState function in IMacExecutor",
   exec->restart();
 
   // Step 1: Check that the observation masking works
-  std::vector<std::tuple<int, int, int>> obs{};
+  std::vector<IMacObservation> obs{};
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      obs.push_back(std::make_tuple(i, j, 1));
+      obs.push_back(IMacObservation{i, j, 1});
     }
   }
 
@@ -158,7 +157,7 @@ TEST_CASE("Tests for the updateState function in IMacExecutor",
     }
   }
 
-  obs.push_back(std::make_tuple(1, 1, 0));
+  obs.push_back(IMacObservation{1, 1, 0});
   nextState = exec->updateState(obs);
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {

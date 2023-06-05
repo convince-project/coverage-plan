@@ -8,7 +8,6 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include <memory>
-#include <tuple>
 #include <vector>
 
 int main() {
@@ -40,41 +39,41 @@ int main() {
   // Step 4: Sample successor states with observations
 
   // t=1
-  std::vector<std::tuple<int, int, int>> obs{};
-  obs.push_back(std::make_tuple(2, 2, 0.0));
-  obs.push_back(std::make_tuple(2, 1, 1.0));
+  std::vector<IMacObservation> obs{};
+  obs.push_back(IMacObservation{2, 2, 0});
+  obs.push_back(IMacObservation{2, 1, 1});
   currentState = exec->updateState(obs);
   std::cout << "Time t=1\n";
   std::cout << currentState << '\n';
 
   // t=2
   obs.clear();
-  obs.push_back(std::make_tuple(2, 1, 0.0));
-  obs.push_back(std::make_tuple(1, 1, 1.0));
+  obs.push_back(IMacObservation{2, 1, 0});
+  obs.push_back(IMacObservation{1, 1, 1});
   currentState = exec->updateState(obs);
   std::cout << "Time t=2\n";
   std::cout << currentState << '\n';
 
   // t=3
   obs.clear();
-  obs.push_back(std::make_tuple(2, 0, 1.0));
-  obs.push_back(std::make_tuple(2, 1, 1.0));
+  obs.push_back(IMacObservation{2, 0, 1});
+  obs.push_back(IMacObservation{2, 1, 1});
   currentState = exec->updateState(obs);
   std::cout << "Time t=3\n";
   std::cout << currentState << '\n';
 
   // t=4
   obs.clear();
-  obs.push_back(std::make_tuple(1, 1, 0.0));
-  obs.push_back(std::make_tuple(1, 2, 0.0));
+  obs.push_back(IMacObservation{1, 1, 0});
+  obs.push_back(IMacObservation{1, 2, 0});
   currentState = exec->updateState(obs);
   std::cout << "Time t=4\n";
   std::cout << currentState << '\n';
 
   // t=5
   obs.clear();
-  obs.push_back(std::make_tuple(1, 1, 0.0));
-  obs.push_back(std::make_tuple(2, 1, 1.0));
+  obs.push_back(IMacObservation{1, 1, 0});
+  obs.push_back(IMacObservation{2, 1, 1});
   currentState = exec->updateState(obs);
   std::cout << "Time t=5\n";
   std::cout << currentState << '\n';

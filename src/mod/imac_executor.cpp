@@ -9,7 +9,6 @@
 #include <Eigen/Dense>
 #include <memory>
 #include <random>
-#include <tuple>
 #include <vector>
 /**
  * Samples a state from a matrix of bernoulli random variables
@@ -41,14 +40,14 @@ Eigen::MatrixXd IMacExecutor::restart() {
  * Updates the current MoD state based on the IMac model and observations
  */
 Eigen::MatrixXd
-IMacExecutor::updateState(std::vector<std::tuple<int, int, int>> observations) {
+IMacExecutor::updateState(std::vector<IMacObservation> observations) {
   // First, sample through the next belief in the iMac model
   this->_currentState =
       this->_sampleState(_imac->forwardStep(this->_currentState));
 
   // Explicitly set the values in the observation list
-  for (std::tuple<int, int, int> obs : observations) {
-    this->_currentState(std::get<0>(obs), std::get<1>(obs)) = std::get<2>(obs);
+  for (IMacObservation obs : observations) {
+    this->_currentState(obs.x, obs.y) = obs.occupied;
   }
 
   return this->_currentState;
