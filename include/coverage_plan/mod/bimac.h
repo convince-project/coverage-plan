@@ -42,19 +42,19 @@ struct BIMacObservation {
  * cell.
  *
  * Members:
- *  _alpha_entry: The matrix of alpha parameters for the lambda_entry
- * parameter (free->occupied) _beta_entry: The matrix of beta parameters for
- * the lambda_entry parameter (free->occupied) _alpha_exit: The matrix of
+ *  _alphaEntry: The matrix of alpha parameters for the lambda_entry
+ * parameter (free->occupied) _betaEntry: The matrix of beta parameters for
+ * the lambda_entry parameter (free->occupied) _alphaExit: The matrix of
  * alpha parameters for the lambda_exit parameter (occupied->free)
- * _beta_exit: The matrix of beta parameters for the lambda_exit parameter
+ * _betaExit: The matrix of beta parameters for the lambda_exit parameter
  * (occupied->free)
  */
 class BIMac {
 private:
-  Eigen::MatrixXi _alpha_entry{};
-  Eigen::MatrixXi _beta_entry{};
-  Eigen::MatrixXi _alpha_exit{};
-  Eigen::MatrixXi _beta_exit{};
+  Eigen::MatrixXi _alphaEntry{};
+  Eigen::MatrixXi _betaEntry{};
+  Eigen::MatrixXi _alphaExit{};
+  Eigen::MatrixXi _betaExit{};
 
   /**
    * Reads BIMac matrix in from file.
@@ -67,9 +67,10 @@ private:
   /**
    * Write a single BIMac matrix to file.
    *
+   * @param matrix The matrix to write out
    * @param outFile The file to send the BIMac matrix
    */
-  void _writeBIMacMatrix(std::filesystem::path outFile);
+  void _writeBIMacMatrix(Eigen::MatrixXi matrix, std::filesystem::path outFile);
 
 public:
   /**
@@ -79,10 +80,11 @@ public:
    * @param y The length of the y dimension of the grid map
    */
   BIMac(int x, int y)
-      : _alpha_entry{Eigen::MatrixXi::Ones(x, y)},
-        _beta_entry{Eigen::MatrixXi::Ones(x, y)},
-        _alpha_exit{Eigen::MatrixXi::Ones(x, y)},
-        _beta_exit{Eigen::MatrixXi::Ones(x, y)} {}
+      : _alphaEntry{Eigen::MatrixXi::Ones(x, y)},
+        _betaEntry{Eigen::MatrixXi::Ones(x, y)},
+        _alphaExit{Eigen::MatrixXi::Ones(x, y)}, _betaExit{
+                                                     Eigen::MatrixXi::Ones(
+                                                         x, y)} {}
 
   /**
    * This constructor reads a BIMac config in from file.
@@ -90,10 +92,10 @@ public:
    * @param inDir The directory where the IMac files are stored
    */
   BIMac(std::filesystem::path inDir)
-      : _alpha_entry{inDir / "alpha_entry.txt"}, _beta_entry{inDir /
-                                                             "beta_entry.txt"},
-        _alpha_exit{inDir / "alpha_exit.txt"}, _beta_exit{inDir /
-                                                          "beta_exit.txt"} {}
+      : _alphaEntry{inDir / "alpha_entry.txt"}, _betaEntry{inDir /
+                                                           "beta_entry.txt"},
+        _alphaExit{inDir / "alpha_exit.txt"}, _betaExit{inDir /
+                                                        "beta_exit.txt"} {}
 
   /**
    * Sample from BIMac to get a single IMac instance.
