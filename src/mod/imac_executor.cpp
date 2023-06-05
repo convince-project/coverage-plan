@@ -13,7 +13,7 @@
 /**
  * Samples a state from a matrix of bernoulli random variables
  */
-Eigen::MatrixXd IMacExecutor::_sampleState(Eigen::MatrixXd distMatrix) {
+Eigen::MatrixXi IMacExecutor::_sampleState(Eigen::MatrixXd distMatrix) {
 
   // Generate a uniform rng between 0 and 1
   std::random_device rd{};
@@ -22,16 +22,15 @@ Eigen::MatrixXd IMacExecutor::_sampleState(Eigen::MatrixXd distMatrix) {
 
   // Return 1 if sampled double is <= value in distMatrix, else 0
   // A value of 1 means the cell is occupied
-  return Eigen::MatrixXd::NullaryExpr(
-      distMatrix.rows(), distMatrix.cols(), [&](Eigen::Index i) {
-        return (sampler(gen) <= distMatrix(i)) ? 1.0 : 0.0;
-      });
+  return Eigen::MatrixXi::NullaryExpr(
+      distMatrix.rows(), distMatrix.cols(),
+      [&](Eigen::Index i) { return (sampler(gen) <= distMatrix(i)) ? 1 : 0; });
 }
 
 /**
  * Restarts the MoD execution
  */
-Eigen::MatrixXd IMacExecutor::restart() {
+Eigen::MatrixXi IMacExecutor::restart() {
   this->_currentState = this->_sampleState(this->_imac->computeInitialBelief());
   return this->_currentState;
 }
@@ -39,11 +38,11 @@ Eigen::MatrixXd IMacExecutor::restart() {
 /**
  * Updates the current MoD state based on the IMac model and observations
  */
-Eigen::MatrixXd
+Eigen::MatrixXi
 IMacExecutor::updateState(std::vector<IMacObservation> observations) {
   // First, sample through the next belief in the iMac model
-  this->_currentState =
-      this->_sampleState(_imac->forwardStep(this->_currentState));
+  this->_currentState = this->_sampleState(
+      _imac->forwardStep(this->_currentState.cast<double>()));
 
   // Explicitly set the values in the observation list
   for (IMacObservation obs : observations) {

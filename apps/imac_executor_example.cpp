@@ -32,7 +32,7 @@ int main() {
   std::unique_ptr<IMacExecutor> exec{std::make_unique<IMacExecutor>(imac)};
 
   // Step 3: Sample the initial state of the MoD in this sample run
-  Eigen::MatrixXd currentState{exec->restart()};
+  Eigen::MatrixXi currentState{exec->restart()};
   std::cout << "Time t=0\n";
   std::cout << currentState << '\n';
 

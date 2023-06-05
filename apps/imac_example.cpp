@@ -24,18 +24,18 @@ int main() {
   exit(1, 0) = 0.6;
   exit(1, 1) = 0.7;
 
-  Eigen::MatrixXd currentState{2, 2};
-  currentState(0, 0) = 0.1;
-  currentState(0, 1) = 0.3;
-  currentState(1, 0) = 0.5;
-  currentState(1, 1) = 0.7;
+  Eigen::MatrixXd currentBelief{2, 2};
+  currentBelief(0, 0) = 0.1;
+  currentBelief(0, 1) = 0.3;
+  currentBelief(1, 0) = 0.5;
+  currentBelief(1, 1) = 0.7;
 
   std::unique_ptr<IMac> imac{std::make_unique<IMac>(entry, exit)};
 
   std::cout << "INITIAL BELIEF\n";
   std::cout << imac->computeInitialBelief() << '\n';
   std::cout << "NEXT STATE\n";
-  std::cout << imac->forwardStep(currentState) << '\n';
+  std::cout << imac->forwardStep(currentBelief) << '\n';
 
   return 0;
 }

@@ -24,18 +24,18 @@ TEST_CASE("Tests for basic IMac functionality", "[imac]") {
   exit(1, 0) = 0.6;
   exit(1, 1) = 0.7;
 
-  // An example mod state
-  Eigen::MatrixXd currentState{2, 2};
-  currentState(0, 0) = 0.1;
-  currentState(0, 1) = 0.3;
-  currentState(1, 0) = 0.5;
-  currentState(1, 1) = 0.7;
+  // An example mod belief
+  Eigen::MatrixXd currentBelief{2, 2};
+  currentBelief(0, 0) = 0.1;
+  currentBelief(0, 1) = 0.3;
+  currentBelief(1, 0) = 0.5;
+  currentBelief(1, 1) = 0.7;
 
   // Create the IMac object
   std::unique_ptr<IMac> imac{std::make_unique<IMac>(entry, exit)};
 
   auto initialBelief{imac->computeInitialBelief()};
-  auto nextState{imac->forwardStep(currentState)};
+  auto nextState{imac->forwardStep(currentBelief)};
 
   REQUIRE_THAT(initialBelief(0, 0), Catch::Matchers::WithinRel(0.4, 0.001));
   REQUIRE_THAT(initialBelief(0, 1), Catch::Matchers::WithinRel(0.4, 0.001));

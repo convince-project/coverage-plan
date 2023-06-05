@@ -21,26 +21,26 @@ TEST_CASE("Tests for restart function in IMacExecutor", "[restart]") {
 
   std::unique_ptr<IMacExecutor> exec{std::make_unique<IMacExecutor>(imac)};
 
-  Eigen::MatrixXd initState{exec->restart()};
+  Eigen::MatrixXi initState{exec->restart()};
 
   // Check matrix is of expected size and all values are 0 or 1
   REQUIRE(initState.rows() == 3);
   REQUIRE(initState.cols() == 3);
   for (int i{0}; i < 3; ++i) {
     for (int j{0}; j < 3; ++j) {
-      REQUIRE((initState(i, j) == 0.0 || initState(i, j) == 1.0));
+      REQUIRE((initState(i, j) == 0 || initState(i, j) == 1));
     }
   }
 
   // Part 2: Run again with same matrix and check values are different
-  Eigen::MatrixXd initStateTwo{exec->restart()};
+  Eigen::MatrixXi initStateTwo{exec->restart()};
 
   // Sanity check second matrix
   REQUIRE(initStateTwo.rows() == 3);
   REQUIRE(initStateTwo.cols() == 3);
   for (int i{0}; i < 3; ++i) {
     for (int j{0}; j < 3; ++j) {
-      REQUIRE((initStateTwo(i, j) == 0.0 || initStateTwo(i, j) == 1.0));
+      REQUIRE((initStateTwo(i, j) == 0 || initStateTwo(i, j) == 1));
     }
   }
 
@@ -78,10 +78,10 @@ TEST_CASE("Tests for restart function in IMacExecutor", "[restart]") {
   initState = exec->restart();
   // Check the values are 1,0,0,1 - checking the computations are the right way
   // round
-  REQUIRE(initState(0, 0) == 1.0);
-  REQUIRE(initState(0, 1) == 0.0);
-  REQUIRE(initState(1, 0) == 0.0);
-  REQUIRE(initState(1, 1) == 1.0);
+  REQUIRE(initState(0, 0) == 1);
+  REQUIRE(initState(0, 1) == 0);
+  REQUIRE(initState(1, 0) == 0);
+  REQUIRE(initState(1, 1) == 1);
 }
 
 TEST_CASE("Tests for the updateState function in IMacExecutor",
@@ -106,16 +106,16 @@ TEST_CASE("Tests for the updateState function in IMacExecutor",
     }
   }
 
-  Eigen::MatrixXd nextState{exec->updateState(obs)};
+  Eigen::MatrixXi nextState{exec->updateState(obs)};
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      REQUIRE(nextState(i, j) == 1.0);
+      REQUIRE(nextState(i, j) == 1);
     }
   }
 
   // Step 2: Check that the next state is different
   obs.clear();
-  Eigen::MatrixXd nextStateTwo(exec->updateState(obs));
+  Eigen::MatrixXi nextStateTwo(exec->updateState(obs));
   int numSame{0};
   for (int i{0}; i < 3; ++i) {
     for (int j{0}; j < 3; ++j) {
@@ -129,7 +129,7 @@ TEST_CASE("Tests for the updateState function in IMacExecutor",
   REQUIRE(numSame != 9);
 
   // Step 3: Check multiple runs without masking
-  Eigen::MatrixXd nextStateThree(exec->updateState(obs));
+  Eigen::MatrixXi nextStateThree(exec->updateState(obs));
   numSame = 0;
   for (int i{0}; i < 3; ++i) {
     for (int j{0}; j < 3; ++j) {
@@ -150,10 +150,10 @@ TEST_CASE("Tests for the updateState function in IMacExecutor",
   imac = std::make_shared<IMac>(detEntry, detExit);
   exec = std::make_unique<IMacExecutor>(imac);
 
-  Eigen::MatrixXd initState{exec->restart()};
+  Eigen::MatrixXi initState{exec->restart()};
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      REQUIRE(initState(i, j) == 1.0);
+      REQUIRE(initState(i, j) == 1);
     }
   }
 
@@ -162,9 +162,9 @@ TEST_CASE("Tests for the updateState function in IMacExecutor",
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
       if (i == 1 && j == 1) {
-        REQUIRE(nextState(i, j) == 0.0);
+        REQUIRE(nextState(i, j) == 0);
       } else {
-        REQUIRE(nextState(i, j) == 1.0);
+        REQUIRE(nextState(i, j) == 1);
       }
     }
   }

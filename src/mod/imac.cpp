@@ -23,11 +23,12 @@ Eigen::MatrixXd IMac::computeInitialBelief() {
 }
 
 /**
- * Runs a given state through IMac to get distribution for the next timestep
+ * Runs a given belief or state through IMac to get distribution for the next
+ * timestep
  */
-Eigen::MatrixXd IMac::forwardStep(Eigen::MatrixXd currentState) {
+Eigen::MatrixXd IMac::forwardStep(Eigen::MatrixXd currentBelief) {
   Eigen::MatrixXd ones{Eigen::MatrixXd::Ones(this->_entryMatrix.rows(),
                                              this->_entryMatrix.cols())};
-  return (ones - currentState).cwiseProduct(this->_entryMatrix) +
-         currentState.cwiseProduct((ones - this->_exitMatrix));
+  return (ones - currentBelief).cwiseProduct(this->_entryMatrix) +
+         currentBelief.cwiseProduct((ones - this->_exitMatrix));
 }

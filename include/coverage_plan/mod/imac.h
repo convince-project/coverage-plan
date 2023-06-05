@@ -49,15 +49,19 @@ public:
   Eigen::MatrixXd computeInitialBelief();
 
   /**
-   * Runs a given state through iMac to get the distribution for the next
-   * timestep.
+   * Runs a given belief or state through iMac to get the distribution for the
+   * next timestep.
+   *
+   * Passing a deterministic state into this function is fine, and it'll still
+   * work. However, note the arg type is double, not int, so casting is probably
+   * required first.
    *
    * Here the probability in each cell represents the probability of occupation.
    *
-   * @param currentState a 2D matrix of the current map state
-   * @return nextState a 2D matrix of the subsequent map state
+   * @param currentBelief a 2D matrix of the current map belief or state
+   * @return nextBelief a 2D matrix of the subsequent map belief
    */
-  Eigen::MatrixXd forwardStep(Eigen::MatrixXd currentState);
+  Eigen::MatrixXd forwardStep(Eigen::MatrixXd currentBelief);
 };
 
 #endif

@@ -51,24 +51,25 @@ struct BIMacObservation {
  */
 class BIMac {
 private:
-  Eigen::MatrixXd _alpha_entry{};
-  Eigen::MatrixXd _beta_entry{};
-  Eigen::MatrixXd _alpha_exit{};
-  Eigen::MatrixXd _beta_exit{};
+  Eigen::MatrixXi _alpha_entry{};
+  Eigen::MatrixXi _beta_entry{};
+  Eigen::MatrixXi _alpha_exit{};
+  Eigen::MatrixXi _beta_exit{};
 
   /**
    * Reads BIMac matrix in from file.
    *
    * @param inFile The Matrix file to read in
+   * @return mat The matrix read from file
    */
-  void _readBIMacMatrix(std::filesystem::path inFile);
+  Eigen::MatrixXi _readBIMacMatrix(std::filesystem::path inFile);
 
   /**
    * Write a single BIMac matrix to file.
    *
    * @param outFile The file to send the BIMac matrix
    */
-  Eigen::MatrixXd _writeBIMacMatrix(std::filesystem::path outFile);
+  void _writeBIMacMatrix(std::filesystem::path outFile);
 
 public:
   /**
@@ -78,10 +79,10 @@ public:
    * @param y The length of the y dimension of the grid map
    */
   BIMac(int x, int y)
-      : _alpha_entry{Eigen::MatrixXd::Ones(x, y)},
-        _beta_entry{Eigen::MatrixXd::Ones(x, y)},
-        _alpha_exit{Eigen::MatrixXd::Ones(x, y)},
-        _beta_exit{Eigen::MatrixXd::Ones(x, y)} {}
+      : _alpha_entry{Eigen::MatrixXi::Ones(x, y)},
+        _beta_entry{Eigen::MatrixXi::Ones(x, y)},
+        _alpha_exit{Eigen::MatrixXi::Ones(x, y)},
+        _beta_exit{Eigen::MatrixXi::Ones(x, y)} {}
 
   /**
    * This constructor reads a BIMac config in from file.

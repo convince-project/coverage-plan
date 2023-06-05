@@ -41,7 +41,7 @@ struct IMacObservation {
 class IMacExecutor {
 private:
   std::shared_ptr<IMac> _imac{};
-  Eigen::MatrixXd _currentState{};
+  Eigen::MatrixXi _currentState{};
 
   /**
    * Helper function which samples an MoD state from a distribution matrix.
@@ -51,7 +51,7 @@ private:
    *
    * @return sampledState an MOD state sampled from the distribution
    */
-  Eigen::MatrixXd _sampleState(Eigen::MatrixXd distMatrix);
+  Eigen::MatrixXi _sampleState(Eigen::MatrixXd distMatrix);
 
 public:
   /**
@@ -66,7 +66,7 @@ public:
    *
    * @return initialState the initial state of the map of dynamics
    */
-  Eigen::MatrixXd restart();
+  Eigen::MatrixXi restart();
 
   /**
    * Update the current MoD state based on the iMac model, where successor
@@ -76,7 +76,7 @@ public:
    *
    * @return nextState The successor IMac state
    */
-  Eigen::MatrixXd updateState(std::vector<IMacObservation> observations);
+  Eigen::MatrixXi updateState(std::vector<IMacObservation> observations);
 };
 
 #endif
