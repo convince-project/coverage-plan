@@ -5,7 +5,8 @@ project(CoveragePlan VERSION 1.0
                      LANGUAGES CXX)
 
 # 3rd party packages
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Boost REQUIRED COMPONENTS math)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(Catch2 REQUIRED)
 
 # Add the subdirectories

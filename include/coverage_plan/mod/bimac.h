@@ -79,6 +79,10 @@ private:
    * Samples a uniform random number in [0,1] and runs it through the Beta
    * quantile function
    *
+   * Note neither gen or sampler are passed by const reference as they maintain
+   * an internal state which we want to change to ensure different random
+   * numbers are generated
+   *
    * @param alpha The alpha value for the corresponding Beta distribtion
    * @param beta The beta value for the corresponding Beta distribtion
    * @param gen A random number generator
@@ -86,8 +90,8 @@ private:
    *
    * @return paramSample The sampled IMac parameter value
    */
-  double _sampleForCell(int alpha, int beta, const std::mt19937 &gen,
-                        const std::uniform_real_distribution<double> &sampler);
+  double _sampleForCell(int alpha, int beta, std::mt19937 &gen,
+                        std::uniform_real_distribution<double> &sampler);
 
   /**
    * Compute the MLE value for a single parameter.

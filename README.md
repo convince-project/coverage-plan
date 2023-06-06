@@ -5,6 +5,7 @@ Author and maintainer: Charlie Street - `cstreet@robots.ox.ac.uk`
 
 ## Dependencies
 
+* [Boost](https://linux.how2shout.com/how-to-install-boost-c-on-ubuntu-20-04-or-22-04/)
 * [Catch](https://github.com/catchorg/Catch2)
 * [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) 
 

@@ -8,6 +8,7 @@
 #include "coverage_plan/mod/bimac.h"
 #include "coverage_plan/mod/imac.h"
 #include <Eigen/Dense>
+#include <boost/math/special_functions/beta.hpp>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -78,18 +79,17 @@ void BIMac::_writeBIMacMatrix(Eigen::MatrixXi matrix,
   }
 }
 
-// double
-// BIMac::_sampleForCell(int alpha, int beta, const std::mt19937 &gen,
-//                       const std::uniform_real_distribution<double> &sampler)
-//                       {
-//   return sampler(gen);
-// }
+double BIMac::_sampleForCell(int alpha, int beta, std::mt19937 &gen,
+                             std::uniform_real_distribution<double> &sampler) {
+  return boost::math::ibeta_inv(alpha, beta, sampler(gen));
+}
 
 /**
  * Compute the MLE value for a single parameter.
  */
 double BIMac::_computeMleForCell(int alpha, int beta) {
   if (alpha == 1 && beta == 1) {
+    // design choice to just return 0.5 for a uniform distribution
     return 0.5;
   } else {
     return (alpha - 1.0) / (alpha + beta - 2.0);
@@ -103,7 +103,9 @@ double BIMac::_computePosteriorMeanForCell(int alpha, int beta) {
   return ((double)alpha) / (alpha + beta);
 }
 
-// TODO: sample
+/**
+ * Sample from BIMac to get a single IMac instance
+ */
 std::shared_ptr<IMac> BIMac::sample() {
   // Generate a uniform rng between 0 and 1 to sample IMac parameters
   std::random_device rd{};
