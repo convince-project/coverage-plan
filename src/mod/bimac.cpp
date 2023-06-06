@@ -47,7 +47,7 @@ Eigen::MatrixXi _readBIMacMatrix(std::filesystem::path inFile) {
   // Convert the vector of elements back into an Eigen matrix
   // I want to keep this in column major to ensure consistency and avoid bugs
   // Function won't be called frequently, so doesn't need to be efficient
-  int numCols{matrixElems.size() / numRows};
+  int numCols{(int)matrixElems.size() / numRows};
   Eigen::MatrixXi matrix{Eigen::MatrixXi::Ones(numRows, numCols)};
 
   for (int i{0}; i < numRows; ++i) {

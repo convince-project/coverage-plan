@@ -135,10 +135,10 @@ public:
    * @param inDir The directory where the IMac files are stored
    */
   BIMac(std::filesystem::path inDir)
-      : _alphaEntry{inDir / "alpha_entry.csv"}, _betaEntry{inDir /
-                                                           "beta_entry.csv"},
-        _alphaExit{inDir / "alpha_exit.csv"}, _betaExit{inDir /
-                                                        "beta_exit.csv"} {}
+      : _alphaEntry{_readBIMacMatrix(inDir / "alpha_entry.csv")},
+        _betaEntry{_readBIMacMatrix(inDir / "beta_entry.csv")},
+        _alphaExit{_readBIMacMatrix(inDir / "alpha_exit.csv")},
+        _betaExit{_readBIMacMatrix(inDir / "beta_exit.csv")} {}
 
   /**
    * Sample from BIMac to get a single IMac instance.
