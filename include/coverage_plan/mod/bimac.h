@@ -13,6 +13,7 @@
 #include <Eigen/Dense>
 #include <filesystem>
 #include <memory>
+#include <random>
 
 /**
  * Struct for storing BiMac observations.
@@ -72,6 +73,44 @@ private:
    */
   void _writeBIMacMatrix(Eigen::MatrixXi matrix, std::filesystem::path outFile);
 
+  /**
+   * Sample single IMac parameter.
+   *
+   * Samples a uniform random number in [0,1] and runs it through the Beta
+   * quantile function
+   *
+   * @param alpha The alpha value for the corresponding Beta distribtion
+   * @param beta The beta value for the corresponding Beta distribtion
+   * @param gen A random number generator
+   * @param sampler A sampler from a uniform distribution which uses gen
+   *
+   * @return paramSample The sampled IMac parameter value
+   */
+  double _sampleForCell(int alpha, int beta, const std::mt19937 &gen,
+                        const std::uniform_real_distribution<double> &sampler);
+
+  /**
+   * Compute the MLE value for a single parameter.
+   * Used in a nullary expression in mle
+   *
+   * @param alpha The alpha value for the corresponding Beta distribtion
+   * @param beta The beta value for the corresponding Beta distribution
+   *
+   * @return mle The MLE for the parameter
+   */
+  double _computeMleForCell(int alpha, int beta);
+
+  /**
+   * Compute the posterior mean for a single parameter.
+   * Used in a nullary expression in posteriorMean
+   *
+   * @param alpha The alpha value for the corresponding Beta distribtion
+   * @param beta The beta value for the corresponding Beta distribution
+   *
+   * @return mean The posterior mean for that parameter
+   */
+  double _computePosteriorMeanForCell(int alpha, int beta);
+
 public:
   /**
    * This constructor initialises all matrices to be full of ones.
@@ -92,10 +131,10 @@ public:
    * @param inDir The directory where the IMac files are stored
    */
   BIMac(std::filesystem::path inDir)
-      : _alphaEntry{inDir / "alpha_entry.txt"}, _betaEntry{inDir /
-                                                           "beta_entry.txt"},
-        _alphaExit{inDir / "alpha_exit.txt"}, _betaExit{inDir /
-                                                        "beta_exit.txt"} {}
+      : _alphaEntry{inDir / "alpha_entry.csv"}, _betaEntry{inDir /
+                                                           "beta_entry.csv"},
+        _alphaExit{inDir / "alpha_exit.csv"}, _betaExit{inDir /
+                                                        "beta_exit.csv"} {}
 
   /**
    * Sample from BIMac to get a single IMac instance.
@@ -113,6 +152,16 @@ public:
    * @return imac A shared ptr to an imac instance
    */
   std::shared_ptr<IMac> mle();
+
+  /**
+   * Compute the posterior mean given the observed data.
+   *
+   * As the + 1 part is already in the beta distribution, its just:
+   * alpha/(alpha + beta)
+   *
+   * @return imac A shared ptr to an imac instance
+   */
+  std::shared_ptr<IMac> posteriorMean();
 
   /**
    * Update the BIMac posterior given a new set of observations.
