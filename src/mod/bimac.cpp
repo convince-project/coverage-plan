@@ -11,7 +11,6 @@
 #include <boost/math/special_functions/beta.hpp>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <memory>
 #include <string>
 
@@ -20,7 +19,7 @@
  * Credit to Aleksandar Haber's tutorial for this function
  * https://www.youtube.com/watch?v=K9QB1LbemnY&ab_channel=AleksandarHaber
  */
-Eigen::MatrixXi _readBIMacMatrix(std::filesystem::path inFile) {
+Eigen::MatrixXi BIMac::_readBIMacMatrix(std::filesystem::path inFile) {
 
   // Vector to temporarily store matrix entries
   std::vector<int> matrixElems;
@@ -104,9 +103,9 @@ double BIMac::_computePosteriorMeanForCell(int alpha, int beta) {
 }
 
 /**
- * Sample from BIMac to get a single IMac instance
+ * Take a posterior sample from BIMac to get a single IMac instance
  */
-std::shared_ptr<IMac> BIMac::sample() {
+std::shared_ptr<IMac> BIMac::posteriorSample() {
   // Generate a uniform rng between 0 and 1 to sample IMac parameters
   std::random_device rd{};
   std::mt19937 gen{rd()};

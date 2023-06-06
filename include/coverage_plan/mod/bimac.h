@@ -141,11 +141,11 @@ public:
         _betaExit{_readBIMacMatrix(inDir / "beta_exit.csv")} {}
 
   /**
-   * Sample from BIMac to get a single IMac instance.
+   * Take a posterior sample from BIMac to get a single IMac instance.
    *
-   * @return imac A shared ptr to an imac instance
+   * @return imac A shared ptr to an IMac instance
    */
-  std::shared_ptr<IMac> sample();
+  std::shared_ptr<IMac> posteriorSample();
 
   /**
    * Compute the MLE given the observed data.
@@ -153,7 +153,7 @@ public:
    * Given how BiMac is initialised, this corresponds to computing the mode
    * of each beta distribution.
    *
-   * @return imac A shared ptr to an imac instance
+   * @return imac A shared ptr to an IMac instance
    */
   std::shared_ptr<IMac> mle();
 
@@ -163,7 +163,7 @@ public:
    * As the + 1 part is already in the beta distribution, its just:
    * alpha/(alpha + beta)
    *
-   * @return imac A shared ptr to an imac instance
+   * @return imac A shared ptr to an IMac instance
    */
   std::shared_ptr<IMac> posteriorMean();
 
