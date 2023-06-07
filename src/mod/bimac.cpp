@@ -19,7 +19,7 @@
  * Credit to Aleksandar Haber's tutorial for this function
  * https://www.youtube.com/watch?v=K9QB1LbemnY&ab_channel=AleksandarHaber
  */
-Eigen::MatrixXi BIMac::_readBIMacMatrix(std::filesystem::path inFile) {
+Eigen::MatrixXi BIMac::_readBIMacMatrix(const std::filesystem::path &inFile) {
 
   // Vector to temporarily store matrix entries
   std::vector<int> matrixElems;
@@ -65,8 +65,8 @@ Eigen::MatrixXi BIMac::_readBIMacMatrix(std::filesystem::path inFile) {
  * Credit to Aleksandar Haber's tutorial for this function
  * https://www.youtube.com/watch?v=K9QB1LbemnY&ab_channel=AleksandarHaber
  */
-void BIMac::_writeBIMacMatrix(Eigen::MatrixXi matrix,
-                              std::filesystem::path outFile) {
+void BIMac::_writeBIMacMatrix(const Eigen::MatrixXi &matrix,
+                              const std::filesystem::path &outFile) {
 
   // output format for matrix
   const static Eigen::IOFormat csvFormat(Eigen::FullPrecision,
@@ -163,7 +163,7 @@ std::shared_ptr<IMac> BIMac::posteriorMean() {
 /**
  * Updates the BIMac posterior given a new set of observations.
  */
-void BIMac::updatePosterior(std::vector<BIMacObservation> observations) {
+void BIMac::updatePosterior(const std::vector<BIMacObservation> &observations) {
 
   for (BIMacObservation obs : observations) {
     // Update lambda_entry parameters
@@ -179,7 +179,7 @@ void BIMac::updatePosterior(std::vector<BIMacObservation> observations) {
 /**
  * Writes each of the BIMac matrices out to file
  */
-void BIMac::writeBIMac(std::filesystem::path outDir) {
+void BIMac::writeBIMac(const std::filesystem::path &outDir) {
   // Each matrix is stored in a different file
   _writeBIMacMatrix(this->_alphaEntry, outDir / "alpha_entry.csv");
   _writeBIMacMatrix(this->_betaEntry, outDir / "beta_entry.csv");

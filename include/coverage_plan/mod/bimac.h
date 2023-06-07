@@ -64,7 +64,7 @@ private:
    * @param inFile The Matrix file to read in
    * @return mat The matrix read from file
    */
-  Eigen::MatrixXi _readBIMacMatrix(std::filesystem::path inFile);
+  Eigen::MatrixXi _readBIMacMatrix(const std::filesystem::path &inFile);
 
   /**
    * Write a single BIMac matrix to file.
@@ -72,7 +72,8 @@ private:
    * @param matrix The matrix to write out
    * @param outFile The file to send the BIMac matrix
    */
-  void _writeBIMacMatrix(Eigen::MatrixXi matrix, std::filesystem::path outFile);
+  void _writeBIMacMatrix(const Eigen::MatrixXi &matrix,
+                         const std::filesystem::path &outFile);
 
   /**
    * Sample single IMac parameter.
@@ -150,7 +151,7 @@ public:
    *
    * @param inDir The directory where the IMac files are stored
    */
-  BIMac(std::filesystem::path inDir)
+  BIMac(const std::filesystem::path &inDir)
       : _alphaEntry{_readBIMacMatrix(inDir / "alpha_entry.csv")},
         _betaEntry{_readBIMacMatrix(inDir / "beta_entry.csv")},
         _alphaExit{_readBIMacMatrix(inDir / "alpha_exit.csv")},
@@ -188,13 +189,13 @@ public:
    *
    * @param observations A list of BIMacObservations
    */
-  void updatePosterior(std::vector<BIMacObservation> observations);
+  void updatePosterior(const std::vector<BIMacObservation> &observations);
 
   /**
    * Write BiMac matrices out to file.
    *
    * @param outDir The directory to write the BIMac matrices to
    */
-  void writeBIMac(std::filesystem::path outDir);
+  void writeBIMac(const std::filesystem::path &outDir);
 };
 #endif

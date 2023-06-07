@@ -13,7 +13,7 @@
 /**
  * Samples a state from a matrix of bernoulli random variables
  */
-Eigen::MatrixXi IMacExecutor::_sampleState(Eigen::MatrixXd distMatrix) {
+Eigen::MatrixXi IMacExecutor::_sampleState(const Eigen::MatrixXd &distMatrix) {
 
   // Generate a uniform rng between 0 and 1
   std::random_device rd{};
@@ -39,7 +39,7 @@ Eigen::MatrixXi IMacExecutor::restart() {
  * Updates the current MoD state based on the IMac model and observations
  */
 Eigen::MatrixXi
-IMacExecutor::updateState(std::vector<IMacObservation> observations) {
+IMacExecutor::updateState(const std::vector<IMacObservation> &observations) {
   // First, sample through the next belief in the iMac model
   this->_currentState = this->_sampleState(
       _imac->forwardStep(this->_currentState.cast<double>()));

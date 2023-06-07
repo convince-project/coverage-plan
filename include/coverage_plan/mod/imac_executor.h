@@ -51,7 +51,7 @@ private:
    *
    * @return sampledState an MOD state sampled from the distribution
    */
-  Eigen::MatrixXi _sampleState(Eigen::MatrixXd distMatrix);
+  Eigen::MatrixXi _sampleState(const Eigen::MatrixXd &distMatrix);
 
 public:
   /**
@@ -76,7 +76,7 @@ public:
    *
    * @return nextState The successor IMac state
    */
-  Eigen::MatrixXi updateState(std::vector<IMacObservation> observations);
+  Eigen::MatrixXi updateState(const std::vector<IMacObservation> &observations);
 };
 
 #endif
