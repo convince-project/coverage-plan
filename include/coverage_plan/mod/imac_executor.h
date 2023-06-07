@@ -11,6 +11,7 @@
 #include "coverage_plan/mod/imac.h"
 #include <Eigen/Dense>
 #include <memory>
+#include <random>
 #include <vector>
 
 /**
@@ -42,6 +43,9 @@ class IMacExecutor {
 private:
   std::shared_ptr<IMac> _imac{};
   Eigen::MatrixXi _currentState{};
+  // Used for random sampling - create once at start of class
+  std::mt19937 _gen{};
+  std::uniform_real_distribution<double> _sampler{};
 
   /**
    * Helper function which samples an MoD state from a distribution matrix.
@@ -59,7 +63,10 @@ public:
    *
    * @param imac The IMac model
    */
-  IMacExecutor(std::shared_ptr<IMac> imac) : _imac{imac}, _currentState{} {}
+  IMacExecutor(std::shared_ptr<IMac> imac)
+      : _imac{imac}, _currentState{}, _gen{std::random_device{}()}, _sampler{
+                                                                        0.0,
+                                                                        1.0} {}
 
   /**
    * Restart the simulation and return the new initial state.

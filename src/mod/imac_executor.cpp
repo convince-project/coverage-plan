@@ -8,23 +8,18 @@
 #include "coverage_plan/mod/imac.h"
 #include <Eigen/Dense>
 #include <memory>
-#include <random>
 #include <vector>
+
 /**
  * Samples a state from a matrix of bernoulli random variables
  */
 Eigen::MatrixXi IMacExecutor::_sampleState(const Eigen::MatrixXd &distMatrix) {
-
-  // Generate a uniform rng between 0 and 1
-  std::random_device rd{};
-  std::mt19937 gen{rd()};
-  std::uniform_real_distribution<double> sampler{0.0, 1.0};
-
   // Return 1 if sampled double is <= value in distMatrix, else 0
   // A value of 1 means the cell is occupied
   return Eigen::MatrixXi::NullaryExpr(
-      distMatrix.rows(), distMatrix.cols(),
-      [&](Eigen::Index i) { return (sampler(gen) <= distMatrix(i)) ? 1 : 0; });
+      distMatrix.rows(), distMatrix.cols(), [&](Eigen::Index i) {
+        return (this->_sampler(this->_gen) <= distMatrix(i)) ? 1 : 0;
+      });
 }
 
 /**
