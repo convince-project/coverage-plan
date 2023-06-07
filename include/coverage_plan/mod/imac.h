@@ -62,6 +62,20 @@ public:
    * @return nextBelief a 2D matrix of the subsequent map belief
    */
   Eigen::MatrixXd forwardStep(const Eigen::MatrixXd &currentBelief);
+
+  /**
+   * Getter for _entryMatrix. Need to retrieve for experimental purposes.
+   *
+   * @return entryMatrix A copy of_entryMatrix
+   */
+  Eigen::MatrixXd getEntryMatrix() { return this->_entryMatrix; }
+
+  /**
+   * Getter for _exitMatrix. Need to retrieve for experimental purposes.
+   *
+   * @return exitMatrix A copy of_exitMatrix
+   */
+  Eigen::MatrixXd getExitMatrix() { return this->_exitMatrix; }
 };
 
 #endif

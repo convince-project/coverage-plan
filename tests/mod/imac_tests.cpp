@@ -46,4 +46,18 @@ TEST_CASE("Tests for basic IMac functionality", "[imac]") {
   REQUIRE_THAT(nextState(0, 1), Catch::Matchers::WithinRel(0.36, 0.001));
   REQUIRE_THAT(nextState(1, 0), Catch::Matchers::WithinRel(0.4, 0.001));
   REQUIRE_THAT(nextState(1, 1), Catch::Matchers::WithinRel(0.36, 0.001));
+
+  // Test getters
+  Eigen::MatrixXd entryGot{imac->getEntryMatrix()};
+  Eigen::MatrixXd exitGot{imac->getExitMatrix()};
+
+  REQUIRE_THAT(entryGot(0, 0), Catch::Matchers::WithinRel(0.2, 0.001));
+  REQUIRE_THAT(entryGot(0, 1), Catch::Matchers::WithinRel(0.3, 0.001));
+  REQUIRE_THAT(entryGot(1, 0), Catch::Matchers::WithinRel(0.4, 0.001));
+  REQUIRE_THAT(entryGot(1, 1), Catch::Matchers::WithinRel(0.5, 0.001));
+
+  REQUIRE_THAT(exitGot(0, 0), Catch::Matchers::WithinRel(0.4, 0.001));
+  REQUIRE_THAT(exitGot(0, 1), Catch::Matchers::WithinRel(0.5, 0.001));
+  REQUIRE_THAT(exitGot(1, 0), Catch::Matchers::WithinRel(0.6, 0.001));
+  REQUIRE_THAT(exitGot(1, 1), Catch::Matchers::WithinRel(0.7, 0.001));
 }
