@@ -25,8 +25,8 @@
  */
 class IMac {
 private:
-  Eigen::MatrixXd _entryMatrix{};
-  Eigen::MatrixXd _exitMatrix{};
+  const Eigen::MatrixXd _entryMatrix{};
+  const Eigen::MatrixXd _exitMatrix{};
   Eigen::MatrixXd _initialBelief{};
 
 public:
@@ -36,7 +36,7 @@ public:
    * @param entryMatrix The entry matrix
    * @param exitMatrix The exit matrix
    */
-  IMac(Eigen::MatrixXd entryMatrix, Eigen::MatrixXd exitMatrix)
+  IMac(const Eigen::MatrixXd &entryMatrix, const Eigen::MatrixXd &exitMatrix)
       : _entryMatrix{entryMatrix}, _exitMatrix{exitMatrix}, _initialBelief{} {}
 
   /**
@@ -61,7 +61,7 @@ public:
    * @param currentBelief a 2D matrix of the current map belief or state
    * @return nextBelief a 2D matrix of the subsequent map belief
    */
-  Eigen::MatrixXd forwardStep(Eigen::MatrixXd currentBelief);
+  Eigen::MatrixXd forwardStep(const Eigen::MatrixXd &currentBelief);
 };
 
 #endif

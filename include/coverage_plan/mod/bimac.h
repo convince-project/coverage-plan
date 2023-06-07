@@ -12,6 +12,7 @@
 #include "coverage_plan/mod/imac.h"
 #include <Eigen/Dense>
 #include <filesystem>
+#include <functional>
 #include <memory>
 #include <random>
 
@@ -114,6 +115,21 @@ private:
    * @return mean The posterior mean for that parameter
    */
   double _computePosteriorMeanForCell(int alpha, int beta);
+
+  /**
+   * Generates a single IMac matrix given a function to generate each value.
+   *
+   * @param alphaMat The matrix of alpha values (from Beta distributions)
+   * @param betaMat The matrix of beta values (from Beta distributions)
+   * @param getSingleVal a function which takes an alpha and beta and returns
+   * the parameter value
+   *
+   * @return iMacMatrix The matrix of parameters for IMac
+   */
+  Eigen::MatrixXd
+  _createIMacMatrix(const Eigen::MatrixXi &alphaMat,
+                    const Eigen::MatrixXi &betaMat,
+                    const std::function<double(int, int)> &getSingleVal);
 
 public:
   /**

@@ -103,6 +103,18 @@ double BIMac::_computePosteriorMeanForCell(int alpha, int beta) {
 }
 
 /**
+ * Generates a single IMac matrix given a function to generate each value.
+ */
+Eigen::MatrixXd
+BIMac::_createIMacMatrix(const Eigen::MatrixXi &alphaMat,
+                         const Eigen::MatrixXi &betaMat,
+                         const std::function<double(int, int)> &getSingleVal) {
+  return Eigen::MatrixXd::NullaryExpr(
+      alphaMat.rows(), alphaMat.cols(),
+      [&](Eigen::Index i) { return getSingleVal(alphaMat(i), betaMat(i)); });
+}
+
+/**
  * Take a posterior sample from BIMac to get a single IMac instance
  */
 std::shared_ptr<IMac> BIMac::posteriorSample() {
@@ -111,21 +123,12 @@ std::shared_ptr<IMac> BIMac::posteriorSample() {
   std::mt19937 gen{rd()};
   std::uniform_real_distribution<double> sampler{0.0, 1.0};
 
-  // Compute sampled entry matrix
-  Eigen::MatrixXd entryMatrix{Eigen::MatrixXd::NullaryExpr(
-      this->_alphaEntry.rows(), this->_alphaEntry.cols(), [&](Eigen::Index i) {
-        return this->_sampleForCell(this->_alphaEntry(i), this->_betaEntry(i),
-                                    gen, sampler);
-      })};
-
-  // Compute sampled exit matrix
-  Eigen::MatrixXd exitMatrix{Eigen::MatrixXd::NullaryExpr(
-      this->_alphaExit.rows(), this->_alphaExit.cols(), [&](Eigen::Index i) {
-        return this->_sampleForCell(this->_alphaExit(i), this->_betaExit(i),
-                                    gen, sampler);
-      })};
-
-  return std::make_shared<IMac>(entryMatrix, exitMatrix);
+  auto psLambda{[&](int alpha, int beta) {
+    return this->_sampleForCell(alpha, beta, gen, sampler);
+  }};
+  return std::make_shared<IMac>(
+      this->_createIMacMatrix(this->_alphaEntry, this->_betaEntry, psLambda),
+      this->_createIMacMatrix(this->_alphaExit, this->_betaExit, psLambda));
 }
 
 /**
@@ -135,21 +138,12 @@ std::shared_ptr<IMac> BIMac::posteriorSample() {
  * mode = (alpha - 1) / (alpha + beta - 2)
  */
 std::shared_ptr<IMac> BIMac::mle() {
-  // Compute MLE for entry matrix
-  Eigen::MatrixXd entryMatrix{Eigen::MatrixXd::NullaryExpr(
-      this->_alphaEntry.rows(), this->_alphaEntry.cols(), [&](Eigen::Index i) {
-        return this->_computeMleForCell(this->_alphaEntry(i),
-                                        this->_betaEntry(i));
-      })};
-
-  // Compute MLE for exit matrix
-  Eigen::MatrixXd exitMatrix{Eigen::MatrixXd::NullaryExpr(
-      this->_alphaExit.rows(), this->_alphaExit.cols(), [&](Eigen::Index i) {
-        return this->_computeMleForCell(this->_alphaExit(i),
-                                        this->_betaExit(i));
-      })};
-
-  return std::make_shared<IMac>(entryMatrix, exitMatrix);
+  auto mleLambda{[&](int alpha, int beta) {
+    return this->_computeMleForCell(alpha, beta);
+  }};
+  return std::make_shared<IMac>(
+      this->_createIMacMatrix(this->_alphaEntry, this->_betaEntry, mleLambda),
+      this->_createIMacMatrix(this->_alphaExit, this->_betaExit, mleLambda));
 }
 
 /**
@@ -158,21 +152,12 @@ std::shared_ptr<IMac> BIMac::mle() {
  * The mean of a beta distribution is alpha/(alpha + beta)
  */
 std::shared_ptr<IMac> BIMac::posteriorMean() {
-  // Compute posterior mean for entry matrix
-  Eigen::MatrixXd entryMatrix{Eigen::MatrixXd::NullaryExpr(
-      this->_alphaEntry.rows(), this->_alphaEntry.cols(), [&](Eigen::Index i) {
-        return this->_computePosteriorMeanForCell(this->_alphaEntry(i),
-                                                  this->_betaEntry(i));
-      })};
-
-  // Compute posterior mean for exit matrix
-  Eigen::MatrixXd exitMatrix{Eigen::MatrixXd::NullaryExpr(
-      this->_alphaExit.rows(), this->_alphaExit.cols(), [&](Eigen::Index i) {
-        return this->_computePosteriorMeanForCell(this->_alphaExit(i),
-                                                  this->_betaExit(i));
-      })};
-
-  return std::make_shared<IMac>(entryMatrix, exitMatrix);
+  auto pmLambda{[&](int alpha, int beta) {
+    return this->_computePosteriorMeanForCell(alpha, beta);
+  }};
+  return std::make_shared<IMac>(
+      this->_createIMacMatrix(this->_alphaEntry, this->_betaEntry, pmLambda),
+      this->_createIMacMatrix(this->_alphaExit, this->_betaExit, pmLambda));
 }
 
 /**
