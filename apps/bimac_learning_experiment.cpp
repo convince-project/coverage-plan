@@ -183,7 +183,8 @@ int main() {
   std::shared_ptr<IMacExecutor> imacExec{
       std::make_shared<IMacExecutor>(groundTruth)};
 
-  std::ofstream outFile("../data/results/BIMacLearningExperimentResults.csv");
+  std::ofstream outFile{"/home/charlie/work/coverage-plan/data/results/"
+                        "BIMacLearningExperimentResults.csv"};
   if (outFile.is_open()) {
     std::shared_ptr<BIMac> bimac{};
     for (int repeat{0}; repeat < 40; ++repeat) {
@@ -200,7 +201,7 @@ int main() {
       pmError.push_back(computeError(pmIMac, groundTruth));
 
       for (int day{0}; day < 400; ++day) {
-        std::cout << "REPEAT: " << repeat + 1 << "DAY: " << day + 1 << "\n";
+        std::cout << "REPEAT: " << repeat + 1 << ", DAY: " << day + 1 << "\n";
         std::tuple<double, double> dayError{
             runSingleDay(groundTruth, imacExec, bimac)};
         mleError.push_back(std::get<0>(dayError));
@@ -212,4 +213,6 @@ int main() {
     }
     outFile.close();
   }
+
+  return 0;
 }
