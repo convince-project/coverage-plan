@@ -12,7 +12,6 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
-#include <string>
 
 /**
  * Read BIMac matrix in from file.
