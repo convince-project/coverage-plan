@@ -167,12 +167,13 @@ void BIMac::updatePosterior(const std::vector<BIMacObservation> &observations) {
 
   for (BIMacObservation obs : observations) {
     // Update lambda_entry parameters
-    this->_alphaEntry(obs.x, obs.y) += obs.freeToOccupied;
-    this->_betaEntry(obs.x, obs.y) += obs.freeToFree;
+    // Recall that rows correspond to the y direction, columns to x
+    this->_alphaEntry(obs.y, obs.x) += obs.freeToOccupied;
+    this->_betaEntry(obs.y, obs.x) += obs.freeToFree;
 
     // Update lambda exit parameters
-    this->_alphaExit(obs.x, obs.y) += obs.occupiedToFree;
-    this->_betaExit(obs.x, obs.y) += obs.occupiedToOccupied;
+    this->_alphaExit(obs.y, obs.x) += obs.occupiedToFree;
+    this->_betaExit(obs.y, obs.x) += obs.occupiedToOccupied;
   }
 }
 

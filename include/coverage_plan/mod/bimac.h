@@ -19,6 +19,9 @@
 /**
  * Struct for storing BiMac observations.
  *
+ * Note an observation at (x,y) corresponds to element (y,x) in the matrices.
+ * This is so we map to the Cartesian coordinates the robot operates over.
+ *
  * Members:
  * x: X position on grid
  * y: Y position on grid
@@ -136,15 +139,15 @@ public:
   /**
    * This constructor initialises all matrices to be full of ones.
    *
-   * @param x The length of the x dimension of the grid map
-   * @param y The length of the y dimension of the grid map
+   * @param x The length of the x dimension of the grid map (num cols)
+   * @param y The length of the y dimension of the grid map (num rows)
    */
   BIMac(int x, int y)
-      : _alphaEntry{Eigen::MatrixXi::Ones(x, y)},
-        _betaEntry{Eigen::MatrixXi::Ones(x, y)},
-        _alphaExit{Eigen::MatrixXi::Ones(x, y)}, _betaExit{
+      : _alphaEntry{Eigen::MatrixXi::Ones(y, x)},
+        _betaEntry{Eigen::MatrixXi::Ones(y, x)},
+        _alphaExit{Eigen::MatrixXi::Ones(y, x)}, _betaExit{
                                                      Eigen::MatrixXi::Ones(
-                                                         x, y)} {}
+                                                         y, x)} {}
 
   /**
    * This constructor reads a BIMac config in from file.

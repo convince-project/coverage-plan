@@ -41,14 +41,14 @@ int main() {
   // t=1
   std::vector<IMacObservation> obs{};
   obs.push_back(IMacObservation{2, 2, 0});
-  obs.push_back(IMacObservation{2, 1, 1});
+  obs.push_back(IMacObservation{1, 2, 1});
   currentState = exec->updateState(obs);
   std::cout << "Time t=1\n";
   std::cout << currentState << '\n';
 
   // t=2
   obs.clear();
-  obs.push_back(IMacObservation{2, 1, 0});
+  obs.push_back(IMacObservation{1, 2, 0});
   obs.push_back(IMacObservation{1, 1, 1});
   currentState = exec->updateState(obs);
   std::cout << "Time t=2\n";
@@ -56,8 +56,8 @@ int main() {
 
   // t=3
   obs.clear();
-  obs.push_back(IMacObservation{2, 0, 1});
-  obs.push_back(IMacObservation{2, 1, 1});
+  obs.push_back(IMacObservation{0, 2, 1});
+  obs.push_back(IMacObservation{1, 2, 1});
   currentState = exec->updateState(obs);
   std::cout << "Time t=3\n";
   std::cout << currentState << '\n';
@@ -65,7 +65,7 @@ int main() {
   // t=4
   obs.clear();
   obs.push_back(IMacObservation{1, 1, 0});
-  obs.push_back(IMacObservation{1, 2, 0});
+  obs.push_back(IMacObservation{2, 1, 0});
   currentState = exec->updateState(obs);
   std::cout << "Time t=4\n";
   std::cout << currentState << '\n';
@@ -73,7 +73,7 @@ int main() {
   // t=5
   obs.clear();
   obs.push_back(IMacObservation{1, 1, 0});
-  obs.push_back(IMacObservation{2, 1, 1});
+  obs.push_back(IMacObservation{1, 2, 1});
   currentState = exec->updateState(obs);
   std::cout << "Time t=5\n";
   std::cout << currentState << '\n';

@@ -17,6 +17,9 @@
 /**
  * Struct for storing IMac observations.
  *
+ * Note an observation at (x,y) corresponds to element (y,x) in the matrices.
+ * This is so we map to the Cartesian coordinates the robot operates over.
+ *
  * Members:
  * x: X position on grid
  * y: Y position on grid

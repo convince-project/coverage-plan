@@ -41,7 +41,9 @@ IMacExecutor::updateState(const std::vector<IMacObservation> &observations) {
 
   // Explicitly set the values in the observation list
   for (IMacObservation obs : observations) {
-    this->_currentState(obs.x, obs.y) = obs.occupied;
+    // To make the matrix compatible with Cartesian coordinates,
+    // y is the row number (y moves down), and x is the column (origin at (0,0))
+    this->_currentState(obs.y, obs.x) = obs.occupied;
   }
 
   return this->_currentState;
