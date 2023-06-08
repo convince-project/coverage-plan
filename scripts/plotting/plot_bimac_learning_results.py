@@ -29,6 +29,7 @@ def plot_results(results_file):
             if row[0] == "mle":
                 mle_runs.append([float(x) for x in row[1:]])
 
+    # Format into each episode's results over the multiple repeats
     mle_formatted = []
     for i in range(401):
         day_res = []
@@ -37,11 +38,21 @@ def plot_results(results_file):
 
         mle_formatted.append(day_res)
 
+    # x axis of our plot
+    episodes = list(range(401))
+
+    # main line of our plot
     means = [np.mean(r) for r in mle_formatted]
-    x = list(range(401))
-    plt.plot(x, means)
+    plt.plot(episodes, means, linewidth=3.0)
+
+    # Show the std as well
+    std = [np.std(r) for r in mle_formatted]
+    mean_plus = [means[i] + std[i] for i in range(len(means))]
+    mean_minus = [means[i] - std[i] for i in range(len(means))]
+    plt.fill_between(episodes, mean_plus, mean_minus, alpha=0.5)
+
     plt.xlabel("Episode")
-    plt.ylabel("Error Between MLE Estimate and Ground Truth IMac")
+    plt.ylabel("Error Between MLE and Ground Truth")
     plt.show()
 
 
