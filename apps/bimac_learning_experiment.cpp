@@ -11,6 +11,7 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <string>
@@ -161,7 +162,21 @@ std::tuple<double, double> runSingleDay(std::shared_ptr<IMac> groundTruth,
  * @param outFile The file handle where we're storing the results
  */
 void writeToFile(std::string_view label, std::vector<double> results,
-                 std::ofstream &outFile) {}
+                 std::ofstream &outFile) {
+
+  // This part taken from:
+  // https://stackoverflow.com/questions/20817322/
+  // convert-vectorint-to-delimited-string
+  std::ostringstream resultsToStr;
+  if (!results.empty()) {
+    std::copy(results.begin(), results.end() - 1,
+              std::ostream_iterator<double>(resultsToStr, ","));
+    resultsToStr << results.back();
+  }
+
+  // Writing to file
+  outFile << label << "," << resultsToStr.str() << '\n';
+}
 
 int main() {
   std::shared_ptr<IMac> groundTruth{generateGroundTruthIMac()};
@@ -185,6 +200,7 @@ int main() {
       pmError.push_back(computeError(pmIMac, groundTruth));
 
       for (int day{0}; day < 400; ++day) {
+        std::cout << "REPEAT: " << repeat + 1 << "DAY: " << day + 1 << "\n";
         std::tuple<double, double> dayError{
             runSingleDay(groundTruth, imacExec, bimac)};
         mleError.push_back(std::get<0>(dayError));
