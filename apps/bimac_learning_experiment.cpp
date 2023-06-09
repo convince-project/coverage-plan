@@ -209,8 +209,9 @@ int main() {
       }
 
       writeToFile("mle", mleError, outFile);
-      writeToFile("pm", mleError, outFile);
+      writeToFile("pm", pmError, outFile);
     }
+
     outFile.close();
   }
 
