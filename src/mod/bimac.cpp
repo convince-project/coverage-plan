@@ -127,7 +127,8 @@ std::shared_ptr<IMac> BIMac::posteriorSample() {
   }};
   return std::make_shared<IMac>(
       this->_createIMacMatrix(this->_alphaEntry, this->_betaEntry, psLambda),
-      this->_createIMacMatrix(this->_alphaExit, this->_betaExit, psLambda));
+      this->_createIMacMatrix(this->_alphaExit, this->_betaExit, psLambda),
+      this->_createIMacMatrix(this->_alphaInit, this->_betaInit, psLambda));
 }
 
 /**
@@ -142,7 +143,8 @@ std::shared_ptr<IMac> BIMac::mle() {
   }};
   return std::make_shared<IMac>(
       this->_createIMacMatrix(this->_alphaEntry, this->_betaEntry, mleLambda),
-      this->_createIMacMatrix(this->_alphaExit, this->_betaExit, mleLambda));
+      this->_createIMacMatrix(this->_alphaExit, this->_betaExit, mleLambda),
+      this->_createIMacMatrix(this->_alphaInit, this->_betaInit, mleLambda));
 }
 
 /**
@@ -156,7 +158,8 @@ std::shared_ptr<IMac> BIMac::posteriorMean() {
   }};
   return std::make_shared<IMac>(
       this->_createIMacMatrix(this->_alphaEntry, this->_betaEntry, pmLambda),
-      this->_createIMacMatrix(this->_alphaExit, this->_betaExit, pmLambda));
+      this->_createIMacMatrix(this->_alphaExit, this->_betaExit, pmLambda),
+      this->_createIMacMatrix(this->_alphaInit, this->_betaInit, pmLambda));
 }
 
 /**
@@ -173,6 +176,12 @@ void BIMac::updatePosterior(const std::vector<BIMacObservation> &observations) {
     // Update lambda exit parameters
     this->_alphaExit(obs.y, obs.x) += obs.occupiedToFree;
     this->_betaExit(obs.y, obs.x) += obs.occupiedToOccupied;
+
+    // Update initial state distribution parameters
+    // Distribution is over the initial occupation probability, so alpha
+    // gets the initOccupied observations
+    this->_alphaInit(obs.y, obs.x) += obs.initOccupied;
+    this->_betaInit(obs.y, obs.x) += obs.initFree;
   }
 }
 
@@ -185,4 +194,6 @@ void BIMac::writeBIMac(const std::filesystem::path &outDir) {
   _writeBIMacMatrix(this->_betaEntry, outDir / "beta_entry.csv");
   _writeBIMacMatrix(this->_alphaExit, outDir / "alpha_exit.csv");
   _writeBIMacMatrix(this->_betaExit, outDir / "beta_exit.csv");
+  _writeBIMacMatrix(this->_alphaInit, outDir / "alpha_init.csv");
+  _writeBIMacMatrix(this->_betaInit, outDir / "beta_init.csv");
 }

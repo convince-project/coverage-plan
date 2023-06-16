@@ -9,17 +9,17 @@
 #include <memory>
 
 /**
- * Returns initial belief over IMac map of dynamics.
+ * Returns estimate of static occupancy from IMac map of dynamics.
  */
-Eigen::MatrixXd IMac::computeInitialBelief() {
+Eigen::MatrixXd IMac::estimateStaticOccupancy() {
   // Check if already cached - if it isn't, the matrix will be empty
-  if (this->_initialBelief.size() == 0) {
+  if (this->_staticOccupancy.size() == 0) {
     Eigen::MatrixXd ones{Eigen::MatrixXd::Ones(this->_entryMatrix.rows(),
                                                this->_entryMatrix.cols())};
-    this->_initialBelief =
+    this->_staticOccupancy =
         (0.5 * this->_entryMatrix) + (0.5 * (ones - this->_exitMatrix));
   }
-  return this->_initialBelief;
+  return this->_staticOccupancy;
 }
 
 /**

@@ -2,6 +2,12 @@
  * Header file defining the IMac class.
  * IMac is a map of dynamics which uses an independent Markov chain at each grid
  * cell.
+ *
+ * Based on the paper: Saarinen, J., Andreasson, H. and Lilienthal, A.J., 2012,
+ * October. Independent markov chain occupancy grid maps for representation of
+ * dynamic environment. In 2012 IEEE/RSJ International Conference on Intelligent
+ * Robots and Systems (pp. 3489-3495). IEEE.
+ *
  * @author Charlie Street
  */
 #ifndef IMAC_H
@@ -21,13 +27,15 @@
  * _exitMatrix: A matrix where _exitMatrix(x,y) is the (occupied->free)
  * probability for (x,y)
  * _initialBelief: A 2D matrix representing the initial
- * belief over each cell being occupied.
+ * belief over each cell being occupied
+ * _staticOccupancy: A 2D matrix estimating the static occupancy of a cell
  */
 class IMac {
 private:
   const Eigen::MatrixXd _entryMatrix{};
   const Eigen::MatrixXd _exitMatrix{};
-  Eigen::MatrixXd _initialBelief{};
+  const Eigen::MatrixXd _initialBelief{};
+  Eigen::MatrixXd _staticOccupancy{};
 
 public:
   /**
@@ -35,18 +43,22 @@ public:
    *
    * @param entryMatrix The entry matrix
    * @param exitMatrix The exit matrix
+   * @param initialBelief The initial belief matrix
    */
-  IMac(const Eigen::MatrixXd &entryMatrix, const Eigen::MatrixXd &exitMatrix)
-      : _entryMatrix{entryMatrix}, _exitMatrix{exitMatrix}, _initialBelief{} {}
+  IMac(const Eigen::MatrixXd &entryMatrix, const Eigen::MatrixXd &exitMatrix,
+       const Eigen::MatrixXd &initialBelief)
+      : _entryMatrix{entryMatrix}, _exitMatrix{exitMatrix},
+        _initialBelief{initialBelief}, _staticOccupancy{} {}
 
   /**
-   * Computes the initial belief over the map of dynamics for timestep 0.
+   *  Estimates the static occupancy of the map.
    *
-   * Here the probability in each cell represents the probability of occupation.
+   * This is the time-abstract probability of the cells being occupied.
+   * A probability of 1 represents the cell being occupied.
    *
-   * @return initialBelief The initial belief over the map
+   * @return staticOccupancy The static occupancy matrix
    */
-  Eigen::MatrixXd computeInitialBelief();
+  Eigen::MatrixXd estimateStaticOccupancy();
 
   /**
    * Runs a given belief or state through iMac to get the distribution for the
@@ -76,6 +88,15 @@ public:
    * @return exitMatrix A copy of_exitMatrix
    */
   Eigen::MatrixXd getExitMatrix() { return this->_exitMatrix; }
+
+  /**
+   * Return the initial belief over the map of dynamics.
+   *
+   * Here the probability in each cell represents the probability of occupation.
+   *
+   * @return initialBelief The initial belief over the map
+   */
+  Eigen::MatrixXd getInitialBelief() { return this->_initialBelief; }
 };
 
 #endif

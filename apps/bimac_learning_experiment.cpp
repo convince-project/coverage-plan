@@ -32,6 +32,7 @@
 std::shared_ptr<IMac> generateGroundTruthIMac() {
   Eigen::MatrixXd entryMatrix{10, 10};
   Eigen::MatrixXd exitMatrix{10, 10};
+  Eigen::MatrixXd initialBelief{10, 10};
 
   int numSet{0};
   const int staticObsLimit{20};
@@ -44,21 +45,25 @@ std::shared_ptr<IMac> generateGroundTruthIMac() {
       if (numSet < staticObsLimit) {
         entryMatrix(i, j) = 1.0;
         exitMatrix(i, j) = 0.0;
+        initialBelief(i, j) = 1.0;
       } else if (numSet < staticFreeLimit) {
         entryMatrix(i, j) = 0.0;
         exitMatrix(i, j) = 1.0;
+        initialBelief(i, j) = 0.0;
       } else if (numSet < semiStaticLimit) {
         entryMatrix(i, j) = 0.05;
         exitMatrix(i, j) = 0.05;
+        initialBelief(i, j) = 0.3;
       } else {
         entryMatrix(i, j) = 0.5;
         exitMatrix(i, j) = 0.5;
+        initialBelief(i, j) = 0.5;
       }
       ++numSet;
     }
   }
 
-  return std::make_shared<IMac>(entryMatrix, exitMatrix);
+  return std::make_shared<IMac>(entryMatrix, exitMatrix, initialBelief);
 }
 
 /**
@@ -80,11 +85,21 @@ double computeError(std::shared_ptr<IMac> estimate,
   Eigen::MatrixXd groundTruthEntry{groundTruth->getEntryMatrix()};
   Eigen::MatrixXd estimateExit{estimate->getExitMatrix()};
   Eigen::MatrixXd groundTruthExit{groundTruth->getExitMatrix()};
+  Eigen::MatrixXd estimateInit{estimate->getInitialBelief()};
+  Eigen::MatrixXd groundTruthInit{groundTruth->getInitialBelief()};
 
   for (int i{0}; i < estimateEntry.rows(); ++i) {
     for (int j{0}; j < estimateEntry.cols(); ++j) {
-      error += abs(estimateEntry(i, j) - groundTruthEntry(i, j));
-      error += abs(estimateExit(i, j) - groundTruthExit(i, j));
+      error += abs(estimateInit(i, j) - groundTruthInit(i, j));
+
+      // If a part of the Markov chain isn't reachable, ignore it
+      if (!(groundTruthExit(i, j) == 0.0 && groundTruthInit(i, j) == 1.0)) {
+        error += abs(estimateEntry(i, j) - groundTruthEntry(i, j));
+      }
+
+      if (!(groundTruthEntry(i, j) == 0.0 && groundTruthInit(i, j) == 0.0)) {
+        error += abs(estimateExit(i, j) - groundTruthExit(i, j));
+      }
     }
   }
 
@@ -108,14 +123,14 @@ std::tuple<double, double> runSingleDay(std::shared_ptr<IMac> groundTruth,
 
   for (int i{0}; i < 10; ++i) {
     for (int j{0}; j < 10; ++j) {
-      obsMap[std::make_tuple(i, j)] = BIMacObservation{i, j, 0, 0, 0, 0};
+      obsMap[std::make_tuple(i, j)] = BIMacObservation{i, j, 0, 0, 0, 0, 0, 0};
     }
   }
 
   Eigen::MatrixXi prevState{imacExec->restart()};
   Eigen::MatrixXi currentState{};
 
-  for (int t{0}; t < 100; ++t) {
+  for (int t{0}; t < 20; ++t) {
     currentState = imacExec->updateState(std::vector<IMacObservation>{});
 
     // Update observations
@@ -131,6 +146,14 @@ std::tuple<double, double> runSingleDay(std::shared_ptr<IMac> groundTruth,
           obsMap[std::make_tuple(x, y)].occupiedToFree += 1;
         } else {
           obsMap[std::make_tuple(x, y)].occupiedToOccupied += 1;
+        }
+
+        if (t == 0) {
+          if (prevState(i, j) == 0) {
+            obsMap[std::make_tuple(x, y)].initFree += 1;
+          } else {
+            obsMap[std::make_tuple(x, y)].initOccupied += 1;
+          }
         }
       }
     }
