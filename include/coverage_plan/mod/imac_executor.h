@@ -74,9 +74,14 @@ public:
   /**
    * Restart the simulation and return the new initial state.
    *
+   * @param observations A vector of IMacObservations (what is seen at t=0).
+   * Optional.
+   *
+   *
    * @return initialState the initial state of the map of dynamics
    */
-  Eigen::MatrixXi restart();
+  Eigen::MatrixXi restart(const std::vector<IMacObservation> &observations =
+                              std::vector<IMacObservation>{});
 
   /**
    * Update the current MoD state based on the iMac model, where successor

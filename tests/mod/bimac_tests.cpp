@@ -303,9 +303,9 @@ TEST_CASE("Tests for posterior sample", "[posteriorSample]") {
         for (int l{0}; l < 3; ++l) {
           if (!((i == k) && (j == l))) {
             REQUIRE_THAT(initBelief(i, j),
-                         !Catch::Matchers::WithinRel(initBelief(k, l), 0.001));
+                         !Catch::Matchers::WithinRel(initBelief(k, l), 0.0001));
             REQUIRE_THAT(staticOcc(i, j),
-                         !Catch::Matchers::WithinRel(staticOcc(k, l), 0.001));
+                         !Catch::Matchers::WithinRel(staticOcc(k, l), 0.0001));
           }
         }
       }

@@ -47,8 +47,8 @@ TEST_CASE("Tests for restart function in IMacExecutor", "[restart]") {
 
   // Check the values are different
   int numSame{0};
-  for (int i{0}; i < 2; ++i) {
-    for (int j{0}; j < 2; ++j) {
+  for (int i{0}; i < 3; ++i) {
+    for (int j{0}; j < 3; ++j) {
       if (initState(i, j) == initStateTwo(i, j)) {
         ++numSame;
       }
@@ -59,7 +59,23 @@ TEST_CASE("Tests for restart function in IMacExecutor", "[restart]") {
   // Re-run and it should be fine
   REQUIRE(numSame != 9);
 
-  // Part 3: Try with deterministic initial belief
+  // Part 3: Check with initial observations
+  std::vector<IMacObservation> initialObs{};
+  for (int i{0}; i < 3; ++i) {
+    for (int j{0}; j < 3; ++j) {
+      initialObs.push_back(IMacObservation{i, j, 1});
+    }
+  }
+
+  initState = exec->restart(initialObs);
+
+  for (int i{0}; i < 3; ++i) {
+    for (int j{0}; j < 3; ++j) {
+      REQUIRE(initState(i, j) == 1);
+    }
+  }
+
+  // Part 4: Try with deterministic initial belief
   Eigen::MatrixXd detEntry{2, 2};
   detEntry(0, 0) = 1;
   detEntry(0, 1) = 0;
