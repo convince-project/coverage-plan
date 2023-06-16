@@ -26,7 +26,7 @@ Eigen::MatrixXi IMacExecutor::_sampleState(const Eigen::MatrixXd &distMatrix) {
  * Restarts the MoD execution
  */
 Eigen::MatrixXi IMacExecutor::restart() {
-  this->_currentState = this->_sampleState(this->_imac->computeInitialBelief());
+  this->_currentState = this->_sampleState(this->_imac->getInitialBelief());
   return this->_currentState;
 }
 

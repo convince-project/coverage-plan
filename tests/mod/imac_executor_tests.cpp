@@ -15,9 +15,10 @@ TEST_CASE("Tests for restart function in IMacExecutor", "[restart]") {
 
   // Part 1: Test when every cell has the same probability (randomness test)
   Eigen::MatrixXd entryAndExit{Eigen::MatrixXd::Constant(3, 3, 0.2)};
+  Eigen::MatrixXd initBelief{Eigen::MatrixXd::Constant(3, 3, 0.5)};
 
   std::shared_ptr<IMac> imac{
-      std::make_shared<IMac>(entryAndExit, entryAndExit)};
+      std::make_shared<IMac>(entryAndExit, entryAndExit, initBelief)};
 
   std::unique_ptr<IMacExecutor> exec{std::make_unique<IMacExecutor>(imac)};
 
@@ -71,8 +72,14 @@ TEST_CASE("Tests for restart function in IMacExecutor", "[restart]") {
   detExit(1, 0) = 1;
   detExit(1, 1) = 0;
 
+  Eigen::MatrixXd detInit{2, 2};
+  detInit(0, 0) = 1;
+  detInit(0, 1) = 0;
+  detInit(1, 0) = 0;
+  detInit(1, 1) = 1;
+
   // Memory allocation shouldn't be an issue here
-  imac = std::make_shared<IMac>(detEntry, detExit);
+  imac = std::make_shared<IMac>(detEntry, detExit, detInit);
   exec = std::make_unique<IMacExecutor>(imac);
 
   initState = exec->restart();
@@ -88,10 +95,10 @@ TEST_CASE("Tests for the updateState function in IMacExecutor",
           "[updateState]") {
 
   // Create an iMac instant with highly random dynamics
-  Eigen::MatrixXd entryAndExit{Eigen::MatrixXd::Constant(3, 3, 0.5)};
+  Eigen::MatrixXd entryExitAndInit{Eigen::MatrixXd::Constant(3, 3, 0.5)};
 
-  std::shared_ptr<IMac> imac{
-      std::make_shared<IMac>(entryAndExit, entryAndExit)};
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(
+      entryExitAndInit, entryExitAndInit, entryExitAndInit)};
 
   std::unique_ptr<IMacExecutor> exec{std::make_unique<IMacExecutor>(imac)};
 
@@ -143,11 +150,11 @@ TEST_CASE("Tests for the updateState function in IMacExecutor",
   REQUIRE(numSame != 9);
 
   // Step 4: Test with deterministic iMac model (always occupied)
-  Eigen::MatrixXd detEntry{Eigen::MatrixXd::Constant(3, 3, 1)};
+  Eigen::MatrixXd detEntryAndInit{Eigen::MatrixXd::Constant(3, 3, 1)};
   Eigen::MatrixXd detExit{Eigen::MatrixXd::Constant(3, 3, 0)};
 
   // Memory allocation shouldn't be an issue here
-  imac = std::make_shared<IMac>(detEntry, detExit);
+  imac = std::make_shared<IMac>(detEntryAndInit, detExit, detEntryAndInit);
   exec = std::make_unique<IMacExecutor>(imac);
 
   Eigen::MatrixXi initState{exec->restart()};

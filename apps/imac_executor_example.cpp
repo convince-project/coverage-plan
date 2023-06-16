@@ -14,6 +14,7 @@ int main() {
   // Step 1: Create the IMac model
   Eigen::MatrixXd entry{Eigen::MatrixXd::Constant(3, 3, 0.5)};
   Eigen::MatrixXd exit{Eigen::MatrixXd::Constant(3, 3, 0.5)};
+  Eigen::MatrixXd initBelief{Eigen::MatrixXd::Constant(3, 3, 0.5)};
 
   // (0,0) and (0,1) are always occupied,
   entry(0, 0) = 1.0;
@@ -26,7 +27,12 @@ int main() {
   exit(0, 2) = 1.0;
   exit(1, 0) = 1.0;
 
-  std::shared_ptr<IMac> imac{std::make_shared<IMac>(entry, exit)};
+  initBelief(0, 0) = 1.0;
+  initBelief(0, 1) = 1.0;
+  initBelief(1, 0) = 0.0;
+  initBelief(1, 1) = 0.0;
+
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(entry, exit, initBelief)};
 
   // Step 2: Make the iMac executor model
   std::unique_ptr<IMacExecutor> exec{std::make_unique<IMacExecutor>(imac)};

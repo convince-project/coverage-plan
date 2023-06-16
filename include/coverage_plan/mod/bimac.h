@@ -2,7 +2,11 @@
  * Header file for the BIMac class.
  *
  * BiMac is an extension of IMac which explicitly maintains the distribution
- * over the IMac parameters.
+ * over the IMac parameters (lambda_entry, lambda_exit, initial state
+ * distribution).
+ *
+ * Initial state distribution learning was not included in the original IMac
+ * paper.
  *
  * @author Charlie Street
  */
@@ -30,6 +34,8 @@
  * occupiedToFree: Number of observations at (x,y) going from occupied to free
  * occupiedToOccupied: Number of observations at (x,y) going from occupied to
  * occupied
+ * initFree: Number of observations of (x,y) being free at time 0
+ * initOccupied: Number of observationsof (x,y) being occupied at time 0
  */
 struct BIMacObservation {
   int x{};
@@ -38,6 +44,8 @@ struct BIMacObservation {
   int freeToFree{};
   int occupiedToFree{};
   int occupiedToOccupied{};
+  int initFree{};
+  int initOccupied{};
 };
 
 /**
@@ -48,11 +56,17 @@ struct BIMacObservation {
  *
  * Members:
  *  _alphaEntry: The matrix of alpha parameters for the lambda_entry
- * parameter (free->occupied) _betaEntry: The matrix of beta parameters for
- * the lambda_entry parameter (free->occupied) _alphaExit: The matrix of
- * alpha parameters for the lambda_exit parameter (occupied->free)
- * _betaExit: The matrix of beta parameters for the lambda_exit parameter
+ * parameter (free->occupied)
+ * _betaEntry: The matrix of beta parameters for the lambda_entry parameter
+ * (free->occupied)
+ * _alphaExit: The matrix of alpha parameters for the lambda_exit parameter
  * (occupied->free)
+ * _betaExit: The matrix of beta parameters for the lambda_exit
+ * parameter (occupied->free)
+ * _alphaInit: The matrix of alpha parameters for the Pr(occupied at time 0)
+ * parameter, i.e. the initial state distribution
+ * _betaInit: The matrix of beta parameters for the Pr(occupied at time 0)
+ * parameter, i.e. the initial state distribution
  */
 class BIMac {
 private:
@@ -60,6 +74,8 @@ private:
   Eigen::MatrixXi _betaEntry{};
   Eigen::MatrixXi _alphaExit{};
   Eigen::MatrixXi _betaExit{};
+  Eigen::MatrixXi _alphaInit{};
+  Eigen::MatrixXi _betaInit{};
 
   /**
    * Reads BIMac matrix in from file.
@@ -145,7 +161,9 @@ public:
   BIMac(int x, int y)
       : _alphaEntry{Eigen::MatrixXi::Ones(y, x)},
         _betaEntry{Eigen::MatrixXi::Ones(y, x)},
-        _alphaExit{Eigen::MatrixXi::Ones(y, x)}, _betaExit{
+        _alphaExit{Eigen::MatrixXi::Ones(y, x)},
+        _betaExit{Eigen::MatrixXi::Ones(y, x)},
+        _alphaInit{Eigen::MatrixXi::Ones(y, x)}, _betaInit{
                                                      Eigen::MatrixXi::Ones(
                                                          y, x)} {}
 
@@ -158,7 +176,9 @@ public:
       : _alphaEntry{_readBIMacMatrix(inDir / "alpha_entry.csv")},
         _betaEntry{_readBIMacMatrix(inDir / "beta_entry.csv")},
         _alphaExit{_readBIMacMatrix(inDir / "alpha_exit.csv")},
-        _betaExit{_readBIMacMatrix(inDir / "beta_exit.csv")} {}
+        _betaExit{_readBIMacMatrix(inDir / "beta_exit.csv")},
+        _alphaInit{_readBIMacMatrix(inDir / "alpha_init.csv")},
+        _betaInit{_readBIMacMatrix(inDir / "beta_init.csv")} {}
 
   /**
    * Take a posterior sample from BIMac to get a single IMac instance.
