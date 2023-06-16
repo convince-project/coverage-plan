@@ -288,8 +288,11 @@ TEST_CASE("Tests for posterior sample", "[posteriorSample]") {
 
   std::shared_ptr<IMac> imac{bimac->posteriorSample()};
 
-  Eigen::MatrixXd initBelief{imac->computeInitialBelief()};
+  Eigen::MatrixXd staticOcc{imac->estimateStaticOccupancy()};
+  Eigen::MatrixXd initBelief{imac->getInitialBelief()};
 
+  REQUIRE(staticOcc.rows() == 2);
+  REQUIRE(staticOcc.cols() == 3);
   REQUIRE(initBelief.rows() == 2);
   REQUIRE(initBelief.cols() == 3);
 
@@ -301,6 +304,8 @@ TEST_CASE("Tests for posterior sample", "[posteriorSample]") {
           if (!((i == k) && (j == l))) {
             REQUIRE_THAT(initBelief(i, j),
                          !Catch::Matchers::WithinRel(initBelief(k, l), 0.001));
+            REQUIRE_THAT(staticOcc(i, j),
+                         !Catch::Matchers::WithinRel(staticOcc(k, l), 0.001));
           }
         }
       }
@@ -309,19 +314,21 @@ TEST_CASE("Tests for posterior sample", "[posteriorSample]") {
 
   // Make it nearly deterministic and check initial belief matches that
   std::vector<BIMacObservation> obsVec{};
-  obsVec.push_back(BIMacObservation{0, 0, 10000, 0, 0, 10000});
-  obsVec.push_back(BIMacObservation{1, 0, 10000, 0, 0, 10000});
-  obsVec.push_back(BIMacObservation{2, 0, 10000, 0, 0, 10000});
-  obsVec.push_back(BIMacObservation{0, 1, 10000, 0, 0, 10000});
-  obsVec.push_back(BIMacObservation{1, 1, 10000, 0, 0, 10000});
-  obsVec.push_back(BIMacObservation{2, 1, 10000, 0, 0, 10000});
+  obsVec.push_back(BIMacObservation{0, 0, 10000, 0, 0, 10000, 0, 10000});
+  obsVec.push_back(BIMacObservation{1, 0, 10000, 0, 0, 10000, 0, 10000});
+  obsVec.push_back(BIMacObservation{2, 0, 10000, 0, 0, 10000, 0, 10000});
+  obsVec.push_back(BIMacObservation{0, 1, 10000, 0, 0, 10000, 0, 10000});
+  obsVec.push_back(BIMacObservation{1, 1, 10000, 0, 0, 10000, 0, 10000});
+  obsVec.push_back(BIMacObservation{2, 1, 10000, 0, 0, 10000, 0, 10000});
   bimac->updatePosterior(obsVec);
 
   imac = bimac->posteriorSample();
-  initBelief = imac->computeInitialBelief();
+  staticOcc = imac->estimateStaticOccupancy();
+  initBelief = imac->getInitialBelief();
 
   for (int i{0}; i < 2; ++i) {
     for (int j{0}; j < 3; ++j) {
+      REQUIRE(staticOcc(i, j) > 0.99);
       REQUIRE(initBelief(i, j) > 0.99);
     }
   }
