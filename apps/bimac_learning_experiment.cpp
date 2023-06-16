@@ -63,7 +63,7 @@ std::shared_ptr<IMac> generateGroundTruthIMac() {
     }
   }
 
-  return std::make_shared<IMac>(entryMatrix, exitMatrix);
+  return std::make_shared<IMac>(entryMatrix, exitMatrix, initialBelief);
 }
 
 /**
@@ -95,14 +95,10 @@ double computeError(std::shared_ptr<IMac> estimate,
       // If a part of the Markov chain isn't reachable, ignore it
       if (!(groundTruthExit(i, j) == 0.0 && groundTruthInit(i, j) == 1.0)) {
         error += abs(estimateEntry(i, j) - groundTruthEntry(i, j));
-      } else {
-        std::cout << "STATIC OBS: " << i << ", " << j << '\n';
       }
 
-      if (!(groundTruthEntry(i, j) == 1.0 && groundTruthInit(i, j) == 0.0)) {
+      if (!(groundTruthEntry(i, j) == 0.0 && groundTruthInit(i, j) == 0.0)) {
         error += abs(estimateExit(i, j) - groundTruthExit(i, j));
-      } else {
-        std::cout << "STATIC FREE: " << i << ", " << j << '\n';
       }
     }
   }
@@ -214,7 +210,7 @@ int main() {
                         "BIMacLearningExperimentResults.csv"};
   if (outFile.is_open()) {
     std::shared_ptr<BIMac> bimac{};
-    for (int repeat{0}; repeat < 1; ++repeat) {
+    for (int repeat{0}; repeat < 40; ++repeat) {
       // Start repeat with new BIMac instance
       bimac = std::make_shared<BIMac>(10, 10);
 
