@@ -130,7 +130,7 @@ std::tuple<double, double> runSingleDay(std::shared_ptr<IMac> groundTruth,
   Eigen::MatrixXi prevState{imacExec->restart()};
   Eigen::MatrixXi currentState{};
 
-  for (int t{0}; t < 100; ++t) {
+  for (int t{0}; t < 20; ++t) {
     currentState = imacExec->updateState(std::vector<IMacObservation>{});
 
     // Update observations
