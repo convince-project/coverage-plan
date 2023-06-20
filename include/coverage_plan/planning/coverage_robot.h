@@ -73,6 +73,14 @@ private:
   const std::function<ActionOutcome(GridCell, Action)> _executeFn{};
   const std::function<std::vector<IMacObservation>(GridCell)> _observeFn{};
 
+  /**
+   * Function gets the IMac instance to be used for an episode.
+   * In this class, it will be set to generate a posterior sample.
+   *
+   * @return imac The IMac instance for the coverage episode.
+   */
+  virtual std::shared_ptr<IMac> _getIMacInstanceForEpisode();
+
 public:
   /**
    * Initialises all member variables.
@@ -110,7 +118,7 @@ public:
    * @return action The next action for the robot to execute
    */
   Action planNextAction(int time, std::shared_ptr<IMac> imac,
-                        std::vector<IMacObservation> obsVector);
+                        const std::vector<IMacObservation> &obsVector);
 
   /**
    * Wrapper around _executeFn which fills in the gaps from class members.
@@ -119,7 +127,7 @@ public:
    *
    * @return outcome The outcome of the action
    */
-  ActionOutcome executeAction(Action action);
+  ActionOutcome executeAction(const Action &action);
 
   /**
    * Wrapper around _observeFn which fills in the gaps from class members.
@@ -130,22 +138,25 @@ public:
 
   /**
    * Resets all necessary members for the next episode.
+   *
+   * @param startLoc The robot's initial location for the episode
+   * @param timeBound The episode time bound, which could change
    */
-  void resetForNextEpisode();
+  void resetForNextEpisode(const GridCell &startLoc, int timeBound);
 
   /**
-   * Logs a set of covered nodes to file
+   * Logs a set of covered nodes to file.
    *
    * @param outFile The csv file to write the covered locations to
    */
-  void logCoveredLocations(std::filesystem::path outFile);
+  void logCoveredLocations(const std::filesystem::path &outFile);
 
   /**
    * Run the plan-execute-observe cycle for a single episode, up to _timeBound.
    *
    * @param outFile The csv file to output covered locations to
    */
-  void runCoverageEpisode(std::filesystem::path outFile);
+  void runCoverageEpisode(const std::filesystem::path &outFile);
 };
 
 #endif
