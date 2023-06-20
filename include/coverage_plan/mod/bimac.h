@@ -13,6 +13,7 @@
 #ifndef BIMAC_H
 #define BIMAC_H
 
+#include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
 #include <Eigen/Dense>
 #include <filesystem>
@@ -27,8 +28,7 @@
  * This is so we map to the Cartesian coordinates the robot operates over.
  *
  * Members:
- * x: X position on grid
- * y: Y position on grid
+ * cell: The cell on the grid
  * freeToOccupied: Number of observations at (x,y) going from free to occupied
  * freeToFree: Number of observations at (x,y) going from free to free
  * occupiedToFree: Number of observations at (x,y) going from occupied to free
@@ -38,8 +38,7 @@
  * initOccupied: Number of observationsof (x,y) being occupied at time 0
  */
 struct BIMacObservation {
-  int x{};
-  int y{};
+  GridCell cell{};
   int freeToOccupied{};
   int freeToFree{};
   int occupiedToFree{};

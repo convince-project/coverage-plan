@@ -170,18 +170,18 @@ void BIMac::updatePosterior(const std::vector<BIMacObservation> &observations) {
   for (BIMacObservation obs : observations) {
     // Update lambda_entry parameters
     // Recall that rows correspond to the y direction, columns to x
-    this->_alphaEntry(obs.y, obs.x) += obs.freeToOccupied;
-    this->_betaEntry(obs.y, obs.x) += obs.freeToFree;
+    this->_alphaEntry(obs.cell.y, obs.cell.x) += obs.freeToOccupied;
+    this->_betaEntry(obs.cell.y, obs.cell.x) += obs.freeToFree;
 
     // Update lambda exit parameters
-    this->_alphaExit(obs.y, obs.x) += obs.occupiedToFree;
-    this->_betaExit(obs.y, obs.x) += obs.occupiedToOccupied;
+    this->_alphaExit(obs.cell.y, obs.cell.x) += obs.occupiedToFree;
+    this->_betaExit(obs.cell.y, obs.cell.x) += obs.occupiedToOccupied;
 
     // Update initial state distribution parameters
     // Distribution is over the initial occupation probability, so alpha
     // gets the initOccupied observations
-    this->_alphaInit(obs.y, obs.x) += obs.initOccupied;
-    this->_betaInit(obs.y, obs.x) += obs.initFree;
+    this->_alphaInit(obs.cell.y, obs.cell.x) += obs.initOccupied;
+    this->_betaInit(obs.cell.y, obs.cell.x) += obs.initFree;
   }
 }
 

@@ -5,6 +5,7 @@
  */
 
 #include "coverage_plan/mod/bimac.h"
+#include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
 #include <Eigen/Dense>
@@ -123,7 +124,8 @@ std::tuple<double, double> runSingleDay(std::shared_ptr<IMac> groundTruth,
 
   for (int i{0}; i < 10; ++i) {
     for (int j{0}; j < 10; ++j) {
-      obsMap[std::make_tuple(i, j)] = BIMacObservation{i, j, 0, 0, 0, 0, 0, 0};
+      obsMap[std::make_tuple(i, j)] =
+          BIMacObservation{GridCell{i, j}, 0, 0, 0, 0, 0, 0};
     }
   }
 

@@ -4,6 +4,7 @@
  * @author Charlie Street
  */
 
+#include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
 #include <Eigen/Dense>
@@ -63,7 +64,7 @@ TEST_CASE("Tests for restart function in IMacExecutor", "[restart]") {
   std::vector<IMacObservation> initialObs{};
   for (int i{0}; i < 3; ++i) {
     for (int j{0}; j < 3; ++j) {
-      initialObs.push_back(IMacObservation{i, j, 1});
+      initialObs.push_back(IMacObservation{GridCell{i, j}, 1});
     }
   }
 
@@ -125,7 +126,7 @@ TEST_CASE("Tests for the updateState function in IMacExecutor",
   std::vector<IMacObservation> obs{};
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      obs.push_back(IMacObservation{i, j, 1});
+      obs.push_back(IMacObservation{GridCell{i, j}, 1});
     }
   }
 
@@ -180,7 +181,7 @@ TEST_CASE("Tests for the updateState function in IMacExecutor",
     }
   }
 
-  obs.push_back(IMacObservation{1, 1, 0});
+  obs.push_back(IMacObservation{GridCell{1, 1}, 0});
   nextState = exec->updateState(obs);
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {

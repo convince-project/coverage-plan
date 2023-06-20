@@ -33,7 +33,7 @@ IMacExecutor::restart(const std::vector<IMacObservation> &observations) {
   for (IMacObservation obs : observations) {
     // To make the matrix compatible with Cartesian coordinates,
     // y is the row number (y moves down), and x is the column (origin at (0,0))
-    this->_currentState(obs.y, obs.x) = obs.occupied;
+    this->_currentState(obs.cell.y, obs.cell.x) = obs.occupied;
   }
 
   return this->_currentState;
@@ -51,7 +51,7 @@ IMacExecutor::updateState(const std::vector<IMacObservation> &observations) {
   // Explicitly set the values in the observation list
   for (IMacObservation obs : observations) {
     // y is row, x is column
-    this->_currentState(obs.y, obs.x) = obs.occupied;
+    this->_currentState(obs.cell.y, obs.cell.x) = obs.occupied;
   }
 
   return this->_currentState;

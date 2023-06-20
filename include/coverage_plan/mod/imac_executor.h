@@ -8,6 +8,7 @@
 #ifndef IMAC_EXECUTOR_H
 #define IMAC_EXECUTOR_H
 
+#include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
 #include <Eigen/Dense>
 #include <memory>
@@ -21,13 +22,11 @@
  * This is so we map to the Cartesian coordinates the robot operates over.
  *
  * Members:
- * x: X position on grid
- * y: Y position on grid
+ * cell: The cell on the grid
  * occupied: 1 if cell is occupied, otherwise 0
  */
 struct IMacObservation {
-  int x{};
-  int y{};
+  GridCell cell{};
   int occupied{};
 };
 
