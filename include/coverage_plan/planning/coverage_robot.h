@@ -81,6 +81,37 @@ private:
    */
   virtual std::shared_ptr<IMac> _getIMacInstanceForEpisode();
 
+  /**
+   * Helper function to add an initial state observation to a BIMacObservation.
+   *
+   * @param biMacObsMap a map from grid cells to corresponding BIMacObservations
+   * @param obs an IMacObservation for time t=0
+   */
+  void _addInitObservation(std::map<GridCell, BIMacObservation> &biMacObsMap,
+                           const IMacObservation &obs);
+
+  /**
+   * Helper function to add IMac transition observation to a BIMacObservation.
+   *
+   * @param biMacObsMap a map from grid cells to corresponding BIMacObservations
+   * @param cell The grid cell the observation is for
+   * @param prevState The previous state of the
+   */
+  void
+  _addTransitionObservation(std::map<GridCell, BIMacObservation> &biMacObsMap,
+                            const GridCell &cell, const int &prevState,
+                            const int &nextState);
+
+  /**
+   * Converts IMacObservation vectors into a BIMacObservation vector.
+   *
+   * @param observations a vector of IMacObservation vectors
+   *
+   * @return biMacObsVector A vector of BIMacObservations
+   */
+  std::vector<BIMacObservation> _generateBIMacObservations(
+      const std::vector<std::vector<IMacObservation>> &observations);
+
 public:
   /**
    * Initialises all member variables.
