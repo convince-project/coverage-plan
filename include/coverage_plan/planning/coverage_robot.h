@@ -17,6 +17,7 @@
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac_executor.h"
 #include <filesystem>
+#include <map>
 #include <memory>
 #include <vector>
 

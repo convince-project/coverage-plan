@@ -70,7 +70,7 @@ TEST_CASE("Test for reset", "[resetForNextEpisode]") {
   // Now check the two files
   // resetTestOne should be 2,1\n once
   // resetTestTwo should be 3,3\n ten times
-  std::ifstream logOne{"tmp/resetTestOne.csv"};
+  std::ifstream logOne{"/tmp/resetTestOne.csv"};
   std::string line{};
   std::vector<std::string> logVec{};
   if (logOne.is_open()) {
@@ -81,9 +81,8 @@ TEST_CASE("Test for reset", "[resetForNextEpisode]") {
   REQUIRE(logVec.size() == 1);
   REQUIRE(logVec.at(0) == "2,1\n");
 
-  std::ifstream logTwo{"tmp/resetTestTwo.csv"};
-  std::string line{};
-  std::vector<std::string> logVec{};
+  std::ifstream logTwo{"/tmp/resetTestTwo.csv"};
+  logVec.clear();
   if (logTwo.is_open()) {
     while (getline(logTwo, line)) {
       logVec.push_back(line);
@@ -114,7 +113,7 @@ TEST_CASE("Test for logCoveredLocations", "[logCoveredLocations]") {
   robot->runCoverageEpisode("/tmp/logTest.csv");
 
   // Test log has got everything in the right order
-  std::ifstream logOne{"tmp/logTest.csv"};
+  std::ifstream logOne{"/tmp/logTest.csv"};
   std::string line{};
   std::vector<std::string> logVec{};
   if (logOne.is_open()) {
@@ -145,7 +144,7 @@ TEST_CASE("Test for runCoverageEpisode", "[runCoverageEpisode]") {
 
   robot->runCoverageEpisode("/tmp/runEpisodeTest.csv");
   // Test log has got everything in the right order
-  std::ifstream logOne{"tmp/runEpisodeTest.csv"};
+  std::ifstream logOne{"/tmp/runEpisodeTest.csv"};
   std::string line{};
   std::vector<std::string> logVec{};
   if (logOne.is_open()) {
