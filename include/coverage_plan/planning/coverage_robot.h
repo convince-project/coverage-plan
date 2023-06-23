@@ -95,7 +95,8 @@ private:
    *
    * @param biMacObsMap a map from grid cells to corresponding BIMacObservations
    * @param cell The grid cell the observation is for
-   * @param prevState The previous state of the
+   * @param prevState The previous state of the grid cell
+   * @param nextState The new state of the grid cell
    */
   void
   _addTransitionObservation(std::map<GridCell, BIMacObservation> &biMacObsMap,
