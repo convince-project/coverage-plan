@@ -68,8 +68,8 @@ TEST_CASE("Test for reset", "[resetForNextEpisode]") {
   robot->runCoverageEpisode("/tmp/resetTestTwo.csv");
 
   // Now check the two files
-  // resetTestOne should be 2,1\n once
-  // resetTestTwo should be 3,3\n ten times
+  // resetTestOne should be 2,1 once
+  // resetTestTwo should be 3,3 ten times
   std::ifstream logOne{"/tmp/resetTestOne.csv"};
   std::string line{};
   std::vector<std::string> logVec{};
@@ -79,7 +79,7 @@ TEST_CASE("Test for reset", "[resetForNextEpisode]") {
     }
   }
   REQUIRE(logVec.size() == 1);
-  REQUIRE(logVec.at(0) == "2,1\n");
+  REQUIRE(logVec.at(0) == "2,1");
 
   std::ifstream logTwo{"/tmp/resetTestTwo.csv"};
   logVec.clear();
@@ -90,7 +90,7 @@ TEST_CASE("Test for reset", "[resetForNextEpisode]") {
   }
   REQUIRE(logVec.size() == 11);
   for (int i{0}; i < 11; ++i) {
-    REQUIRE(logVec.at(i) == "3,3\n");
+    REQUIRE(logVec.at(i) == "3,3");
   }
 }
 
@@ -123,7 +123,7 @@ TEST_CASE("Test for logCoveredLocations", "[logCoveredLocations]") {
   }
   REQUIRE(logVec.size() == 11);
   for (int i{0}; i < 11; ++i) {
-    REQUIRE(logVec.at(i) == "2," + std::to_string(i + 1) + "\n");
+    REQUIRE(logVec.at(i) == "2," + std::to_string(i + 1));
   }
 }
 
@@ -154,7 +154,7 @@ TEST_CASE("Test for runCoverageEpisode", "[runCoverageEpisode]") {
   }
   REQUIRE(logVec.size() == 11);
   for (int i{0}; i < 11; ++i) {
-    REQUIRE(logVec.at(i) == "2," + std::to_string(i + 1) + "\n");
+    REQUIRE(logVec.at(i) == "2," + std::to_string(i + 1));
   }
 
   std::shared_ptr<IMac> imac{robot->getBIMac()->posteriorMean()};
@@ -173,7 +173,7 @@ TEST_CASE("Test for runCoverageEpisode", "[runCoverageEpisode]") {
         REQUIRE_THAT(init(i, j), Catch::Matchers::WithinRel(0.5, 0.001));
         REQUIRE_THAT(exit(i, j), Catch::Matchers::WithinRel(0.5, 0.001));
       }
-      REQUIRE_THAT(entry(i, j), Catch::Matchers::WithinRel(2.0 / 3.0, 0.001));
+      REQUIRE_THAT(entry(i, j), Catch::Matchers::WithinRel(0.5, 0.001));
     }
   }
 }

@@ -178,8 +178,8 @@ void CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
     observations.push_back(this->makeObservations());
 
     // Update location, covered and time
-    this->_covered.push_back(this->_currentLoc);
     this->_currentLoc = outcome.location;
+    this->_covered.push_back(this->_currentLoc);
     ++t;
   }
 
