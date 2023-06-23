@@ -65,13 +65,15 @@ private:
   GridCell _currentLoc{};
   std::vector<GridCell> _covered{};
   int _timeBound{};
-  std::unique_ptr<BIMac> _bimac{};
-  const std::function<Action(GridCell, int, int, std::shared_ptr<IMac>,
-                             std::vector<GridCell>,
-                             std::vector<IMacObservation>)>
+  std::shared_ptr<BIMac> _bimac{};
+  const std::function<Action(const GridCell &, int, int, std::shared_ptr<IMac>,
+                             const std::vector<GridCell> &,
+                             const std::vector<IMacObservation> &)>
       _planFn{};
-  const std::function<ActionOutcome(GridCell, Action)> _executeFn{};
-  const std::function<std::vector<IMacObservation>(GridCell)> _observeFn{};
+  const std::function<ActionOutcome(const GridCell &, const Action &)>
+      _executeFn{};
+  const std::function<std::vector<IMacObservation>(const GridCell &)>
+      _observeFn{};
 
   /**
    * Function gets the IMac instance to be used for an episode.
@@ -131,13 +133,16 @@ public:
    */
   CoverageRobot(
       const GridCell &currentLoc, int timeBound, int xDim, int yDim,
-      const std::function<Action(GridCell, int, int, std::shared_ptr<IMac>,
-                                 std::vector<GridCell>,
-                                 std::vector<IMacObservation>)> &planFn,
-      const std::function<ActionOutcome(GridCell, Action)> &executeFn,
-      const std::function<std::vector<IMacObservation>(GridCell)> &observeFn)
+      const std::function<Action(const GridCell &, int, int,
+                                 std::shared_ptr<IMac>,
+                                 const std::vector<GridCell> &,
+                                 const std::vector<IMacObservation> &)> &planFn,
+      const std::function<ActionOutcome(const GridCell &, const Action &)>
+          &executeFn,
+      const std::function<std::vector<IMacObservation>(const GridCell &)>
+          &observeFn)
       : _currentLoc{currentLoc}, _covered{}, _timeBound{timeBound},
-        _bimac{std::make_unique<BIMac>(xDim, yDim)}, _planFn{planFn},
+        _bimac{std::make_shared<BIMac>(xDim, yDim)}, _planFn{planFn},
         _executeFn{executeFn}, _observeFn{observeFn} {}
 
   /**
@@ -189,6 +194,15 @@ public:
    * @param outFile The csv file to output covered locations to
    */
   void runCoverageEpisode(const std::filesystem::path &outFile);
+
+  /**
+   * Getter for the BIMac model.
+   *
+   * Getter useful in case user wishes to write to file etc.
+   *
+   * @return bimac A shared ptr to a BIMac instance
+   */
+  std::shared_ptr<BIMac> getBIMac() { return this->_bimac; }
 };
 
 #endif

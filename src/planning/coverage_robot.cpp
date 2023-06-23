@@ -141,7 +141,7 @@ void CoverageRobot::resetForNextEpisode(const GridCell &startLoc,
  * Logs a set of covered nodes to file.
  */
 void CoverageRobot::logCoveredLocations(const std::filesystem::path &outFile) {
-  std::ofstream f(outFile);
+  std::ofstream f{outFile};
   if (f.is_open()) {
     for (const GridCell &cell : this->_covered) {
       f << cell.x << ',' << cell.y << '\n';
@@ -182,10 +182,6 @@ void CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
     this->_currentLoc = outcome.location;
     ++t;
   }
-
-  // Final covered location and observation
-  this->_covered.push_back(this->_currentLoc);
-  observations.push_back(this->makeObservations());
 
   // Update BiMac
   this->_bimac->updatePosterior(this->_generateBIMacObservations(observations));
