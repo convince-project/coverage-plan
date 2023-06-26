@@ -41,6 +41,17 @@ struct GridCell {
   bool operator==(const GridCell &other) const {
     return this->x == other.x && this->y == other.y;
   }
+
+  /**
+   * Implement != to allow comparisons
+   *
+   * @param other The GridCell to compare against
+   *
+   * @return eq Is this not eq to other?
+   */
+  bool operator!=(const GridCell &other) const {
+    return this->x != other.x or this->y != other.y;
+  }
 };
 
 #endif
