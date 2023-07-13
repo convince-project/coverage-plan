@@ -73,7 +73,7 @@ Action randomAction(const GridCell &currentLoc, int ts, int timeBound,
  * @param map The current vector of how the map has changed so far
  * @param state The current IMac state
  */
-void logMapDiff(const std::vector<std::vector<std::pair<GridCell, int>>> &map,
+void logMapDiff(std::vector<std::vector<std::pair<GridCell, int>>> &map,
                 const Eigen::MatrixXi &state) {
   std::vector<std::pair<GridCell, int>> mapAtTs{};
 
@@ -82,6 +82,7 @@ void logMapDiff(const std::vector<std::vector<std::pair<GridCell, int>>> &map,
       mapAtTs.push_back(std::make_pair(GridCell{x, y}, state(y, x)));
     }
   }
+  map.push_back(mapAtTs);
 }
 
 /**
@@ -92,6 +93,7 @@ void logMapDiff(const std::vector<std::vector<std::pair<GridCell, int>>> &map,
  */
 void printCurrentTransition(const GridCell &startLoc,
                             const ActionOutcome &outcome) {
+  std::cout << std::boolalpha;
   std::cout << "STATE: (" << startLoc.x << ',' << startLoc.y << "); ACTION: ";
   switch (outcome.action) {
   case Action::up:
@@ -111,7 +113,7 @@ void printCurrentTransition(const GridCell &startLoc,
     break;
   }
 
-  std::cout << "; SUCCESS: " << outcome.success << "SUCCESSOR: (";
+  std::cout << "; SUCCESS: " << outcome.success << "; SUCCESSOR: (";
   std::cout << outcome.location.x << ',' << outcome.location.y << ")\n";
 }
 
@@ -126,10 +128,9 @@ void printCurrentTransition(const GridCell &startLoc,
  *
  * @return outcome The ActionOutcome object describing the outcome
  */
-ActionOutcome
-execute(std::shared_ptr<IMacExecutor> executor,
-        const std::vector<std::vector<std::pair<GridCell, int>>> &map,
-        const GridCell &currentLoc, const Action &action) {
+ActionOutcome execute(IMacExecutor &executor,
+                      std::vector<std::vector<std::pair<GridCell, int>>> &map,
+                      const GridCell &currentLoc, const Action &action) {
   // Apply action
   GridCell nextLoc{};
   switch (action) {
@@ -157,7 +158,7 @@ execute(std::shared_ptr<IMacExecutor> executor,
 
   // Unroll the next IMac state here so we can check occlusion
   Eigen::MatrixXi nextState{
-      executor->updateState(std::vector<IMacObservation>{})};
+      executor.updateState(std::vector<IMacObservation>{})};
   // Log the difference in map state
   logMapDiff(map, nextState);
 
@@ -170,7 +171,6 @@ execute(std::shared_ptr<IMacExecutor> executor,
   }
 
   ActionOutcome outcome{action, succ, nextLoc};
-
   printCurrentTransition(currentLoc, outcome);
 
   return outcome;
@@ -194,14 +194,14 @@ std::vector<IMacObservation> observe(const GridCell &currentLoc) {
  * @return robot A pointer to a CoverageRobot object
  */
 std::shared_ptr<CoverageRobot>
-createRobot(std::shared_ptr<IMacExecutor> executor,
-            const std::vector<std::vector<std::pair<GridCell, int>>> &map) {
+createRobot(IMacExecutor &executor,
+            std::vector<std::vector<std::pair<GridCell, int>>> &map) {
 
   // Pass in by reference but match CoverageRobot type definition
   auto executeLambda{[&](const GridCell &currentLoc, const Action &action) {
     return execute(executor, map, currentLoc, action);
   }};
-  return std::make_shared<CoverageRobot>(GridCell{0, 0}, 100, 10, 10,
+  return std::make_shared<CoverageRobot>(GridCell{5, 5}, 100, 10, 10,
                                          randomAction, executeLambda, observe);
 }
 
@@ -217,8 +217,8 @@ std::shared_ptr<IMac> createIMac() {
 
   int numSet{0};
   const int staticObsLimit{20};
-  const int staticFreeLimit{50};
-  const int semiStaticLimit{75};
+  const int staticFreeLimit{75};
+  const int semiStaticLimit{90};
 
   // Random order of cells on grid map
   std::vector<GridCell> cells{};
@@ -264,8 +264,8 @@ std::shared_ptr<IMac> createIMac() {
  * @param map A vector of vectors of GridCell,occupied pairs
  * @param outFile The CSV file to write everything
  */
-void logMap(std::vector<std::vector<std::pair<GridCell, int>>> map,
-            std::filesystem::path outFile) {
+void logMap(const std::vector<std::vector<std::pair<GridCell, int>>> &map,
+            const std::filesystem::path &outFile) {
   std::ofstream f{outFile};
   if (f.is_open()) {
     int ts{0};
@@ -285,13 +285,14 @@ void logMap(std::vector<std::vector<std::pair<GridCell, int>>> map,
 int main() {
 
   // Create the IMac Executor
+  // Allocating on heap but then just using reference to object
   std::shared_ptr<IMacExecutor> executor{
       std::make_shared<IMacExecutor>(createIMac())};
 
   // Used for logging the map's observed dynamics
   std::vector<std::vector<std::pair<GridCell, int>>> map{};
 
-  std::shared_ptr<CoverageRobot> coverageRobot{createRobot(executor, map)};
+  std::shared_ptr<CoverageRobot> coverageRobot{createRobot(*executor, map)};
 
   // Initial IMac state
   Eigen::MatrixXi initState{executor->restart()};
@@ -303,7 +304,7 @@ int main() {
       "randomCoverageRobotExampleCovered.csv");
 
   // Log the map over time
-  logMap(map, "/home/charlie/work/cover-plan/data/results/"
+  logMap(map, "/home/charlie/work/coverage-plan/data/results/"
               "randomCoverageRobotExampleMap.csv");
 
   return 0;
