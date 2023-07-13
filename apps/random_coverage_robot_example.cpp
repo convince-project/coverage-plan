@@ -9,8 +9,10 @@
 #include "coverage_plan/mod/imac_executor.h"
 #include "coverage_plan/planning/coverage_robot.h"
 #include <Eigen/Dense>
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <memory>
 #include <random>
 #include <tuple>
@@ -66,6 +68,37 @@ Action randomAction(const GridCell &currentLoc, int ts, int timeBound,
 }
 
 /**
+ * Prints the current transition in the example run.
+ *
+ * @param startLoc where did the robot start the transition?
+ * @param outcome The action outcome
+ */
+void printCurrentTransition(const GridCell &startLoc,
+                            const ActionOutcome &outcome) {
+  std::cout << "STATE: (" << startLoc.x << ',' << startLoc.y << '); ACTION: ';
+  switch (outcome.action) {
+  case Action::up:
+    std::cout << "up";
+    break;
+  case Action::down:
+    std::cout << "down";
+    break;
+  case Action::left:
+    std::cout << "left";
+    break;
+  case Action::right:
+    std::cout << "right";
+    break;
+  case Action::wait:
+    std::cout << "wait";
+    break;
+  }
+
+  std::cout << "; SUCCESS: " << outcome.success << "SUCCESSOR: (";
+  std::cout << outcome.location.x << ',' << outcome.location.y << ")\n";
+}
+
+/**
  * The action execution function.
  * Just applies the action to the grid and checks the outcome.
  *
@@ -113,13 +146,17 @@ execute(std::shared_ptr<IMacExecutor> executor,
 
   bool succ{true};
   // Check for action failure (note flipped x and y)
-  if (nextState[nextLoc.y, nextLoc.x] == 1) {
+  if (nextState[nextLoc.y, nextLoc.x] == 1 && action != Action::wait) {
     succ = false;
     nextLoc.x = currentLoc.x;
     nextLoc.y = currentLoc.y;
   }
 
-  return ActionOutcome{action, succ, nextLoc};
+  ActionOutcome outcome{action, succ, nextLoc};
+
+  printCurrentTransition(currentLoc, outcome);
+
+  return outcome;
 }
 
 /**
@@ -151,8 +188,55 @@ createRobot(std::shared_ptr<IMacExecutor> executor,
                                          randomAction, executeLambda, observe);
 }
 
-// TODO: Fill in
-std::shared_ptr<IMac> createIMac() { return nullptr; }
+/**
+ * Create a random IMac instance for this example.
+ *
+ * @return imac A shared pointer to an IMac instance
+ */
+std::shared_ptr<IMac> createIMac() {
+  Eigen::MatrixXd entryMatrix{10, 10};
+  Eigen::MatrixXd exitMatrix{10, 10};
+  Eigen::MatrixXd initialBelief{10, 10};
+
+  int numSet{0};
+  const int staticObsLimit{20};
+  const int staticFreeLimit{50};
+  const int semiStaticLimit{75};
+
+  // Random order of cells on grid map
+  std::vector<GridCell> cells{};
+  for (int x{0}; x < 10; ++x) {
+    for (int y{0}; y < 10; ++y) {
+      cells.push_back(GridCell{x, y});
+    }
+  }
+  std::mt19937 rng{std::random_device{}()};
+  std::shuffle(std::begin(cells), std::end(cells), rng);
+
+  // Have to use y,x to match coordinate systems up
+  for (const GridCell &cell : cells) {
+    if (numSet < staticObsLimit) {
+      entryMatrix(cell.y, cell.x) = 1.0;
+      exitMatrix(cell.y, cell.x) = 0.0;
+      initialBelief(cell.y, cell.x) = 1.0;
+    } else if (numSet < staticFreeLimit) {
+      entryMatrix(cell.y, cell.x) = 0.0;
+      exitMatrix(cell.y, cell.x) = 1.0;
+      initialBelief(cell.y, cell.x) = 0.0;
+    } else if (numSet < semiStaticLimit) {
+      entryMatrix(cell.y, cell.x) = 0.05;
+      exitMatrix(cell.y, cell.x) = 0.05;
+      initialBelief(cell.y, cell.x) = 0.3;
+    } else {
+      entryMatrix(cell.y, cell.x) = 0.5;
+      exitMatrix(cell.y, cell.x) = 0.5;
+      initialBelief(cell.y, cell.x) = 0.5;
+    }
+    ++numSet;
+  }
+
+  return std::make_shared<IMac>(entryMatrix, exitMatrix, initialBelief);
+}
 
 /**
  * Log how the map has changed in the last time step.
