@@ -62,9 +62,26 @@ Action randomAction(const GridCell &currentLoc, int ts, int timeBound,
   }
 
   std::mt19937 gen{std::random_device{}()};
-  std::uniform_int_distribution<> sampler{0, validActions.size() - 1};
+  std::uniform_int_distribution<> sampler{0, (int)validActions.size() - 1};
 
   return validActions.at(sampler(gen));
+}
+
+/**
+ * Log how the map has changed in the last time step.
+ *
+ * @param map The current vector of how the map has changed so far
+ * @param state The current IMac state
+ */
+void logMapDiff(const std::vector<std::vector<std::pair<GridCell, int>>> &map,
+                const Eigen::MatrixXi &state) {
+  std::vector<std::pair<GridCell, int>> mapAtTs{};
+
+  for (int y{0}; y < state.rows(); ++y) {
+    for (int x{0}; x < state.cols(); ++x) {
+      mapAtTs.push_back(std::make_pair(GridCell{x, y}, state(y, x)));
+    }
+  }
 }
 
 /**
@@ -75,7 +92,7 @@ Action randomAction(const GridCell &currentLoc, int ts, int timeBound,
  */
 void printCurrentTransition(const GridCell &startLoc,
                             const ActionOutcome &outcome) {
-  std::cout << "STATE: (" << startLoc.x << ',' << startLoc.y << '); ACTION: ';
+  std::cout << "STATE: (" << startLoc.x << ',' << startLoc.y << "); ACTION: ";
   switch (outcome.action) {
   case Action::up:
     std::cout << "up";
@@ -146,7 +163,7 @@ execute(std::shared_ptr<IMacExecutor> executor,
 
   bool succ{true};
   // Check for action failure (note flipped x and y)
-  if (nextState[nextLoc.y, nextLoc.x] == 1 && action != Action::wait) {
+  if (nextState(nextLoc.y, nextLoc.x) == 1 && action != Action::wait) {
     succ = false;
     nextLoc.x = currentLoc.x;
     nextLoc.y = currentLoc.y;
@@ -236,23 +253,6 @@ std::shared_ptr<IMac> createIMac() {
   }
 
   return std::make_shared<IMac>(entryMatrix, exitMatrix, initialBelief);
-}
-
-/**
- * Log how the map has changed in the last time step.
- *
- * @param map The current vector of how the map has changed so far
- * @param state The current IMac state
- */
-void logMapDiff(const std::vector<std::vector<std::pair<GridCell, int>>> &map,
-                const Eigen::MatrixXi &state) {
-  std::vector<std::pair<GridCell, int>> mapAtTs{};
-
-  for (int y{0}; y < state.rows(); ++y) {
-    for (int x{0}; x < state.cols(); ++x) {
-      mapAtTs.push_back(std::make_pair(GridCell{x, y}, state(y, x)));
-    }
-  }
 }
 
 /**
