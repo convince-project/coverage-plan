@@ -107,10 +107,16 @@ def animate(covered, map_dynamics, grid, robot, frame):
     robot.center = robot_grid_to_plot_pos(current_x, current_y, y_len)
 
     for cell in map_dynamics[ts]:
-        if map_dynamics[ts][cell] == 1:
-            grid[cell].set_facecolor("black")
+        if cell in covered[: ts + 1]:
+            if map_dynamics[ts][cell] == 1:
+                grid[cell].set_facecolor("#007500")
+            else:
+                grid[cell].set_facecolor("lime")
         else:
-            grid[cell].set_facecolor("white")
+            if map_dynamics[ts][cell] == 1:
+                grid[cell].set_facecolor("black")
+            else:
+                grid[cell].set_facecolor("white")
 
 
 def robot_grid_to_plot_pos(x, y, y_len):
