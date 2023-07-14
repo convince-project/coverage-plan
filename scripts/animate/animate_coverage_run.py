@@ -79,7 +79,7 @@ def draw_grid(x_len, y_len, ax):
     return grid
 
 
-def animate(covered, map_dynamics, grid, robot, frame):
+def animate(covered, map_dynamics, grid, robot, time_label, frame):
     """Generate a given frame in the animation.
 
     Args:
@@ -87,6 +87,7 @@ def animate(covered, map_dynamics, grid, robot, frame):
         map_dynamics: The evolution of the map
         grid: The grid drawing ((x,y)->square)
         robot: The robot drawing
+        time_label: The label for the current timestep
         frame: The current frame number
     """
     # Current timestep
@@ -106,6 +107,10 @@ def animate(covered, map_dynamics, grid, robot, frame):
     y_len = max([k[1] for k in grid.keys()]) + 1
     robot.center = robot_grid_to_plot_pos(current_x, current_y, y_len)
 
+    # Set time step label
+    time_label.set_text("Time: {}".format(ts))
+
+    # Set grid cells
     for cell in map_dynamics[ts]:
         if cell in covered[: ts + 1]:
             if map_dynamics[ts][cell] == 1:
@@ -150,6 +155,24 @@ def generate_robot(start_loc, y_len, ax):
     return robot
 
 
+def generate_time(x_len, y_len, ax):
+    """Generate the timestep label.
+
+    Args:
+        x_len: X dimension of the map
+        ax: The axis
+    """
+    return ax.annotate(
+        "Time: 0",
+        (x_len / 2, y_len + 0.7),
+        color="black",
+        ha="center",
+        va="center",
+        zorder=9,
+        size=24,
+    )
+
+
 def run_animation(x_len, y_len, covered_file, map_file, output_path=None):
     """Run the animation of the coverage run.
 
@@ -175,13 +198,16 @@ def run_animation(x_len, y_len, covered_file, map_file, output_path=None):
     # Draw the robot
     robot = generate_robot(covered[0], y_len, ax)
 
+    # Draw timestep
+    time_label = generate_time(x_len, y_len, ax)
+
     # Now set up the animation
     frames = TS_LEN * len(covered)
     interval = (1.0 / FPS) * 1000
 
     anim = animation.FuncAnimation(
         fig,
-        lambda i: animate(covered, map_dynamics, grid, robot, i),
+        lambda i: animate(covered, map_dynamics, grid, robot, time_label, i),
         frames=int(frames),
         interval=interval,
         blit=False,
@@ -198,7 +224,7 @@ def run_animation(x_len, y_len, covered_file, map_file, output_path=None):
         )
 
     plt.xlim([0, 10])
-    plt.ylim([0, 10])
+    plt.ylim([0, 11])
     plt.axis("off")
     plt.show()
 
@@ -213,4 +239,9 @@ if __name__ == "__main__":
 
     map_file = os.path.join("../../data/results/randomCoverageRobotExampleMap.csv")
 
-    run_animation(x_len, y_len, covered_file, map_file)
+    run_animation(
+        x_len,
+        y_len,
+        covered_file,
+        map_file,
+    )
