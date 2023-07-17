@@ -6,6 +6,7 @@
 
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
+#include "coverage_plan/planning/action.h"
 #include "coverage_plan/planning/coverage_robot.h"
 #include <Eigen/Dense>
 #include <catch2/catch.hpp>

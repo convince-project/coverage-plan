@@ -8,6 +8,7 @@
 #include "coverage_plan/planning/coverage_robot.h"
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
+#include "coverage_plan/planning/action.h"
 #include <fstream>
 #include <map>
 #include <memory>

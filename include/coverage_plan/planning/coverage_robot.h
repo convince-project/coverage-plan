@@ -16,32 +16,11 @@
 #include "coverage_plan/mod/bimac.h"
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac_executor.h"
+#include "coverage_plan/planning/action.h"
 #include <filesystem>
 #include <map>
 #include <memory>
 #include <vector>
-
-/**
- * Enum for robot actions on a grid.
- */
-enum class Action { up, down, left, right, wait };
-
-/**
- * Struct for storing action outcomes.
- *
- * Action outcome contains action success/failure flag, the successor
- * location, and a reminder of the action executed.
- *
- * Members:
- * action: The action executed
- * success: A flag set to true if the action was successful
- * location: The current GridCell of the robot
- */
-struct ActionOutcome {
-  Action action{};
-  bool success{};
-  GridCell location{};
-};
 
 /**
  * A class for the coverage planning execution framework.

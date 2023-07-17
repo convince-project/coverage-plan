@@ -7,6 +7,7 @@
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
+#include "coverage_plan/planning/action.h"
 #include "coverage_plan/planning/coverage_robot.h"
 #include <Eigen/Dense>
 #include <algorithm>
@@ -88,29 +89,7 @@ void printCurrentTransition(const GridCell &startLoc,
 ActionOutcome execute(IMacExecutor &executor, const GridCell &currentLoc,
                       const Action &action) {
   // Apply action
-  GridCell nextLoc{};
-  switch (action) {
-  case Action::up:
-    nextLoc.x = currentLoc.x;
-    nextLoc.y = currentLoc.y - 1;
-    break;
-  case Action::down:
-    nextLoc.x = currentLoc.x;
-    nextLoc.y = currentLoc.y + 1;
-    break;
-  case Action::left:
-    nextLoc.x = currentLoc.x - 1;
-    nextLoc.y = currentLoc.y;
-    break;
-  case Action::right:
-    nextLoc.x = currentLoc.x + 1;
-    nextLoc.y = currentLoc.y;
-    break;
-  case Action::wait:
-    nextLoc.x = currentLoc.x;
-    nextLoc.y = currentLoc.y;
-    break;
-  }
+  GridCell nextLoc{applySuccessfulAction(currentLoc, action)};
 
   // Unroll the next IMac state here so we can check occlusion
   Eigen::MatrixXi nextState{
