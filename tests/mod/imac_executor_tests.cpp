@@ -9,7 +9,9 @@
 #include "coverage_plan/mod/imac_executor.h"
 #include <Eigen/Dense>
 #include <catch2/catch.hpp>
+#include <fstream>
 #include <memory>
+#include <string>
 #include <vector>
 
 TEST_CASE("Tests for restart function in IMacExecutor", "[restart]") {
@@ -191,5 +193,61 @@ TEST_CASE("Tests for the updateState function in IMacExecutor",
         REQUIRE(nextState(i, j) == 1);
       }
     }
+  }
+}
+
+TEST_CASE("Tests for the logMapDynamics function in IMacExecutor",
+          "[logMapDynamics]") {
+  Eigen::MatrixXd entryExitAndInit{Eigen::MatrixXd::Constant(2, 2, 0.5)};
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(
+      entryExitAndInit, entryExitAndInit, entryExitAndInit)};
+
+  std::unique_ptr<IMacExecutor> exec{std::make_unique<IMacExecutor>(imac)};
+
+  // Fixing map state for example
+  std::vector<IMacObservation> obsZero{
+      IMacObservation{GridCell{0, 0}, 1}, IMacObservation{GridCell{1, 0}, 0},
+      IMacObservation{GridCell{0, 1}, 0}, IMacObservation{GridCell{1, 1}, 1}};
+
+  std::vector<IMacObservation> obsOne{
+      IMacObservation{GridCell{0, 0}, 0}, IMacObservation{GridCell{1, 0}, 1},
+      IMacObservation{GridCell{0, 1}, 1}, IMacObservation{GridCell{1, 1}, 0}};
+
+  std::vector<IMacObservation> obsTwo{
+      IMacObservation{GridCell{0, 0}, 1}, IMacObservation{GridCell{1, 0}, 1},
+      IMacObservation{GridCell{0, 1}, 0}, IMacObservation{GridCell{1, 1}, 0}};
+
+  exec->restart(obsZero);
+  exec->updateState(obsOne);
+  exec->updateState(obsTwo);
+
+  exec->logMapDynamics("/tmp/mapLogTest.csv");
+
+  // Read file back in as vector of elements
+  std::vector<int> mapElems;
+  std::ifstream f("/tmp/mapLogTest.csv");
+
+  std::string rowString;
+  std::string entryString;
+
+  int numRows{0};
+
+  while (getline(f, rowString)) {
+    std::stringstream rowStream(rowString);
+    while (getline(rowStream, entryString, ',')) {
+      mapElems.push_back(std::stoi(entryString));
+    }
+    ++numRows;
+  }
+
+  std::vector<int> expected{0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1,
+                            1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0,
+                            2, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0};
+
+  // Length == 39
+  REQUIRE(mapElems.size() == expected.size());
+
+  for (int i{0}; i < mapElems.size(); ++i) {
+    REQUIRE(mapElems.at(i) == expected.at(i));
   }
 }

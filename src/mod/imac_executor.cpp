@@ -83,9 +83,9 @@ void IMacExecutor::logMapDynamics(const std::filesystem::path &outFile) {
           f << x << ',' << y << ',' << mapAtTs(y, x) << ',';
         }
       }
+      f << '\n';
+      ++ts;
     }
-    f << '\n';
-    ++ts;
   }
   f.close();
 }
