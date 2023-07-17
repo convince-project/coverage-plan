@@ -68,24 +68,6 @@ Action randomAction(const GridCell &currentLoc, int ts, int timeBound,
 }
 
 /**
- * Log how the map has changed in the last time step.
- *
- * @param map The current vector of how the map has changed so far
- * @param state The current IMac state
- */
-void logMapDiff(std::vector<std::vector<std::pair<GridCell, int>>> &map,
-                const Eigen::MatrixXi &state) {
-  std::vector<std::pair<GridCell, int>> mapAtTs{};
-
-  for (int y{0}; y < state.rows(); ++y) {
-    for (int x{0}; x < state.cols(); ++x) {
-      mapAtTs.push_back(std::make_pair(GridCell{x, y}, state(y, x)));
-    }
-  }
-  map.push_back(mapAtTs);
-}
-
-/**
  * Prints the current transition in the example run.
  *
  * @param startLoc where did the robot start the transition?
@@ -122,15 +104,13 @@ void printCurrentTransition(const GridCell &startLoc,
  * Just applies the action to the grid and checks the outcome.
  *
  * @param executor The IMac executor
- * @param map The map data over time
  * @param currentLoc The robot's current location
  * @param action The robot's action to execute
  *
  * @return outcome The ActionOutcome object describing the outcome
  */
-ActionOutcome execute(IMacExecutor &executor,
-                      std::vector<std::vector<std::pair<GridCell, int>>> &map,
-                      const GridCell &currentLoc, const Action &action) {
+ActionOutcome execute(IMacExecutor &executor, const GridCell &currentLoc,
+                      const Action &action) {
   // Apply action
   GridCell nextLoc{};
   switch (action) {
@@ -159,8 +139,6 @@ ActionOutcome execute(IMacExecutor &executor,
   // Unroll the next IMac state here so we can check occlusion
   Eigen::MatrixXi nextState{
       executor.updateState(std::vector<IMacObservation>{})};
-  // Log the difference in map state
-  logMapDiff(map, nextState);
 
   bool succ{true};
   // Check for action failure (note flipped x and y)
@@ -189,17 +167,14 @@ std::vector<IMacObservation> observe(const GridCell &currentLoc) {
  * Creates the robot, wrapping the execute function to handle the internals.
  *
  * @param executor The IMac executor
- * @param map The vector describing the realisation of the map
  *
  * @return robot A pointer to a CoverageRobot object
  */
-std::shared_ptr<CoverageRobot>
-createRobot(IMacExecutor &executor,
-            std::vector<std::vector<std::pair<GridCell, int>>> &map) {
+std::shared_ptr<CoverageRobot> createRobot(IMacExecutor &executor) {
 
   // Pass in by reference but match CoverageRobot type definition
   auto executeLambda{[&](const GridCell &currentLoc, const Action &action) {
-    return execute(executor, map, currentLoc, action);
+    return execute(executor, currentLoc, action);
   }};
   return std::make_shared<CoverageRobot>(GridCell{5, 5}, 100, 10, 10,
                                          randomAction, executeLambda, observe);
@@ -255,33 +230,6 @@ std::shared_ptr<IMac> createIMac() {
   return std::make_shared<IMac>(entryMatrix, exitMatrix, initialBelief);
 }
 
-/**
- * Output the map information into a csv file.
- *
- * Each row will be the differences in the map in that timestep.
- * Row format: ts,(x,y,occ)*
- *
- * @param map A vector of vectors of GridCell,occupied pairs
- * @param outFile The CSV file to write everything
- */
-void logMap(const std::vector<std::vector<std::pair<GridCell, int>>> &map,
-            const std::filesystem::path &outFile) {
-  std::ofstream f{outFile};
-  if (f.is_open()) {
-    int ts{0};
-    for (const std::vector<std::pair<GridCell, int>> &mapAtTs : map) {
-      f << ts << ',';
-      for (const std::pair<GridCell, int> &cellVal : mapAtTs) {
-        f << std::get<0>(cellVal).x << ',' << std::get<0>(cellVal).y << ','
-          << std::get<1>(cellVal) << ',';
-      }
-      f << '\n';
-      ++ts;
-    }
-  }
-  f.close();
-}
-
 int main() {
 
   // Create the IMac Executor
@@ -289,14 +237,10 @@ int main() {
   std::shared_ptr<IMacExecutor> executor{
       std::make_shared<IMacExecutor>(createIMac())};
 
-  // Used for logging the map's observed dynamics
-  std::vector<std::vector<std::pair<GridCell, int>>> map{};
-
-  std::shared_ptr<CoverageRobot> coverageRobot{createRobot(*executor, map)};
+  std::shared_ptr<CoverageRobot> coverageRobot{createRobot(*executor)};
 
   // Initial IMac state
   Eigen::MatrixXi initState{executor->restart()};
-  logMapDiff(map, initState);
 
   // Start example
   coverageRobot->runCoverageEpisode(
@@ -304,8 +248,8 @@ int main() {
       "randomCoverageRobotExampleCovered.csv");
 
   // Log the map over time
-  logMap(map, "/home/charlie/work/coverage-plan/data/results/"
-              "randomCoverageRobotExampleMap.csv");
+  executor->logMapDynamics("/home/charlie/work/coverage-plan/data/results/"
+                           "randomCoverageRobotExampleMap.csv");
 
   return 0;
 }

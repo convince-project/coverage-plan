@@ -11,6 +11,7 @@
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
 #include <Eigen/Dense>
+#include <filesystem>
 #include <memory>
 #include <random>
 #include <vector>
@@ -48,6 +49,7 @@ private:
   // Used for random sampling - create once at start of class
   std::mt19937 _gen{};
   std::uniform_real_distribution<double> _sampler{};
+  std::vector<Eigen::MatrixXi> _mapDynamics{};
 
   /**
    * Helper function which samples an MoD state from a distribution matrix.
@@ -59,6 +61,11 @@ private:
    */
   Eigen::MatrixXi _sampleState(const Eigen::MatrixXd &distMatrix);
 
+  /**
+   * Store the current state of the map for logging purposes.
+   */
+  void _addMapForTs();
+
 public:
   /**
    * Constructor initialises the member variables.
@@ -66,9 +73,8 @@ public:
    * @param imac The IMac model
    */
   IMacExecutor(std::shared_ptr<IMac> imac)
-      : _imac{imac}, _currentState{}, _gen{std::random_device{}()}, _sampler{
-                                                                        0.0,
-                                                                        1.0} {}
+      : _imac{imac}, _currentState{}, _gen{std::random_device{}()},
+        _sampler{0.0, 1.0}, _mapDynamics{} {}
 
   /**
    * Restart the simulation and return the new initial state.
@@ -91,6 +97,16 @@ public:
    * @return nextState The successor IMac state
    */
   Eigen::MatrixXi updateState(const std::vector<IMacObservation> &observations);
+
+  /**
+   * Output the map dynamic information into a csv file.
+   *
+   * Each row is the state of the map at the corresponding timestep.
+   * Row format: ts,(x,y,occ)*
+   *
+   * @param outFile The CSV file to write the map logs
+   */
+  void logMapDynamics(const std::filesystem::path &outFile);
 };
 
 #endif
