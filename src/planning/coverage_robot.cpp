@@ -104,13 +104,42 @@ std::vector<BIMacObservation> CoverageRobot::_generateBIMacObservations(
 }
 
 /**
+ * Returns a vector of actions that can be executed from the current location.
+ */
+std::vector<Action> CoverageRobot::_getEnabledActions() {
+  std::vector<Action> validActions{Action::wait};
+
+  // up: y-1
+  if (this->_currentLoc.y - 1 >= 0) {
+    validActions.push_back(Action::up);
+  }
+
+  // down: y+1
+  if (this->_currentLoc.y + 1 < this->_yDim) {
+    validActions.push_back(Action::down);
+  }
+
+  // left: x-1
+  if (this->_currentLoc.x - 1 >= 0) {
+    validActions.push_back(Action::left);
+  }
+
+  // right: x+1
+  if (this->_currentLoc.x + 1 < this->_xDim) {
+    validActions.push_back(Action::right);
+  }
+
+  return validActions;
+}
+
+/**
  * Wrapper around _planFn which fills in the gaps from class members.
  */
 Action
 CoverageRobot::planNextAction(int time, std::shared_ptr<IMac> imac,
                               const std::vector<IMacObservation> &obsVector) {
-  return this->_planFn(this->_currentLoc, time, this->_timeBound, imac,
-                       this->_covered, obsVector);
+  return this->_planFn(this->_currentLoc, this->_getEnabledActions(), time,
+                       this->_timeBound, imac, this->_covered, obsVector);
 }
 
 /**

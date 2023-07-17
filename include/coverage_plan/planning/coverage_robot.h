@@ -52,6 +52,8 @@ struct ActionOutcome {
  * _currentLoc: The robot's current GridCell
  * _covered: A vector of locations covered by the robot
  * _timeBound: The maximum number of timesteps given to the robot
+ * _xDim: The x dimension of the map
+ * _yDim: The y dimension of the map
  * _bimac: The BIMac model the robot is learning
  * _planFn: A function which takes the robot's location, the timestep, the
  * timeBound, IMac instance, covered vector, and current observations, and
@@ -66,8 +68,11 @@ private:
   GridCell _currentLoc{};
   std::vector<GridCell> _covered{};
   int _timeBound{};
+  const int _xDim{};
+  const int _yDim{};
   std::shared_ptr<BIMac> _bimac{};
-  const std::function<Action(const GridCell &, int, int, std::shared_ptr<IMac>,
+  const std::function<Action(const GridCell &, const std::vector<Action> &, int,
+                             int, std::shared_ptr<IMac>,
                              const std::vector<GridCell> &,
                              const std::vector<IMacObservation> &)>
       _planFn{};
@@ -116,6 +121,13 @@ private:
   std::vector<BIMacObservation> _generateBIMacObservations(
       const std::vector<std::vector<IMacObservation>> &observations);
 
+  /**
+   * Returns a vector of actions that can be executed from the current location.
+   *
+   * @return enabled The enabled actions from the current location
+   */
+  std::vector<Action> _getEnabledActions();
+
 public:
   /**
    * Initialises all member variables.
@@ -134,17 +146,17 @@ public:
    */
   CoverageRobot(
       const GridCell &currentLoc, int timeBound, int xDim, int yDim,
-      const std::function<Action(const GridCell &, int, int,
-                                 std::shared_ptr<IMac>,
+      const std::function<Action(const GridCell &, const std::vector<Action> &,
+                                 int, int, std::shared_ptr<IMac>,
                                  const std::vector<GridCell> &,
                                  const std::vector<IMacObservation> &)> &planFn,
       const std::function<ActionOutcome(const GridCell &, const Action &)>
           &executeFn,
       const std::function<std::vector<IMacObservation>(const GridCell &)>
           &observeFn)
-      : _currentLoc{currentLoc}, _covered{}, _timeBound{timeBound},
-        _bimac{std::make_shared<BIMac>(xDim, yDim)}, _planFn{planFn},
-        _executeFn{executeFn}, _observeFn{observeFn} {}
+      : _currentLoc{currentLoc}, _covered{}, _timeBound{timeBound}, _xDim{xDim},
+        _yDim{yDim}, _bimac{std::make_shared<BIMac>(xDim, yDim)},
+        _planFn{planFn}, _executeFn{executeFn}, _observeFn{observeFn} {}
 
   /**
    * Wrapper around _planFn which fills in the gaps from class members.

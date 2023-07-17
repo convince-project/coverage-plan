@@ -31,35 +31,11 @@
  *
  * @return action The action to execute next
  */
-Action randomAction(const GridCell &currentLoc, int ts, int timeBound,
-                    std::shared_ptr<IMac> imac,
+Action randomAction(const GridCell &currentLoc,
+                    const std::vector<Action> &validActions, int ts,
+                    int timeBound, std::shared_ptr<IMac> imac,
                     const std::vector<GridCell> &covered,
                     const std::vector<IMacObservation> &obsVector) {
-
-  std::vector<Action> validActions{Action::wait};
-
-  // Used to check dimensions of map
-  Eigen::MatrixXd entryMat{imac->getEntryMatrix()};
-
-  // up: y-1
-  if (currentLoc.y - 1 >= 0) {
-    validActions.push_back(Action::up);
-  }
-
-  // down: y+1
-  if (currentLoc.y + 1 < entryMat.rows()) {
-    validActions.push_back(Action::down);
-  }
-
-  // left: x-1
-  if (currentLoc.x - 1 >= 0) {
-    validActions.push_back(Action::left);
-  }
-
-  // right: x+1
-  if (currentLoc.x + 1 < entryMat.cols()) {
-    validActions.push_back(Action::right);
-  }
 
   std::mt19937 gen{std::random_device{}()};
   std::uniform_int_distribution<> sampler{0, (int)validActions.size() - 1};
