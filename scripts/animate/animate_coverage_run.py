@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import csv
 import os
 
-FPS = 24
+FPS = 25
 TS_LEN = 10
 
 
@@ -213,6 +213,10 @@ def run_animation(x_len, y_len, covered_file, map_file, output_path=None):
         blit=False,
     )
 
+    plt.xlim([0, 10])
+    plt.ylim([0, 11])
+    plt.axis("off")
+
     if output_path is not None:
         anim.save(
             output_path,
@@ -223,9 +227,6 @@ def run_animation(x_len, y_len, covered_file, map_file, output_path=None):
             dpi=500,
         )
 
-    plt.xlim([0, 10])
-    plt.ylim([0, 11])
-    plt.axis("off")
     plt.show()
 
 
@@ -244,4 +245,5 @@ if __name__ == "__main__":
         y_len,
         covered_file,
         map_file,
+        "../../data/videos/randomCoverageRobotRunVideo.mp4",
     )
