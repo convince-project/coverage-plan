@@ -14,23 +14,115 @@
 #include <fstream>
 #include <vector>
 
+// Dummy subclasses of CoverageRobot so we can test it
+class TestCoverageRobotOne : public CoverageRobot {
+
+protected:
+  Action _planFn(const GridCell &currentLoc,
+                 const std::vector<Action> &enabledActions, int ts,
+                 int timeBound, std::shared_ptr<IMac> imac,
+                 const std::vector<GridCell> &covered,
+                 const std::vector<IMacObservation> &currentObs) {
+    return Action::up;
+  }
+
+  ActionOutcome _executeFn(const GridCell &currentLoc, const Action &action) {
+    return ActionOutcome{action, true, currentLoc};
+  }
+
+  std::vector<IMacObservation> _observeFn(const GridCell &currentLoc) {
+    return std::vector<IMacObservation>{IMacObservation{currentLoc, 1}};
+  }
+
+public:
+  TestCoverageRobotOne(const GridCell &currentLoc, int timeBound, int xDim,
+                       int yDim)
+      : CoverageRobot{currentLoc, timeBound, xDim, yDim} {}
+};
+
+class TestCoverageRobotTwo : public CoverageRobot {
+
+protected:
+  Action _planFn(const GridCell &currentLoc,
+                 const std::vector<Action> &enabledActions, int ts,
+                 int timeBound, std::shared_ptr<IMac> imac,
+                 const std::vector<GridCell> &covered,
+                 const std::vector<IMacObservation> &currentObs) {
+    return Action::up;
+  }
+
+  ActionOutcome _executeFn(const GridCell &currentLoc, const Action &action) {
+    return ActionOutcome{action, true,
+                         GridCell{currentLoc.x, currentLoc.y + 1}};
+  }
+
+  std::vector<IMacObservation> _observeFn(const GridCell &currentLoc) {
+    return std::vector<IMacObservation>{IMacObservation{currentLoc, 1}};
+  }
+
+public:
+  TestCoverageRobotTwo(const GridCell &currentLoc, int timeBound, int xDim,
+                       int yDim)
+      : CoverageRobot{currentLoc, timeBound, xDim, yDim} {}
+};
+
+class TestCoverageRobotThree : public CoverageRobot {
+
+protected:
+  Action _planFn(const GridCell &currentLoc,
+                 const std::vector<Action> &enabledActions, int ts,
+                 int timeBound, std::shared_ptr<IMac> imac,
+                 const std::vector<GridCell> &covered,
+                 const std::vector<IMacObservation> &currentObs) {
+    return Action::up;
+  }
+
+  ActionOutcome _executeFn(const GridCell &currentLoc, const Action &action) {
+    return ActionOutcome{action, true,
+                         GridCell{currentLoc.x, currentLoc.y + 1}};
+  }
+
+  std::vector<IMacObservation> _observeFn(const GridCell &currentLoc) {
+    return std::vector<IMacObservation>{IMacObservation{GridCell{1, 1}, 1}};
+  }
+
+public:
+  TestCoverageRobotThree(const GridCell &currentLoc, int timeBound, int xDim,
+                         int yDim)
+      : CoverageRobot{currentLoc, timeBound, xDim, yDim} {}
+};
+
+class TestCoverageRobotFour : public CoverageRobot {
+
+protected:
+  Action _planFn(const GridCell &currentLoc,
+                 const std::vector<Action> &enabledActions, int ts,
+                 int timeBound, std::shared_ptr<IMac> imac,
+                 const std::vector<GridCell> &covered,
+                 const std::vector<IMacObservation> &currentObs) {
+    return enabledActions.at(enabledActions.size() - 1);
+  }
+
+  ActionOutcome _executeFn(const GridCell &currentLoc, const Action &action) {
+    return ActionOutcome{action, true,
+                         GridCell{currentLoc.x, currentLoc.y + 1}};
+  }
+
+  std::vector<IMacObservation> _observeFn(const GridCell &currentLoc) {
+    return std::vector<IMacObservation>{IMacObservation{GridCell{1, 1}, 1}};
+  }
+
+public:
+  TestCoverageRobotFour(const GridCell &currentLoc, int timeBound, int xDim,
+                        int yDim)
+      : CoverageRobot{currentLoc, timeBound, xDim, yDim} {}
+};
+
 TEST_CASE("Tests for plan-execute-observe wrapper functions",
           "[plan-execute-observe]") {
 
-  auto planLambda{
-      [](const GridCell &cell, const std::vector<Action> &validActions,
-         int time, int timeBound, std::shared_ptr<IMac> imac,
-         const std::vector<GridCell> &covered,
-         const std::vector<IMacObservation> &obs) { return Action::up; }};
-  auto actLambda{[](const GridCell &cell, const Action &action) {
-    return ActionOutcome{action, true, cell};
-  }};
-  auto observeLambda{[](const GridCell &cell) {
-    return std::vector<IMacObservation>{IMacObservation{cell, 1}};
-  }};
-
-  std::unique_ptr<CoverageRobot> robot{std::make_unique<CoverageRobot>(
-      GridCell{2, 1}, 10, 5, 5, planLambda, actLambda, observeLambda)};
+  std::unique_ptr<TestCoverageRobotOne> robot{
+      std::make_unique<TestCoverageRobotOne>(GridCell{2, 1}, 10, 5, 5)};
 
   REQUIRE(robot->planNextAction(1, nullptr, std::vector<IMacObservation>{}) ==
           Action::up);
@@ -50,20 +142,8 @@ TEST_CASE("Tests for plan-execute-observe wrapper functions",
 
 TEST_CASE("Test for reset", "[resetForNextEpisode]") {
 
-  auto planLambda{
-      [](const GridCell &cell, const std::vector<Action> &validActions,
-         int time, int timeBound, std::shared_ptr<IMac> imac,
-         const std::vector<GridCell> &covered,
-         const std::vector<IMacObservation> &obs) { return Action::up; }};
-  auto actLambda{[](const GridCell &cell, const Action &action) {
-    return ActionOutcome{action, true, cell};
-  }};
-  auto observeLambda{[](const GridCell &cell) {
-    return std::vector<IMacObservation>{IMacObservation{cell, 1}};
-  }};
-
-  std::unique_ptr<CoverageRobot> robot{std::make_unique<CoverageRobot>(
-      GridCell{2, 1}, 0, 5, 5, planLambda, actLambda, observeLambda)};
+  std::unique_ptr<TestCoverageRobotOne> robot{
+      std::make_unique<TestCoverageRobotOne>(GridCell{2, 1}, 0, 5, 5)};
 
   robot->runCoverageEpisode("/tmp/resetTestOne.csv");
 
@@ -100,20 +180,8 @@ TEST_CASE("Test for reset", "[resetForNextEpisode]") {
 
 TEST_CASE("Test for logCoveredLocations", "[logCoveredLocations]") {
 
-  auto planLambda{
-      [](const GridCell &cell, const std::vector<Action> &validActions,
-         int time, int timeBound, std::shared_ptr<IMac> imac,
-         const std::vector<GridCell> &covered,
-         const std::vector<IMacObservation> &obs) { return Action::up; }};
-  auto actLambda{[](const GridCell &cell, const Action &action) {
-    return ActionOutcome{action, true, GridCell{cell.x, cell.y + 1}};
-  }};
-  auto observeLambda{[](const GridCell &cell) {
-    return std::vector<IMacObservation>{IMacObservation{cell, 1}};
-  }};
-
-  std::unique_ptr<CoverageRobot> robot{std::make_unique<CoverageRobot>(
-      GridCell{2, 1}, 10, 5, 5, planLambda, actLambda, observeLambda)};
+  std::unique_ptr<TestCoverageRobotTwo> robot{
+      std::make_unique<TestCoverageRobotTwo>(GridCell{2, 1}, 10, 5, 5)};
 
   robot->runCoverageEpisode("/tmp/logTest.csv");
 
@@ -133,20 +201,9 @@ TEST_CASE("Test for logCoveredLocations", "[logCoveredLocations]") {
 }
 
 TEST_CASE("Test for runCoverageEpisode", "[runCoverageEpisode]") {
-  auto planLambda{
-      [](const GridCell &cell, const std::vector<Action> &validActions,
-         int time, int timeBound, std::shared_ptr<IMac> imac,
-         const std::vector<GridCell> &covered,
-         const std::vector<IMacObservation> &obs) { return Action::up; }};
-  auto actLambda{[](const GridCell &cell, const Action &action) {
-    return ActionOutcome{action, true, GridCell{cell.x, cell.y + 1}};
-  }};
-  auto observeLambda{[](const GridCell &cell) {
-    return std::vector<IMacObservation>{IMacObservation{GridCell{1, 1}, 1}};
-  }};
 
-  std::unique_ptr<CoverageRobot> robot{std::make_unique<CoverageRobot>(
-      GridCell{2, 1}, 10, 5, 5, planLambda, actLambda, observeLambda)};
+  std::unique_ptr<TestCoverageRobotThree> robot{
+      std::make_unique<TestCoverageRobotThree>(GridCell{2, 1}, 10, 5, 5)};
 
   robot->runCoverageEpisode("/tmp/runEpisodeTest.csv");
   // Test log has got everything in the right order
@@ -185,29 +242,16 @@ TEST_CASE("Test for runCoverageEpisode", "[runCoverageEpisode]") {
 }
 
 TEST_CASE("Tests for _getEnabledActions function", "[getEnabledActions]") {
-  auto planLambda{[](const GridCell &cell,
-                     const std::vector<Action> &validActions, int time,
-                     int timeBound, std::shared_ptr<IMac> imac,
-                     const std::vector<GridCell> &covered,
-                     const std::vector<IMacObservation> &obs) {
-    return validActions.at(validActions.size() - 1);
-  }};
-  auto actLambda{[](const GridCell &cell, const Action &action) {
-    return ActionOutcome{action, true, GridCell{cell.x, cell.y + 1}};
-  }};
-  auto observeLambda{[](const GridCell &cell) {
-    return std::vector<IMacObservation>{IMacObservation{GridCell{1, 1}, 1}};
-  }};
 
-  std::unique_ptr<CoverageRobot> robot{std::make_unique<CoverageRobot>(
-      GridCell{0, 0}, 10, 1, 1, planLambda, actLambda, observeLambda)};
+  std::unique_ptr<TestCoverageRobotFour> robot{
+      std::make_unique<TestCoverageRobotFour>(GridCell{0, 0}, 10, 1, 1)};
 
   REQUIRE(robot->planNextAction(0, robot->getBIMac()->posteriorMean(),
                                 std::vector<IMacObservation>{}) ==
           Action::wait);
 
-  std::unique_ptr<CoverageRobot> robotTwo{std::make_unique<CoverageRobot>(
-      GridCell{0, 0}, 10, 2, 1, planLambda, actLambda, observeLambda)};
+  std::unique_ptr<TestCoverageRobotFour> robotTwo{
+      std::make_unique<TestCoverageRobotFour>(GridCell{0, 0}, 10, 2, 1)};
 
   REQUIRE(robotTwo->planNextAction(0, robotTwo->getBIMac()->posteriorMean(),
                                    std::vector<IMacObservation>{}) ==

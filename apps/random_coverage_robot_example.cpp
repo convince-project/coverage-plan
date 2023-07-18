@@ -7,133 +7,13 @@
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
-#include "coverage_plan/planning/action.h"
-#include "coverage_plan/planning/coverage_robot.h"
+#include "coverage_plan/planning/random_coverage_robot.h"
 #include <Eigen/Dense>
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <memory>
 #include <random>
-#include <tuple>
-#include <vector>
-
-/**
- * Synthesises a random valid action for the coverage robot.
- * Recall that x goes from left to right, y from top to bottom.
- *
- * @param currentLoc The robot's current location
- * @param ts The current timestep
- * @param timeBound The time bound for planning
- * @param imac The IMac instance
- * @param covered The covered nodes
- * @param obsVector The current set of observations
- *
- * @return action The action to execute next
- */
-Action randomAction(const GridCell &currentLoc,
-                    const std::vector<Action> &validActions, int ts,
-                    int timeBound, std::shared_ptr<IMac> imac,
-                    const std::vector<GridCell> &covered,
-                    const std::vector<IMacObservation> &obsVector) {
-
-  std::mt19937 gen{std::random_device{}()};
-  std::uniform_int_distribution<> sampler{0, (int)validActions.size() - 1};
-
-  return validActions.at(sampler(gen));
-}
-
-/**
- * Prints the current transition in the example run.
- *
- * @param startLoc where did the robot start the transition?
- * @param outcome The action outcome
- */
-void printCurrentTransition(const GridCell &startLoc,
-                            const ActionOutcome &outcome) {
-  std::cout << std::boolalpha;
-  std::cout << "STATE: (" << startLoc.x << ',' << startLoc.y << "); ACTION: ";
-  switch (outcome.action) {
-  case Action::up:
-    std::cout << "up";
-    break;
-  case Action::down:
-    std::cout << "down";
-    break;
-  case Action::left:
-    std::cout << "left";
-    break;
-  case Action::right:
-    std::cout << "right";
-    break;
-  case Action::wait:
-    std::cout << "wait";
-    break;
-  }
-
-  std::cout << "; SUCCESS: " << outcome.success << "; SUCCESSOR: (";
-  std::cout << outcome.location.x << ',' << outcome.location.y << ")\n";
-}
-
-/**
- * The action execution function.
- * Just applies the action to the grid and checks the outcome.
- *
- * @param executor The IMac executor
- * @param currentLoc The robot's current location
- * @param action The robot's action to execute
- *
- * @return outcome The ActionOutcome object describing the outcome
- */
-ActionOutcome execute(IMacExecutor &executor, const GridCell &currentLoc,
-                      const Action &action) {
-  // Apply action
-  GridCell nextLoc{applySuccessfulAction(currentLoc, action)};
-
-  // Unroll the next IMac state here so we can check occlusion
-  Eigen::MatrixXi nextState{
-      executor.updateState(std::vector<IMacObservation>{})};
-
-  bool succ{true};
-  // Check for action failure (note flipped x and y)
-  if (nextState(nextLoc.y, nextLoc.x) == 1 && action != Action::wait) {
-    succ = false;
-    nextLoc.x = currentLoc.x;
-    nextLoc.y = currentLoc.y;
-  }
-
-  ActionOutcome outcome{action, succ, nextLoc};
-  printCurrentTransition(currentLoc, outcome);
-
-  return outcome;
-}
-
-/**
- * Dummy observation function which returns an empty vector.
- *
- * @param currentLoc The robot's current location
- */
-std::vector<IMacObservation> observe(const GridCell &currentLoc) {
-  return std::vector<IMacObservation>{};
-}
-
-/**
- * Creates the robot, wrapping the execute function to handle the internals.
- *
- * @param executor The IMac executor
- *
- * @return robot A pointer to a CoverageRobot object
- */
-std::shared_ptr<CoverageRobot> createRobot(IMacExecutor &executor) {
-
-  // Pass in by reference but match CoverageRobot type definition
-  auto executeLambda{[&](const GridCell &currentLoc, const Action &action) {
-    return execute(executor, currentLoc, action);
-  }};
-  return std::make_shared<CoverageRobot>(GridCell{5, 5}, 100, 10, 10,
-                                         randomAction, executeLambda, observe);
-}
 
 /**
  * Create a random IMac instance for this example.
@@ -192,7 +72,9 @@ int main() {
   std::shared_ptr<IMacExecutor> executor{
       std::make_shared<IMacExecutor>(createIMac())};
 
-  std::shared_ptr<CoverageRobot> coverageRobot{createRobot(*executor)};
+  std::shared_ptr<RandomCoverageRobot> coverageRobot{
+      std::make_shared<RandomCoverageRobot>(GridCell{5, 5}, 100, 10, 10,
+                                            executor)};
 
   // Initial IMac state
   Eigen::MatrixXi initState{executor->restart()};

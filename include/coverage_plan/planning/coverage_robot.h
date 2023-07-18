@@ -34,13 +34,6 @@
  * _xDim: The x dimension of the map
  * _yDim: The y dimension of the map
  * _bimac: The BIMac model the robot is learning
- * _planFn: A function which takes the robot's location, the timestep, the
- * timeBound, IMac instance, covered vector, and current observations, and
- * returns an action
- * _executeFn: A function which takes the robot's current location and action
- * and returns an ActionOutcome
- * _observeFn: A function which takes the robot's
- * current location and returns a vector of IMacObservations
  */
 class CoverageRobot {
 private:
@@ -50,15 +43,6 @@ private:
   const int _xDim{};
   const int _yDim{};
   std::shared_ptr<BIMac> _bimac{};
-  const std::function<Action(const GridCell &, const std::vector<Action> &, int,
-                             int, std::shared_ptr<IMac>,
-                             const std::vector<GridCell> &,
-                             const std::vector<IMacObservation> &)>
-      _planFn{};
-  const std::function<ActionOutcome(const GridCell &, const Action &)>
-      _executeFn{};
-  const std::function<std::vector<IMacObservation>(const GridCell &)>
-      _observeFn{};
 
   /**
    * Function gets the IMac instance to be used for an episode.
@@ -107,6 +91,55 @@ private:
    */
   std::vector<Action> _getEnabledActions();
 
+protected:
+  // Pure virtual functions making CoverageRobot an abstract base class
+
+  /**
+   * Internal function which generates the next action to be executed.
+   *
+   * Wrapped around by planNextAction, which passes in the parameters.
+   *
+   * @param currentLoc The robot's current location
+   * @param enabledActions A vector of enabled actions in this state
+   * @param ts The current timestep
+   * @param timeBound The time bound
+   * @param imac The current IMac instance
+   * @param covered The vector of covered locations
+   * @param currentObs The most recent observations
+   *
+   * @return nextAction The next action to be executed
+   */
+  virtual Action _planFn(const GridCell &currentLoc,
+                         const std::vector<Action> &enabledActions, int ts,
+                         int timeBound, std::shared_ptr<IMac> imac,
+                         const std::vector<GridCell> &covered,
+                         const std::vector<IMacObservation> &currentObs) = 0;
+
+  /**
+   * Internal function for executing actions.
+   *
+   * Wrapped around by executeAction, which passes in parameters.
+   *
+   * @param currentLoc The robot's current location
+   * @param action The action to execute
+   *
+   * @return outcome The outcome of the action
+   */
+  virtual ActionOutcome _executeFn(const GridCell &currentLoc,
+                                   const Action &action) = 0;
+
+  /**
+   * Internal function for making observations.
+   *
+   * Wrapped around by makeObservations, which passes in parameters.
+   *
+   * @param currentLoc The robot's current location
+   *
+   * @return obsVector A vector of observations
+   */
+  virtual std::vector<IMacObservation>
+  _observeFn(const GridCell &currentLoc) = 0;
+
 public:
   /**
    * Initialises all member variables.
@@ -115,27 +148,10 @@ public:
    * @param timeBound: The maximum number of timesteps given to the robot
    * @param xDim The length of the x dimension of the environment
    * @param yDim The length of the y dimension of the environment
-   * @param planFn: A function which takes the robot's location, the timestep,
-   * the timeBound, IMac instance, covered vector, and current observations, and
-   * returns an action
-   * @param executeFn: A function which takes the robot's current location and
-   * action and returns an ActionOutcome
-   * @param observeFn: A function which takes the robot's current location and
-   * returns a vector of IMacObservations
    */
-  CoverageRobot(
-      const GridCell &currentLoc, int timeBound, int xDim, int yDim,
-      const std::function<Action(const GridCell &, const std::vector<Action> &,
-                                 int, int, std::shared_ptr<IMac>,
-                                 const std::vector<GridCell> &,
-                                 const std::vector<IMacObservation> &)> &planFn,
-      const std::function<ActionOutcome(const GridCell &, const Action &)>
-          &executeFn,
-      const std::function<std::vector<IMacObservation>(const GridCell &)>
-          &observeFn)
+  CoverageRobot(const GridCell &currentLoc, int timeBound, int xDim, int yDim)
       : _currentLoc{currentLoc}, _covered{}, _timeBound{timeBound}, _xDim{xDim},
-        _yDim{yDim}, _bimac{std::make_shared<BIMac>(xDim, yDim)},
-        _planFn{planFn}, _executeFn{executeFn}, _observeFn{observeFn} {}
+        _yDim{yDim}, _bimac{std::make_shared<BIMac>(xDim, yDim)} {}
 
   /**
    * Wrapper around _planFn which fills in the gaps from class members.
