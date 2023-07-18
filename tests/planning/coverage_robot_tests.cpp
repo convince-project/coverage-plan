@@ -17,7 +17,7 @@
 // Dummy subclasses of CoverageRobot so we can test it
 class TestCoverageRobotOne : public CoverageRobot {
 
-protected:
+private:
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,
                  int timeBound, std::shared_ptr<IMac> imac,
@@ -42,7 +42,7 @@ public:
 
 class TestCoverageRobotTwo : public CoverageRobot {
 
-protected:
+private:
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,
                  int timeBound, std::shared_ptr<IMac> imac,
@@ -68,7 +68,7 @@ public:
 
 class TestCoverageRobotThree : public CoverageRobot {
 
-protected:
+private:
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,
                  int timeBound, std::shared_ptr<IMac> imac,
@@ -94,7 +94,7 @@ public:
 
 class TestCoverageRobotFour : public CoverageRobot {
 
-protected:
+private:
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,
                  int timeBound, std::shared_ptr<IMac> imac,

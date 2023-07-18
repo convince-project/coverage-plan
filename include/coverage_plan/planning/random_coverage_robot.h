@@ -11,7 +11,7 @@
 #include "coverage_plan/planning/coverage_robot.h"
 
 /**
- * A class for a random coverage robot.
+ * A class for a random coverage robot, i.e. the robot moves randomly.
  *
  * Members:
  * As in superclass, plus:
@@ -73,7 +73,7 @@ private:
 
 public:
   /**
-   * Constructor calls super constructor and initialises _world
+   * Constructor calls super constructor and initialises _world.
    *
    * @param currentLoc The robot's current location
    * @param timeBound The planning time bound

@@ -68,16 +68,15 @@ std::shared_ptr<IMac> createIMac() {
 int main() {
 
   // Create the IMac Executor
-  // Allocating on heap but then just using reference to object
   std::shared_ptr<IMacExecutor> executor{
       std::make_shared<IMacExecutor>(createIMac())};
+
+  // Initial IMac state
+  Eigen::MatrixXi initState{executor->restart()};
 
   std::shared_ptr<RandomCoverageRobot> coverageRobot{
       std::make_shared<RandomCoverageRobot>(GridCell{5, 5}, 100, 10, 10,
                                             executor)};
-
-  // Initial IMac state
-  Eigen::MatrixXi initState{executor->restart()};
 
   // Start example
   coverageRobot->runCoverageEpisode(
