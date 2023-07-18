@@ -1,0 +1,98 @@
+/**
+ * Tests for the RandomCoverageRobot class.
+ *
+ * @author Charlie Street
+ */
+
+#include "coverage_plan/mod/imac_executor.h"
+#include "coverage_plan/planning/action.h"
+#include "coverage_plan/planning/random_coverage_robot.h"
+#include <Eigen/Dense>
+#include <catch2/catch.hpp>
+#include <memory>
+#include <vector>
+
+TEST_CASE("Tests for RandomCoverageRobot planNextAction",
+          "[RandomCoverageRobot-planNextAction]") {
+  std::unique_ptr<RandomCoverageRobot> robot{
+      std::make_unique<RandomCoverageRobot>(GridCell{0, 0}, 2, 1, 1, nullptr)};
+
+  Action action{
+      robot->planNextAction(1, nullptr, std::vector<IMacObservation>{})};
+
+  // Can't do much more than this
+  REQUIRE(action == Action::wait);
+}
+
+TEST_CASE("Tests for RandomCoverageRobot executeAction with failure",
+          "[RandomCoverageRobot-executeAction-fail]") {
+
+  Eigen::MatrixXd entry{1, 2};
+  entry(0, 0) = 0;
+  entry(0, 1) = 1;
+
+  Eigen::MatrixXd exit{1, 2};
+  exit(0, 0) = 1;
+  exit(0, 1) = 0;
+
+  Eigen::MatrixXd init{1, 2};
+  init(0, 0) = 0;
+  init(0, 1) = 1;
+
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(entry, exit, init)};
+  std::shared_ptr<IMacExecutor> exec{std::make_shared<IMacExecutor>(imac)};
+  exec->restart();
+
+  std::unique_ptr<RandomCoverageRobot> robot{
+      std::make_unique<RandomCoverageRobot>(GridCell{0, 0}, 2, 2, 1, exec)};
+
+  ActionOutcome outcome{robot->executeAction(Action::right)};
+
+  // Always empty
+  REQUIRE(outcome.action == Action::right);
+  REQUIRE(outcome.success == false);
+  REQUIRE(outcome.location.x == 0);
+  REQUIRE(outcome.location.y == 0);
+}
+
+TEST_CASE("Tests for RandomCoverageRobot executeAction with success",
+          "[RandomCoverageRobot-executeAction-succeed]") {
+
+  Eigen::MatrixXd entry{1, 2};
+  entry(0, 0) = 0;
+  entry(0, 1) = 0;
+
+  Eigen::MatrixXd exit{1, 2};
+  exit(0, 0) = 1;
+  exit(0, 1) = 1;
+
+  Eigen::MatrixXd init{1, 2};
+  init(0, 0) = 0;
+  init(0, 1) = 0;
+
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(entry, exit, init)};
+  std::shared_ptr<IMacExecutor> exec{std::make_shared<IMacExecutor>(imac)};
+  exec->restart();
+
+  std::unique_ptr<RandomCoverageRobot> robot{
+      std::make_unique<RandomCoverageRobot>(GridCell{0, 0}, 2, 2, 1, exec)};
+
+  ActionOutcome outcome{robot->executeAction(Action::right)};
+
+  // Always empty
+  REQUIRE(outcome.action == Action::right);
+  REQUIRE(outcome.success == true);
+  REQUIRE(outcome.location.x == 1);
+  REQUIRE(outcome.location.y == 0);
+}
+
+TEST_CASE("Tests for RandomCoverageRobot makeObservations",
+          "[RandomCoverageRobot-makeObservations]") {
+  std::unique_ptr<RandomCoverageRobot> robot{
+      std::make_unique<RandomCoverageRobot>(GridCell{0, 0}, 2, 1, 1, nullptr)};
+
+  std::vector<IMacObservation> obsVector{robot->makeObservations()};
+
+  // Always empty
+  REQUIRE(obsVector.size() == 0);
+}
