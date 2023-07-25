@@ -11,3 +11,4 @@ add_library(planning STATIC planning/action.cpp
 target_include_directories(planning PUBLIC ../include)
 target_link_libraries(planning PUBLIC mod)
 target_link_libraries(planning PUBLIC Eigen3::Eigen)
+target_link_libraries(planning PUBLIC despot)

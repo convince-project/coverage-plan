@@ -8,6 +8,7 @@ project(CoveragePlan VERSION 1.0
 find_package(Boost 1.82 REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(Catch2 REQUIRED)
+find_package(Despot CONFIG REQUIRED)
 
 # Add the subdirectories
 add_subdirectory(src)
