@@ -22,9 +22,11 @@
  */
 class CoveragePOMDP : public despot::DSPOMDP {
 private:
-  mutable despot::MemoryPool<CoverageState> _memory_pool;
+  mutable despot::MemoryPool<CoverageState> _memory_pool{};
 
 public:
+  // TODO: Constructor
+
   /**
    * The deterministic simulative model for the POMDP.
    * Avoids enumerating the whole POMDP, which is huge.
