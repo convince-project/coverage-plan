@@ -15,16 +15,6 @@
 enum class Action { up, down, left, right, wait };
 
 /**
- * Applies a successful action to a grid cell to get the new location.
- *
- * @param cell The current grid cell
- * @param action The action to be executed
- *
- * @return nextCell The new location
- */
-GridCell applySuccessfulAction(const GridCell &cell, const Action &action);
-
-/**
  * Struct for storing action outcomes.
  *
  * Action outcome contains action success/failure flag, the successor
@@ -40,5 +30,38 @@ struct ActionOutcome {
   bool success{};
   GridCell location{};
 };
+
+namespace ActionHelpers {
+/**
+ * Applies a successful action to a grid cell to get the new location.
+ *
+ * @param cell The current grid cell
+ * @param action The action to be executed
+ *
+ * @return nextCell The new location
+ */
+GridCell applySuccessfulAction(const GridCell &cell, const Action &action);
+
+/**
+ * Converts an action into an int.
+ *
+ * @param action The action to convert to an int
+ *
+ * @return actionNum The action as an int
+ */
+int toInt(const Action &action);
+
+/**
+ * Converts an int into an action.
+ *
+ * @param num The number to convert
+ *
+ * @return action The correponding action
+ *
+ * @exception badNum Raised if an invalid integer passed in
+ */
+Action fromInt(const int &num);
+
+} // namespace ActionHelpers
 
 #endif

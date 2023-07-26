@@ -68,7 +68,7 @@ RandomCoverageRobot::_planFn(const GridCell &currentLoc,
 ActionOutcome RandomCoverageRobot::_executeFn(const GridCell &currentLoc,
                                               const Action &action) {
   // Apply action
-  GridCell nextLoc{applySuccessfulAction(currentLoc, action)};
+  GridCell nextLoc{ActionHelpers::applySuccessfulAction(currentLoc, action)};
 
   // Unroll the next IMac state here so we can check occlusion
   Eigen::MatrixXi nextState{

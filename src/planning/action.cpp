@@ -8,6 +8,8 @@
 #include "coverage_plan/planning/action.h"
 #include "coverage_plan/mod/grid_cell.h"
 
+// Implementing functions in ActionHelpers namespace
+namespace ActionHelpers {
 /**
  * Applies a successful action to a grid cell to get the new location.
  */
@@ -27,3 +29,44 @@ GridCell applySuccessfulAction(const GridCell &cell, const Action &action) {
     return cell;
   }
 }
+
+/**
+ * Converts an action into an int.
+ */
+int toInt(const Action &action) {
+  switch (action) {
+  case Action::up:
+    return 0;
+  case Action::down:
+    return 1;
+  case Action::left:
+    return 2;
+  case Action::right:
+    return 3;
+  case Action::wait:
+    return 4;
+  default: // Can never happen, but will shut compiler up
+    return -1;
+  }
+}
+
+/**
+ * Converts an int into an action.
+ */
+Action fromInt(const int &num) {
+  switch (num) {
+  case 0:
+    return Action::up;
+  case 1:
+    return Action::down;
+  case 2:
+    return Action::left;
+  case 3:
+    return Action::right;
+  case 4:
+    return Action::wait;
+  default:
+    throw "Actions can only take integers in [0-4]";
+  }
+}
+} // namespace ActionHelpers
