@@ -4,7 +4,8 @@ add_executable(unitTests mod/imac_tests.cpp
                          mod/grid_cell_tests.cpp
                          planning/action_tests.cpp
                          planning/coverage_robot_tests.cpp
-                         planning/random_coverage_robot_tests.cpp)
+                         planning/random_coverage_robot_tests.cpp
+                         planning/coverage_state_tests.cpp)
 target_link_libraries(unitTests PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(unitTests PUBLIC mod)
 target_link_libraries(unitTests PUBLIC planning)
