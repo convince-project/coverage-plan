@@ -7,6 +7,7 @@
 #include "coverage_plan/planning/coverage_pomdp.h"
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/planning/action.h"
+#include "coverage_plan/planning/coverage_observation.h"
 #include "coverage_plan/planning/coverage_state.h"
 #include <despot/interface/pomdp.h>
 #include <iostream>
@@ -21,7 +22,43 @@
  */
 int CoveragePOMDP::NumActions() const { return 5; }
 
-// TODO: ObsProb
+/**
+ * Return the probability of observing obs given we took action and reached
+ * state.
+ */
+double CoveragePOMDP::ObsProb(despot::OBS_TYPE obs, const despot::State &state,
+                              despot::ACT_TYPE action) const {
+
+  // TODO: Get FOV in here somehow
+  // Don't need action success marker here, just the obs vector
+  std::vector<IMacObservation> obsVec{
+      std::get<0>(Observation::fromObsType(obs, this->_fov))};
+
+  const CoverageState &coverageState{static_cast<const CoverageState &>(state)};
+
+  // If one cell doesn't match, we return 0.0. If all good, we return 1.0
+  for (const IMacObservation &imacObs : obsVec) {
+
+    // Recall grid cells in obsVec are relative to robot's pos
+    int x{coverageState.robot_position.x + imacObs.cell.x};
+    int y{coverageState.robot_position.y + imacObs.cell.y};
+
+    if (x < 0 or x >= coverageState.map.cols() or y < 0 or
+        y >= coverageState.map.rows()) {
+      // Out of bounds location should always be marked as occupied
+      if (!imacObs.occupied) {
+        return 0.0;
+      }
+    } else {
+      // coverageState.map has to be indexed (y,x)
+      if (coverageState.map(y, x) != imacObs.occupied) {
+        return 0.0;
+      }
+    }
+  }
+
+  return 1.0;
+}
 
 // TODO: InitialBelief
 

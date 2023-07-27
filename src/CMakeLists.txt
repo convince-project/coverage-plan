@@ -9,7 +9,7 @@ add_library(planning STATIC planning/action.cpp
                             planning/coverage_robot.cpp 
                             planning/random_coverage_robot.cpp
                             planning/coverage_state.cpp
-                            planning/coverage_observation.h)
+                            planning/coverage_observation.cpp)
 target_include_directories(planning PUBLIC ../include)
 target_link_libraries(planning PUBLIC mod)
 target_link_libraries(planning PUBLIC Eigen3::Eigen)

@@ -9,6 +9,7 @@
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac_executor.h"
 #include "coverage_plan/planning/action.h"
+#include <cmath>
 #include <despot/core/globals.h>
 #include <tuple>
 #include <vector>
@@ -34,7 +35,7 @@ Observation::fromObsType(const despot::OBS_TYPE &obsInt,
   // Shift so bit of interest is rightmost. Then do a modulo check for 0 or 1
   for (int i{0}; i < fovLength; ++i) {
     obsVector.push_back(
-        IMacObservation{fov.at(i), (obsInt >> ((fovLength - 1) + i)) % 2 != 0});
+        IMacObservation{fov.at(i), (int)(obsInt >> ((fovLength - 1) - i)) % 2});
   }
 
   return std::make_pair(obsVector, actSuccess);
@@ -51,6 +52,19 @@ Observation::toObsType(const std::vector<IMacObservation> &obsVector,
     throw "FOV too big for uint64_t representation.";
   }
 
-  // TODO: Fill in
-  return 0;
+  int bitVal{(int)pow(2, obsVector.size())};
+
+  // Convert bool to int
+  despot::OBS_TYPE obsInt{(despot::OBS_TYPE)(((int)outcome.success) * bitVal)};
+
+  // Continuously right shift the bitVal by 1 (i.e. divide by 2)
+  bitVal = bitVal >> 1;
+
+  // Assume same ordering as in obsVector
+  for (const IMacObservation &imacObs : obsVector) {
+    obsInt += imacObs.occupied * bitVal;
+    bitVal = bitVal >> 1;
+  }
+
+  return obsInt;
 }
