@@ -75,41 +75,7 @@ double CoveragePOMDP::GetMaxReward() const { return 1.0; }
 
 void CoveragePOMDP::PrintState(const despot::State &state,
                                std::ostream &out = std::cout) const {
-  const CoverageState &coverageState{static_cast<const CoverageState &>(state)};
-  // Convert to set for quicker lookup
-  std::set<GridCell> coveredSet{};
-  std::copy(coverageState.covered.begin(), coverageState.covered.end(),
-            std::inserter(coveredSet, coveredSet.end()));
-
-  // Print out timestep and coverage %
-  out << "Time: " << coverageState.time;
-  out << "; Coverage: "
-      << ((double)coverageState.covered.size()) /
-             ((double)coverageState.map.size())
-      << "%\n";
-
-  // Print out map using the flipping convention of the map
-  for (int x{0}; x < coverageState.map.cols(); ++x) {
-    for (int y{0}; y < coverageState.map.rows(); ++y) {
-      // Print covered cells in green
-      if (coveredSet.find(GridCell{x, y}) != coveredSet.end()) {
-        out << "\032[1;31m";
-      } else {
-        out << "\033[1;0m";
-      }
-
-      // Robot is R, occupied is X, free is -
-      if (coverageState.robot_position.x == x &&
-          coverageState.robot_position.y == y) {
-        out << "R ";
-      } else if (coverageState.map(y, x) == 1) {
-        out << "X ";
-      } else {
-        out << "- ";
-      }
-    }
-    out << '\n';
-  }
+  out << state.text();
 }
 
 /**
@@ -199,7 +165,13 @@ void CoveragePOMDP::PrintAction(despot::ACT_TYPE action,
   }
 }
 
-// TODO: PrintBelief
+/**
+ * Prints a belief.
+ */
+void CoveragePOMDP::PrintBelief(const despot::Belief &belief,
+                                std::ostream &out = std::cout) const {
+  out << belief.text();
+}
 
 /**
  * Allocate a state using the memory pool.
