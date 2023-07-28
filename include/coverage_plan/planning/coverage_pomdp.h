@@ -12,20 +12,32 @@
 
 #include "coverage_plan/planning/coverage_state.h"
 #include <despot/interface/pomdp.h>
+#include <despot/util/memorypool.h>
 #include <string>
+#include <vector>
 
 /**
  * POMDP model for coverage planning problems under spatio temporal uncertainty.
  *
  * Members:
  * _memory_pool: A memory pool for allocating CoverageStates
+ * _fov: A vector of GridCells relative to the robot's position which capture
+ * its FOV.
  */
 class CoveragePOMDP : public despot::DSPOMDP {
 private:
   mutable despot::MemoryPool<CoverageState> _memory_pool{};
+  const std::vector<GridCell> _fov{};
 
 public:
-  // TODO: Constructor
+  /**
+   * Constructor initialises members.
+   *
+   * @param fov The robot's field of view as a vector of grid cells relative to
+   * the robot's position
+   */
+  CoveragePOMDP(const std::vector<GridCell> &fov)
+      : despot::DSPOMDP{}, _fov{fov} {}
 
   /**
    * The deterministic simulative model for the POMDP.
@@ -33,13 +45,13 @@ public:
    *
    * @param state The current state of the system (assumed known). Should be
    * updated with the successor state
-   * @param random_num A single random number which should dictate the successor
-   * state and observation
+   * @param random_num A single random number which should dictate the
+   * successor state and observation
    * @param action The action to be executed
    * @param reward The reward value. Should be updated with current step's
    * reward
-   * @param obs The current observation. Should be updated with current step's
-   * observation
+   * @param obs The current observation. Should be updated with current
+   * step's observation
    *
    * @return terminal True if the successor state is a terminal state
    */

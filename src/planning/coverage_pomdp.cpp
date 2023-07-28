@@ -11,6 +11,7 @@
 #include "coverage_plan/planning/coverage_state.h"
 #include <despot/interface/pomdp.h>
 #include <iostream>
+#include <map>
 #include <set>
 
 // TODO: Step
@@ -111,7 +112,65 @@ void CoveragePOMDP::PrintState(const despot::State &state,
   }
 }
 
-// TODO: PrintObs
+/**
+ * Prints an observation.
+ */
+void CoveragePOMDP::PrintObs(const despot::State &state, despot::OBS_TYPE obs,
+                             std::ostream &out = std::cout) const {
+  std::pair<std::vector<IMacObservation>, bool> obsInfo{
+      Observation::fromObsType(obs, this->_fov)};
+
+  // Print action success info
+  if (std::get<1>(obsInfo)) {
+    out << "Action Successful; Observation:\n";
+  } else {
+    out << "Action Failed; Observation:\n";
+  }
+
+  const CoverageState &coverageState{static_cast<const CoverageState &>(state)};
+  int minX{coverageState.map.cols()};
+  int maxX{-1 * coverageState.map.cols()};
+  int minY{coverageState.map.rows()};
+  int maxY{-1 * coverageState.map.rows()};
+
+  std::map<GridCell, bool> obsMap{};
+
+  // Get the range we have to print over
+  for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
+    obsMap[imacObs.cell] = (imacObs.occupied == 1);
+    if (imacObs.cell.x < minX) {
+      minX = imacObs.cell.x;
+    }
+    if (imacObs.cell.x > maxX) {
+      maxX = imacObs.cell.x;
+    }
+
+    if (imacObs.cell.y < minY) {
+      minY = imacObs.cell.y;
+    }
+    if (imacObs.cell.y > maxY) {
+      maxY = imacObs.cell.y;
+    }
+  }
+
+  // Print the observation as a grid
+  for (int x{minX}; x <= maxX; ++x) {
+    for (int y{minY}; y <= maxY; ++y) {
+      if (x == 0 && y == 0) {
+        out << "R "; // The robot
+      } else if (obsMap.find(GridCell{x, y}) != obsMap.end()) {
+        if (obsMap[GridCell{x, y}]) {
+          out << "X "; // Occupied
+        } else {
+          out << "- "; // Free
+        }
+      } else {
+        out << "? "; // Unobserved cells
+      }
+    }
+    out << "\n";
+  }
+}
 
 /**
  * Prints an action.
