@@ -28,6 +28,8 @@
  * _covered: The locations covered by the robot
  * _mapBelief: A distribution over the occupancy map
  * _imac: The IMac model
+ * _fov: The robot's FOV represented as a vector of GridCells relative to the
+ * robot's position
  */
 class CoverageBelief : public despot::Belief {
 
@@ -37,22 +39,26 @@ private:
   std::vector<GridCell> _covered{};
   Eigen::MatrixXd _mapBelief{};
   std::shared_ptr<IMac> _imac{};
+  const std::vector<GridCell> _fov{};
 
 public:
   /**
    * Initialise all attributes (call superclass constructor with nullptr).
    *
+   * @param model The POMDP model containing the memory pool
    * @param initPos The robot's initial position
    * @param initTime The initial time
    * @param initCovered The initially covered vertices
    * @param initBelief The initial map belief
    * @param imac The IMac model used for planning
+   * @param fov The robot's FOV as a vector of relative grid cells
    */
-  CoverageBelief(const GridCell &initPos, const int &initTime,
-                 const std::vector<GridCell> &initCovered,
-                 const Eigen::MatrixXd &initBelief, std::shared_ptr<IMac> imac)
-      : Belief{nullptr}, _robotPosition{initPos}, _time{initTime},
-        _covered{initCovered}, _mapBelief{initBelief}, _imac{imac} {}
+  CoverageBelief(const despot::DSPOMDP *model, const GridCell &initPos,
+                 const int &initTime, const std::vector<GridCell> &initCovered,
+                 const Eigen::MatrixXd &initBelief, std::shared_ptr<IMac> imac,
+                 const std::vector<GridCell> &fov)
+      : Belief{model}, _robotPosition{initPos}, _time{initTime},
+        _covered{initCovered}, _mapBelief{initBelief}, _imac{imac}, _fov{fov} {}
 
   ~CoverageBelief() {}
 
