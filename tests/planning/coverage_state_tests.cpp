@@ -7,7 +7,6 @@
 #include "coverage_plan/planning/coverage_state.h"
 #include <Eigen/Dense>
 #include <catch2/catch.hpp>
-#include <iostream>
 #include <vector>
 
 TEST_CASE("Tests for the CoverageState constructors",
@@ -57,7 +56,7 @@ TEST_CASE("Tests for the CoverageState text function", "[CoverageState-text]") {
                                             GridCell{1, 1}, GridCell{1, 2}},
                       0.5};
 
-  std::string expected{"Time: 3; Coverage: 100%\n\032[1;31m- \033[1;0m- "
-                       "\n\032[1;31m- \032[1;31mR \n"};
+  std::string expected{"Time: 3; Coverage: 100%\n\x1b[1;32m- \033[1;0m- "
+                       "\n\x1b[1;32m- \x1b[1;32mR \n\033[1;0m"};
   REQUIRE(state.text() == expected);
 }

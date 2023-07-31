@@ -37,7 +37,7 @@ std::string CoverageState::text() const {
     for (int x{0}; x < this->map.cols(); ++x) {
       // Write covered cells in green
       if (coveredSet.find(GridCell{x, y}) != coveredSet.end()) {
-        stream << "\032[1;31m";
+        stream << "\x1b[1;32m";
       } else {
         stream << "\033[1;0m";
       }
@@ -53,6 +53,6 @@ std::string CoverageState::text() const {
     }
     stream << '\n';
   }
-
+  stream << "\033[1;0m";
   return stream.str();
 }
