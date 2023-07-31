@@ -7,6 +7,7 @@
 #include "coverage_plan/planning/coverage_state.h"
 #include <Eigen/Dense>
 #include <catch2/catch.hpp>
+#include <iostream>
 #include <vector>
 
 TEST_CASE("Tests for the CoverageState constructors",
@@ -51,11 +52,12 @@ TEST_CASE("Tests for the CoverageState constructors",
 
 TEST_CASE("Tests for the CoverageState text function", "[CoverageState-text]") {
 
-  CoverageState state{GridCell{1, 2}, 3, Eigen::MatrixXi::Zero(2, 2),
+  CoverageState state{GridCell{1, 1}, 3, Eigen::MatrixXi::Zero(2, 2),
                       std::vector<GridCell>{GridCell{0, 0}, GridCell{0, 1},
                                             GridCell{1, 1}, GridCell{1, 2}},
                       0.5};
 
-  std::string expected{"Robot Position: (1, 2); Time: 3; Nodes Covered: 4"};
+  std::string expected{"Time: 3; Coverage: 100%\n\032[1;31m- \033[1;0m- "
+                       "\n\032[1;31m- \032[1;31mR \n"};
   REQUIRE(state.text() == expected);
 }

@@ -6,6 +6,7 @@
  */
 
 #include "coverage_plan/planning/coverage_state.h"
+#include <cmath>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -27,12 +28,13 @@ std::string CoverageState::text() const {
 
   // Write out timestep and coverage %
   stream << "Time: " << this->time << "; Coverage: "
-         << ((double)this->covered.size()) / ((double)this->map.size())
+         << int(round(100 * ((double)this->covered.size()) /
+                      ((double)this->map.size())))
          << "%\n";
 
   // Write out map using the flipping convention of the map
-  for (int x{0}; x < this->map.cols(); ++x) {
-    for (int y{0}; y < this->map.rows(); ++y) {
+  for (int y{0}; y < this->map.rows(); ++y) {
+    for (int x{0}; x < this->map.cols(); ++x) {
       // Write covered cells in green
       if (coveredSet.find(GridCell{x, y}) != coveredSet.end()) {
         stream << "\032[1;31m";
