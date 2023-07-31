@@ -6,6 +6,7 @@
  */
 
 #include "coverage_plan/planning/coverage_belief.h"
+#include "coverage_plan/mod/imac_belief_sampler.h"
 #include "coverage_plan/mod/imac_executor.h"
 #include "coverage_plan/planning/action.h"
 #include "coverage_plan/planning/coverage_observation.h"
@@ -37,8 +38,8 @@ std::vector<despot::State *> CoverageBelief::Sample(int num) const {
     particle->time = this->_time;
     particle->covered = this->_covered;
 
-    // Sample a map state
-    // TODO
+    // Sample a map state from the current belief
+    particle->map = this->_beliefSampler->sampleFromBelief(this->_mapBelief);
 
     particles.push_back(particle);
   }

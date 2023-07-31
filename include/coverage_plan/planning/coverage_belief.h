@@ -9,6 +9,7 @@
 
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
+#include "coverage_plan/mod/imac_belief_sampler.h"
 #include <Eigen/Dense>
 #include <despot/core/globals.h>
 #include <despot/interface/belief.h>
@@ -30,6 +31,8 @@
  * _imac: The IMac model
  * _fov: The robot's FOV represented as a vector of GridCells relative to the
  * robot's position
+ * _beliefSampler: A pointer to an IMacBeliefSampler object required for
+ * sampling
  */
 class CoverageBelief : public despot::Belief {
 
@@ -40,6 +43,7 @@ private:
   Eigen::MatrixXd _mapBelief{};
   std::shared_ptr<IMac> _imac{};
   const std::vector<GridCell> _fov{};
+  std::unique_ptr<IMacBeliefSampler> _beliefSampler{};
 
 public:
   /**
@@ -58,7 +62,8 @@ public:
                  const Eigen::MatrixXd &initBelief, std::shared_ptr<IMac> imac,
                  const std::vector<GridCell> &fov)
       : Belief{model}, _robotPosition{initPos}, _time{initTime},
-        _covered{initCovered}, _mapBelief{initBelief}, _imac{imac}, _fov{fov} {}
+        _covered{initCovered}, _mapBelief{initBelief}, _imac{imac}, _fov{fov},
+        _beliefSampler{std::make_unique<IMacBeliefSampler>()} {}
 
   ~CoverageBelief() {}
 
