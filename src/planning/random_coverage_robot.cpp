@@ -7,6 +7,7 @@
 
 #include "coverage_plan/planning/random_coverage_robot.h"
 #include "coverage_plan/planning/action.h"
+#include "coverage_plan/util/seed.h"
 #include <Eigen/Dense>
 #include <iostream>
 #include <random>
@@ -55,7 +56,7 @@ RandomCoverageRobot::_planFn(const GridCell &currentLoc,
                              int timeBound, std::shared_ptr<IMac> imac,
                              const std::vector<GridCell> &covered,
                              const std::vector<IMacObservation> &currentObs) {
-  std::mt19937 gen{std::random_device{}()};
+  std::mt19937_64 gen{SeedHelpers::genRandomDeviceSeed()};
   std::uniform_int_distribution<> sampler{0, (int)enabledActions.size() - 1};
 
   return enabledActions.at(sampler(gen));

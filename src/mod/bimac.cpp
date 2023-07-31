@@ -4,9 +4,9 @@
  *
  * @author Charlie Street
  */
-
 #include "coverage_plan/mod/bimac.h"
 #include "coverage_plan/mod/imac.h"
+#include "coverage_plan/util/seed.h"
 #include <Eigen/Dense>
 #include <boost/math/special_functions/beta.hpp>
 #include <filesystem>
@@ -77,7 +77,7 @@ void BIMac::_writeBIMacMatrix(const Eigen::MatrixXi &matrix,
   }
 }
 
-double BIMac::_sampleForCell(int alpha, int beta, std::mt19937 &gen,
+double BIMac::_sampleForCell(int alpha, int beta, std::mt19937_64 &gen,
                              std::uniform_real_distribution<double> &sampler) {
   return boost::math::ibeta_inv(alpha, beta, sampler(gen));
 }
@@ -118,8 +118,7 @@ BIMac::_createIMacMatrix(const Eigen::MatrixXi &alphaMat,
  */
 std::shared_ptr<IMac> BIMac::posteriorSample() {
   // Generate a uniform rng between 0 and 1 to sample IMac parameters
-  std::random_device rd{};
-  std::mt19937 gen{rd()};
+  std::mt19937_64 gen{SeedHelpers::genRandomDeviceSeed()};
   std::uniform_real_distribution<double> sampler{0.0, 1.0};
 
   auto psLambda{[&](int alpha, int beta) {

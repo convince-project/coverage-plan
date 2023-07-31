@@ -8,6 +8,7 @@
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
 #include "coverage_plan/planning/random_coverage_robot.h"
+#include "coverage_plan/util/seed.h"
 #include <Eigen/Dense>
 #include <algorithm>
 #include <filesystem>
@@ -37,7 +38,7 @@ std::shared_ptr<IMac> createIMac() {
       cells.push_back(GridCell{x, y});
     }
   }
-  std::mt19937 rng{std::random_device{}()};
+  std::mt19937_64 rng{SeedHelpers::genRandomDeviceSeed()};
   std::shuffle(std::begin(cells), std::end(cells), rng);
 
   // Have to use y,x to match coordinate systems up

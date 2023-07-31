@@ -110,7 +110,7 @@ private:
    *
    * @return paramSample The sampled IMac parameter value
    */
-  double _sampleForCell(int alpha, int beta, std::mt19937 &gen,
+  double _sampleForCell(int alpha, int beta, std::mt19937_64 &gen,
                         std::uniform_real_distribution<double> &sampler);
 
   /**

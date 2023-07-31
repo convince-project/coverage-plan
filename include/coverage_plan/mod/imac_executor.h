@@ -10,6 +10,7 @@
 
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
+#include "coverage_plan/util/seed.h"
 #include <Eigen/Dense>
 #include <filesystem>
 #include <memory>
@@ -47,7 +48,7 @@ private:
   std::shared_ptr<IMac> _imac{};
   Eigen::MatrixXi _currentState{};
   // Used for random sampling - create once at start of class
-  std::mt19937 _gen{};
+  std::mt19937_64 _gen{};
   std::uniform_real_distribution<double> _sampler{};
   std::vector<Eigen::MatrixXi> _mapDynamics{};
 
@@ -73,7 +74,7 @@ public:
    * @param imac The IMac model
    */
   IMacExecutor(std::shared_ptr<IMac> imac)
-      : _imac{imac}, _currentState{}, _gen{std::random_device{}()},
+      : _imac{imac}, _currentState{}, _gen{SeedHelpers::genRandomDeviceSeed()},
         _sampler{0.0, 1.0}, _mapDynamics{} {}
 
   /**
