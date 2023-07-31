@@ -48,9 +48,17 @@ private:
   std::shared_ptr<IMac> _imac{};
   Eigen::MatrixXi _currentState{};
   // Used for random sampling - create once at start of class
-  std::mt19937_64 _gen{};
   std::uniform_real_distribution<double> _sampler{};
   std::vector<Eigen::MatrixXi> _mapDynamics{};
+
+  /**
+   * Store the current state of the map for logging purposes.
+   */
+  void _addMapForTs();
+
+protected:
+  // Used for random sampling alongside _sampler
+  std::mt19937_64 _gen{};
 
   /**
    * Helper function which samples an MoD state from a distribution matrix.
@@ -61,11 +69,6 @@ private:
    * @return sampledState an MOD state sampled from the distribution
    */
   Eigen::MatrixXi _sampleState(const Eigen::MatrixXd &distMatrix);
-
-  /**
-   * Store the current state of the map for logging purposes.
-   */
-  void _addMapForTs();
 
 public:
   /**
@@ -82,7 +85,6 @@ public:
    *
    * @param observations A vector of IMacObservations (what is seen at t=0).
    * Optional.
-   *
    *
    * @return initialState the initial state of the map of dynamics
    */
