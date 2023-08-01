@@ -10,9 +10,12 @@
 #ifndef COVERAGE_POMDP_H
 #define COVERAGE_POMDP_H
 
+#include "coverage_plan/mod/imac.h"
+#include "coverage_plan/mod/imac_belief_sampler.h"
 #include "coverage_plan/planning/coverage_state.h"
 #include <despot/interface/pomdp.h>
 #include <despot/util/memorypool.h>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -26,8 +29,10 @@
  */
 class CoveragePOMDP : public despot::DSPOMDP {
 private:
-  mutable despot::MemoryPool<CoverageState> _memory_pool{};
+  mutable despot::MemoryPool<CoverageState> _memoryPool{};
   const std::vector<GridCell> _fov{};
+  std::shared_ptr<IMac> _imac{};
+  std::unique_ptr<IMacBeliefSampler> _beliefSampler{};
 
 public:
   /**
@@ -36,8 +41,9 @@ public:
    * @param fov The robot's field of view as a vector of grid cells relative to
    * the robot's position
    */
-  CoveragePOMDP(const std::vector<GridCell> &fov)
-      : despot::DSPOMDP{}, _fov{fov} {}
+  CoveragePOMDP(const std::vector<GridCell> &fov, std::shared_ptr<IMac> imac)
+      : despot::DSPOMDP{}, _memoryPool{}, _fov{fov}, _imac{imac},
+        _beliefSampler{std::make_unique<IMacBeliefSampler>()} {}
 
   /**
    * The deterministic simulative model for the POMDP.

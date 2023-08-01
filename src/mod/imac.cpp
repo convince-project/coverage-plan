@@ -26,7 +26,7 @@ Eigen::MatrixXd IMac::estimateStaticOccupancy() {
  * Runs a given belief or state through IMac to get distribution for the next
  * timestep
  */
-Eigen::MatrixXd IMac::forwardStep(const Eigen::MatrixXd &currentBelief) {
+Eigen::MatrixXd IMac::forwardStep(const Eigen::MatrixXd &currentBelief) const {
   Eigen::MatrixXd ones{Eigen::MatrixXd::Ones(this->_entryMatrix.rows(),
                                              this->_entryMatrix.cols())};
   return (ones - currentBelief).cwiseProduct(this->_entryMatrix) +

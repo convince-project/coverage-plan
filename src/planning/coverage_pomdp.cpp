@@ -6,15 +6,77 @@
 
 #include "coverage_plan/planning/coverage_pomdp.h"
 #include "coverage_plan/mod/grid_cell.h"
+#include "coverage_plan/mod/imac_executor.h"
 #include "coverage_plan/planning/action.h"
+#include "coverage_plan/planning/coverage_belief.h"
 #include "coverage_plan/planning/coverage_observation.h"
 #include "coverage_plan/planning/coverage_state.h"
+#include <Eigen/Dense>
+#include <algorithm>
 #include <despot/interface/pomdp.h>
 #include <iostream>
 #include <map>
 #include <set>
 
-// TODO: Step
+/**
+ * The deterministic simulative model for the POMDP.
+ */
+bool CoveragePOMDP::Step(despot::State &state, double random_num,
+                         despot::ACT_TYPE action, double &reward,
+                         despot::OBS_TYPE &obs) const {
+  CoverageState &coverageState = static_cast<CoverageState &>(state);
+
+  // Update the map state (only stochastic element)
+  coverageState.map = this->_beliefSampler->sampleFromBelief(
+      this->_imac->forwardStep(coverageState.map.cast<double>()), random_num);
+
+  // The time is increased in each transition
+  ++coverageState.time;
+
+  GridCell expectedLoc{ActionHelpers::applySuccessfulAction(
+      coverageState.robot_position, ActionHelpers::fromInt(action))};
+  ActionOutcome outcome{};
+  outcome.action = ActionHelpers::fromInt(action);
+
+  // Action success
+  if (coverageState.map(expectedLoc.y, expectedLoc.x) == 0) {
+    coverageState.robot_position = expectedLoc;
+    outcome.success = true;
+
+    // Get a reward if we reach an previously unreached state
+    if (std::find(coverageState.covered.begin(), coverageState.covered.end(),
+                  expectedLoc) == coverageState.covered.end()) {
+      reward = 1.0;
+    } else {
+      reward = 0.0;
+    }
+
+  } else {
+    // If action failed, the robot's old location must be free
+    coverageState.map(coverageState.robot_position.y,
+                      coverageState.robot_position.x) = 0;
+    outcome.success = false;
+    reward = 0.0;
+  }
+
+  outcome.location = coverageState.robot_position;
+
+  // Add to covered
+  coverageState.covered.push_back(coverageState.robot_position);
+
+  // Now get the observation
+  std::vector<IMacObservation> obsVec{};
+  for (const GridCell &cell : this->_fov) {
+    int x{coverageState.robot_position.x + cell.x};
+    int y{coverageState.robot_position.y + cell.y};
+    obsVec.push_back(IMacObservation{GridCell{x, y}, coverageState.map(y, x)});
+  }
+  obs = Observation::toObsType(obsVec, outcome);
+
+  // Termination condition
+  // TODO
+  return false;
+}
 
 /**
  * Returns the total number of actions.
@@ -61,7 +123,36 @@ double CoveragePOMDP::ObsProb(despot::OBS_TYPE obs, const despot::State &state,
   return 1.0;
 }
 
-// TODO: InitialBelief
+/**
+ * Return the initial belief, which corresponds to the initial IMac belief.
+ */
+despot::Belief *
+CoveragePOMDP::InitialBelief(const despot::State *start,
+                             std::string type = "DEFAULT") const {
+  // Assume default is our CoverageBelief
+  if (type == "DEFAULT" || type == "COVERAGE_BELIEF") {
+    // This should be the true initial state of the system which we have
+    // privileged access to
+    const CoverageState *initState{static_cast<const CoverageState *>(start)};
+
+    Eigen::MatrixXd initMapBelief{this->_imac->getInitialBelief()};
+    // Add initial observation into initial belief
+    // The robot should be able to make an initial observation before moving
+    for (const GridCell &cell : this->_fov) {
+      int x{initState->robot_position.x + cell.x};
+      int y{initState->robot_position.y + cell.y};
+      initMapBelief(y, x) = initState->map(y, x);
+    }
+
+    return new CoverageBelief(this, initState->robot_position, initState->time,
+                              initState->covered, initMapBelief, this->_imac,
+                              this->_fov);
+  } else { // Not supporting anything else (for now)
+    std::cerr << "[CoveragePOMDP::InitialBelief] Unsupported belief type: "
+              << type << '\n';
+    exit(1);
+  }
+}
 
 /**
  * Returns the maximal *immediate* reward.
@@ -179,7 +270,7 @@ void CoveragePOMDP::PrintBelief(const despot::Belief &belief,
  */
 despot::State *CoveragePOMDP::Allocate(int state_id = -1,
                                        double weight = 0) const {
-  CoverageState *state = this->_memory_pool.Allocate();
+  CoverageState *state = this->_memoryPool.Allocate();
   state->state_id = state_id;
   state->weight = weight;
   return state;
@@ -190,7 +281,7 @@ despot::State *CoveragePOMDP::Allocate(int state_id = -1,
  * Copied with minor modifications from the DESPOT tutorial.
  */
 despot::State *CoveragePOMDP::Copy(const despot::State *particle) const {
-  CoverageState *state = this->_memory_pool.Allocate();
+  CoverageState *state = this->_memoryPool.Allocate();
   *state = *static_cast<const CoverageState *>(particle);
   state->SetAllocated();
   return state;
@@ -201,7 +292,7 @@ despot::State *CoveragePOMDP::Copy(const despot::State *particle) const {
  * Copied with minor modifications from the DESPOT tutorial.
  */
 void CoveragePOMDP::Free(despot::State *state) const {
-  this->_memory_pool.Free(static_cast<CoverageState *>(state));
+  this->_memoryPool.Free(static_cast<CoverageState *>(state));
 }
 
 /**
@@ -209,5 +300,5 @@ void CoveragePOMDP::Free(despot::State *state) const {
  * Follows examples in returning the number of particles in the memory pool.
  */
 int CoveragePOMDP::NumActiveParticles() const {
-  return this->_memory_pool.num_allocated();
+  return this->_memoryPool.num_allocated();
 }

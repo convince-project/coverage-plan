@@ -88,8 +88,9 @@ public:
    *
    * @return initialState the initial state of the map of dynamics
    */
-  Eigen::MatrixXi restart(const std::vector<IMacObservation> &observations =
-                              std::vector<IMacObservation>{});
+  virtual Eigen::MatrixXi
+  restart(const std::vector<IMacObservation> &observations =
+              std::vector<IMacObservation>{});
 
   /**
    * Update the current MoD state based on the iMac model, where successor
@@ -99,7 +100,8 @@ public:
    *
    * @return nextState The successor IMac state
    */
-  Eigen::MatrixXi updateState(const std::vector<IMacObservation> &observations);
+  virtual Eigen::MatrixXi
+  updateState(const std::vector<IMacObservation> &observations);
 
   /**
    * Output the map dynamic information into a csv file.
@@ -109,7 +111,7 @@ public:
    *
    * @param outFile The CSV file to write the map logs
    */
-  void logMapDynamics(const std::filesystem::path &outFile);
+  virtual void logMapDynamics(const std::filesystem::path &outFile);
 };
 
 #endif

@@ -73,21 +73,21 @@ public:
    * @param currentBelief a 2D matrix of the current map belief or state
    * @return nextBelief a 2D matrix of the subsequent map belief
    */
-  Eigen::MatrixXd forwardStep(const Eigen::MatrixXd &currentBelief);
+  Eigen::MatrixXd forwardStep(const Eigen::MatrixXd &currentBelief) const;
 
   /**
    * Getter for _entryMatrix. Need to retrieve for experimental purposes.
    *
    * @return entryMatrix A copy of_entryMatrix
    */
-  Eigen::MatrixXd getEntryMatrix() { return this->_entryMatrix; }
+  Eigen::MatrixXd getEntryMatrix() const { return this->_entryMatrix; }
 
   /**
    * Getter for _exitMatrix. Need to retrieve for experimental purposes.
    *
    * @return exitMatrix A copy of_exitMatrix
    */
-  Eigen::MatrixXd getExitMatrix() { return this->_exitMatrix; }
+  Eigen::MatrixXd getExitMatrix() const { return this->_exitMatrix; }
 
   /**
    * Return the initial belief over the map of dynamics.
@@ -96,7 +96,7 @@ public:
    *
    * @return initialBelief The initial belief over the map
    */
-  Eigen::MatrixXd getInitialBelief() { return this->_initialBelief; }
+  Eigen::MatrixXd getInitialBelief() const { return this->_initialBelief; }
 };
 
 #endif
