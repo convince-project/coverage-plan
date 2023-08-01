@@ -21,7 +21,7 @@ class CoverageState : public despot::State {
 
   // Following conventions in DESPOT and making fields public
 public:
-  GridCell robot_position{};       // The robot's current grid position
+  GridCell robotPosition{};        // The robot's current grid position
   int time{};                      // The current time step
   Eigen::MatrixXi map{};           // The current map state
   std::vector<GridCell> covered{}; // The vector of covered nodes
@@ -45,7 +45,7 @@ public:
                 const Eigen::MatrixXi &curMap,
                 const std::vector<GridCell> &curCovered,
                 const double &particleWeight, const int &id = -1)
-      : State{id, particleWeight}, robot_position{curPosition}, time{curTime},
+      : State{id, particleWeight}, robotPosition{curPosition}, time{curTime},
         map{curMap}, covered{curCovered} {}
 
   /**

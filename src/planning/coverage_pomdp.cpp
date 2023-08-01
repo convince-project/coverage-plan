@@ -34,13 +34,13 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
   ++coverageState.time;
 
   GridCell expectedLoc{ActionHelpers::applySuccessfulAction(
-      coverageState.robot_position, ActionHelpers::fromInt(action))};
+      coverageState.robotPosition, ActionHelpers::fromInt(action))};
   ActionOutcome outcome{};
   outcome.action = ActionHelpers::fromInt(action);
 
   // Action success
   if (coverageState.map(expectedLoc.y, expectedLoc.x) == 0) {
-    coverageState.robot_position = expectedLoc;
+    coverageState.robotPosition = expectedLoc;
     outcome.success = true;
 
     // Get a reward if we reach an previously unreached state
@@ -53,22 +53,22 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
 
   } else {
     // If action failed, the robot's old location must be free
-    coverageState.map(coverageState.robot_position.y,
-                      coverageState.robot_position.x) = 0;
+    coverageState.map(coverageState.robotPosition.y,
+                      coverageState.robotPosition.x) = 0;
     outcome.success = false;
     reward = 0.0;
   }
 
-  outcome.location = coverageState.robot_position;
+  outcome.location = coverageState.robotPosition;
 
   // Add to covered
-  coverageState.covered.push_back(coverageState.robot_position);
+  coverageState.covered.push_back(coverageState.robotPosition);
 
   // Now get the observation
   std::vector<IMacObservation> obsVec{};
   for (const GridCell &cell : this->_fov) {
-    int x{coverageState.robot_position.x + cell.x};
-    int y{coverageState.robot_position.y + cell.y};
+    int x{coverageState.robotPosition.x + cell.x};
+    int y{coverageState.robotPosition.y + cell.y};
     obsVec.push_back(IMacObservation{GridCell{x, y}, coverageState.map(y, x)});
   }
   obs = Observation::toObsType(obsVec, outcome);
@@ -103,8 +103,8 @@ double CoveragePOMDP::ObsProb(despot::OBS_TYPE obs, const despot::State &state,
   for (const IMacObservation &imacObs : obsVec) {
 
     // Recall grid cells in obsVec are relative to robot's pos
-    int x{coverageState.robot_position.x + imacObs.cell.x};
-    int y{coverageState.robot_position.y + imacObs.cell.y};
+    int x{coverageState.robotPosition.x + imacObs.cell.x};
+    int y{coverageState.robotPosition.y + imacObs.cell.y};
 
     if (x < 0 or x >= coverageState.map.cols() or y < 0 or
         y >= coverageState.map.rows()) {
@@ -139,12 +139,12 @@ CoveragePOMDP::InitialBelief(const despot::State *start,
     // Add initial observation into initial belief
     // The robot should be able to make an initial observation before moving
     for (const GridCell &cell : this->_fov) {
-      int x{initState->robot_position.x + cell.x};
-      int y{initState->robot_position.y + cell.y};
+      int x{initState->robotPosition.x + cell.x};
+      int y{initState->robotPosition.y + cell.y};
       initMapBelief(y, x) = initState->map(y, x);
     }
 
-    return new CoverageBelief(this, initState->robot_position, initState->time,
+    return new CoverageBelief(this, initState->robotPosition, initState->time,
                               initState->covered, initMapBelief, this->_imac,
                               this->_fov);
   } else { // Not supporting anything else (for now)

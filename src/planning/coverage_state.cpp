@@ -43,7 +43,7 @@ std::string CoverageState::text() const {
       }
 
       // Robot is R, occupied is X, free is -
-      if (this->robot_position.x == x && this->robot_position.y == y) {
+      if (this->robotPosition.x == x && this->robotPosition.y == y) {
         stream << "R ";
       } else if (this->map(y, x) == 1) {
         stream << "X ";

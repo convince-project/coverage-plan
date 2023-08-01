@@ -27,8 +27,8 @@ TEST_CASE("Tests for the CoverageState constructors",
                                                GridCell{1, 1}, GridCell{1, 2}},
                          0.5};
 
-  REQUIRE(stateTwo.robot_position.x == 1);
-  REQUIRE(stateTwo.robot_position.y == 2);
+  REQUIRE(stateTwo.robotPosition.x == 1);
+  REQUIRE(stateTwo.robotPosition.y == 2);
   REQUIRE(stateTwo.time == 3);
   REQUIRE(stateTwo.map.rows() == 2);
   REQUIRE(stateTwo.map.cols() == 2);

@@ -34,7 +34,7 @@ std::vector<despot::State *> CoverageBelief::Sample(int num) const {
         static_cast<CoverageState *>(this->model_->Allocate(-1, weight))};
 
     // Set the fully observable components
-    particle->robot_position = this->_robotPosition;
+    particle->robotPosition = this->_robotPosition;
     particle->time = this->_time;
     particle->covered = this->_covered;
 
