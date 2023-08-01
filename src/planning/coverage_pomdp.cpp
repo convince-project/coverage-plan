@@ -74,7 +74,10 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
   obs = Observation::toObsType(obsVec, outcome);
 
   // Termination condition
-  // TODO
+  if (coverageState.time >= this->_timeBound) {
+    // Or % covered == 100%
+    return true;
+  }
   return false;
 }
 

@@ -26,6 +26,9 @@
  * _memory_pool: A memory pool for allocating CoverageStates
  * _fov: A vector of GridCells relative to the robot's position which capture
  * its FOV.
+ * _imac: The IMac instance used for planning
+ * _beliefSampler: The IMac belief sampler used for the simulator
+ * _timeBound: The planning horizon in timesteps
  */
 class CoveragePOMDP : public despot::DSPOMDP {
 private:
@@ -33,6 +36,7 @@ private:
   const std::vector<GridCell> _fov{};
   std::shared_ptr<IMac> _imac{};
   std::unique_ptr<IMacBeliefSampler> _beliefSampler{};
+  const int _timeBound{};
 
 public:
   /**
@@ -40,10 +44,14 @@ public:
    *
    * @param fov The robot's field of view as a vector of grid cells relative to
    * the robot's position
+   * @param imac The IMac instance used for planning
+   * @param timeBound The planning horizon in timesteps
    */
-  CoveragePOMDP(const std::vector<GridCell> &fov, std::shared_ptr<IMac> imac)
+  CoveragePOMDP(const std::vector<GridCell> &fov, std::shared_ptr<IMac> imac,
+                int timeBound)
       : despot::DSPOMDP{}, _memoryPool{}, _fov{fov}, _imac{imac},
-        _beliefSampler{std::make_unique<IMacBeliefSampler>()} {}
+        _timeBound{timeBound}, _beliefSampler{
+                                   std::make_unique<IMacBeliefSampler>()} {}
 
   /**
    * The deterministic simulative model for the POMDP.
