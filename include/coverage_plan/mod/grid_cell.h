@@ -64,7 +64,7 @@ struct GridCell {
    * @param yMax The max y value
    */
   bool outOfBounds(const int &xMin, const int &xMax, const int &yMin,
-                   const int &yMax);
+                   const int &yMax) const;
 };
 
 #endif

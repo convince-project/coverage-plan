@@ -41,7 +41,10 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
   outcome.action = ActionHelpers::fromInt(action);
 
   // Action success
-  if (coverageState.map(expectedLoc.y, expectedLoc.x) == 0) {
+  // Occurs if location in bounds and 0
+  if ((!expectedLoc.outOfBounds(0, coverageState.map.cols(), 0,
+                                coverageState.map.rows())) &&
+      coverageState.map(expectedLoc.y, expectedLoc.x) == 0) {
     coverageState.robotPosition = expectedLoc;
     outcome.success = true;
 
@@ -58,6 +61,10 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
     coverageState.map(coverageState.robotPosition.y,
                       coverageState.robotPosition.x) = 0;
     outcome.success = false;
+    if (action == ActionHelpers::toInt(Action::wait)) { // wait always succeeds
+      outcome.success = true;
+    }
+
     reward = 0.0;
   }
 
@@ -69,9 +76,15 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
   // Now get the observation
   std::vector<IMacObservation> obsVec{};
   for (const GridCell &cell : this->_fov) {
-    int x{coverageState.robotPosition.x + cell.x};
-    int y{coverageState.robotPosition.y + cell.y};
-    obsVec.push_back(IMacObservation{GridCell{x, y}, coverageState.map(y, x)});
+    GridCell obsLoc{coverageState.robotPosition.x + cell.x,
+                    coverageState.robotPosition.y + cell.y};
+    if (!obsLoc.outOfBounds(0, coverageState.map.cols(), 0,
+                            coverageState.map.rows())) {
+      obsVec.push_back(
+          IMacObservation{obsLoc, coverageState.map(obsLoc.y, obsLoc.x)});
+    } else { // Out of bounds cells are occupied
+      obsVec.push_back(IMacObservation{obsLoc, 1});
+    }
   }
   obs = Observation::toObsType(obsVec, outcome);
 
@@ -104,7 +117,6 @@ int CoveragePOMDP::NumActions() const { return 5; }
 double CoveragePOMDP::ObsProb(despot::OBS_TYPE obs, const despot::State &state,
                               despot::ACT_TYPE action) const {
 
-  // TODO: Get FOV in here somehow
   // Don't need action success marker here, just the obs vector
   std::vector<IMacObservation> obsVec{
       std::get<0>(Observation::fromObsType(obs, this->_fov))};
@@ -115,18 +127,18 @@ double CoveragePOMDP::ObsProb(despot::OBS_TYPE obs, const despot::State &state,
   for (const IMacObservation &imacObs : obsVec) {
 
     // Recall grid cells in obsVec are relative to robot's pos
-    int x{coverageState.robotPosition.x + imacObs.cell.x};
-    int y{coverageState.robotPosition.y + imacObs.cell.y};
+    GridCell obsLoc{coverageState.robotPosition.x + imacObs.cell.x,
+                    coverageState.robotPosition.y + imacObs.cell.y};
 
-    if (x < 0 || x >= coverageState.map.cols() || y < 0 ||
-        y >= coverageState.map.rows()) {
+    if (obsLoc.outOfBounds(0, coverageState.map.cols(), 0,
+                           coverageState.map.rows())) {
       // Out of bounds location should always be marked as occupied
       if (!imacObs.occupied) {
         return 0.0;
       }
     } else {
       // coverageState.map has to be indexed (y,x)
-      if (coverageState.map(y, x) != imacObs.occupied) {
+      if (coverageState.map(obsLoc.y, obsLoc.x) != imacObs.occupied) {
         return 0.0;
       }
     }
@@ -150,9 +162,14 @@ despot::Belief *CoveragePOMDP::InitialBelief(const despot::State *start,
     // Add initial observation into initial belief
     // The robot should be able to make an initial observation before moving
     for (const GridCell &cell : this->_fov) {
-      int x{initState->robotPosition.x + cell.x};
-      int y{initState->robotPosition.y + cell.y};
-      initMapBelief(y, x) = initState->map(y, x);
+      GridCell absCell{initState->robotPosition.x + cell.x,
+                       initState->robotPosition.y + cell.y};
+
+      if (!absCell.outOfBounds(0, initMapBelief.cols(), 0,
+                               initMapBelief.rows())) {
+        initMapBelief(absCell.y, absCell.x) =
+            initState->map(absCell.y, absCell.x);
+      }
     }
 
     return new CoverageBelief(this, initState->robotPosition, initState->time,

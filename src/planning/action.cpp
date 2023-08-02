@@ -12,6 +12,7 @@
 namespace ActionHelpers {
 /**
  * Applies a successful action to a grid cell to get the new location.
+ * Note successful means not blocked or not out of bounds.
  */
 GridCell applySuccessfulAction(const GridCell &cell, const Action &action) {
   switch (action) {

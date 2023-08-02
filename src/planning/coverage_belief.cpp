@@ -73,9 +73,12 @@ void CoverageBelief::Update(despot::ACT_TYPE action, despot::OBS_TYPE obs) {
   // Update map belief (forward step of IMac model and setting known locations)
   this->_mapBelief = this->_imac->forwardStep(this->_mapBelief);
   for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
-    this->_mapBelief(this->_robotPosition.y + imacObs.cell.y,
-                     this->_robotPosition.x + imacObs.cell.x) =
-        imacObs.occupied;
+    GridCell obsLoc{this->_robotPosition.x + imacObs.cell.x,
+                    this->_robotPosition.y + imacObs.cell.y};
+    if (!obsLoc.outOfBounds(0, this->_mapBelief.cols(), 0,
+                            this->_mapBelief.rows())) {
+      this->_mapBelief(obsLoc.y, obsLoc.x) = imacObs.occupied;
+    }
   }
 }
 

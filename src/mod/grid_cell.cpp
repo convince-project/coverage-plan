@@ -8,7 +8,7 @@
 #include "coverage_plan/mod/grid_cell.h"
 
 bool GridCell::outOfBounds(const int &xMin, const int &xMax, const int &yMin,
-                           const int &yMax) {
+                           const int &yMax) const {
   return (this->x < xMin) || (this->x >= xMax) || (this->y < yMin) ||
          (this->y >= yMax);
 }

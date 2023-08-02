@@ -83,7 +83,8 @@ private:
   }
 
   std::vector<IMacObservation> _observeFn(const GridCell &currentLoc) {
-    return std::vector<IMacObservation>{IMacObservation{GridCell{1, 1}, 1}};
+    return std::vector<IMacObservation>{IMacObservation{GridCell{1, 1}, 1},
+                                        IMacObservation{GridCell{-1, -1}, 1}};
   }
 
 public:
@@ -119,7 +120,7 @@ public:
 };
 
 TEST_CASE("Tests for plan-execute-observe wrapper functions",
-          "[plan-execute-observe]") {
+          "[CoverageRobot::plan-execute-observe]") {
 
   std::unique_ptr<TestCoverageRobotOne> robot{
       std::make_unique<TestCoverageRobotOne>(GridCell{2, 1}, 10, 5, 5)};
@@ -140,7 +141,7 @@ TEST_CASE("Tests for plan-execute-observe wrapper functions",
   REQUIRE(obsVector.at(0).occupied == 1);
 }
 
-TEST_CASE("Test for reset", "[resetForNextEpisode]") {
+TEST_CASE("Test for reset", "[CoverageRobot::resetForNextEpisode]") {
 
   std::unique_ptr<TestCoverageRobotOne> robot{
       std::make_unique<TestCoverageRobotOne>(GridCell{2, 1}, 0, 5, 5)};
@@ -178,7 +179,8 @@ TEST_CASE("Test for reset", "[resetForNextEpisode]") {
   }
 }
 
-TEST_CASE("Test for logCoveredLocations", "[logCoveredLocations]") {
+TEST_CASE("Test for logCoveredLocations",
+          "[CoverageRobot::logCoveredLocations]") {
 
   std::unique_ptr<TestCoverageRobotTwo> robot{
       std::make_unique<TestCoverageRobotTwo>(GridCell{2, 1}, 10, 5, 5)};
@@ -200,7 +202,8 @@ TEST_CASE("Test for logCoveredLocations", "[logCoveredLocations]") {
   }
 }
 
-TEST_CASE("Test for runCoverageEpisode", "[runCoverageEpisode]") {
+TEST_CASE("Test for runCoverageEpisode",
+          "[CoverageRobot::runCoverageEpisode]") {
 
   std::unique_ptr<TestCoverageRobotThree> robot{
       std::make_unique<TestCoverageRobotThree>(GridCell{2, 1}, 10, 5, 5)};
@@ -241,7 +244,8 @@ TEST_CASE("Test for runCoverageEpisode", "[runCoverageEpisode]") {
   }
 }
 
-TEST_CASE("Tests for _getEnabledActions function", "[getEnabledActions]") {
+TEST_CASE("Tests for _getEnabledActions function",
+          "[CoverageRobot::getEnabledActions]") {
 
   std::unique_ptr<TestCoverageRobotFour> robot{
       std::make_unique<TestCoverageRobotFour>(GridCell{0, 0}, 10, 1, 1)};

@@ -28,14 +28,17 @@ std::shared_ptr<IMac> CoverageRobot::_getIMacInstanceForEpisode() {
 void CoverageRobot::_addInitObservation(
     std::map<GridCell, BIMacObservation> &biMacObsMap,
     const IMacObservation &obs) {
-  // count returns number of keys of obs.cell
-  if (biMacObsMap.count(obs.cell) == 0) {
-    biMacObsMap[obs.cell] = BIMacObservation{obs.cell, 0, 0, 0, 0, 0, 0};
-  }
-  if (obs.occupied == 1) {
-    biMacObsMap[obs.cell].initOccupied += 1;
-  } else {
-    biMacObsMap[obs.cell].initFree += 1;
+
+  if (!obs.cell.outOfBounds(0, this->_xDim, 0, this->_yDim)) {
+    // count returns number of keys of obs.cell
+    if (biMacObsMap.count(obs.cell) == 0) {
+      biMacObsMap[obs.cell] = BIMacObservation{obs.cell, 0, 0, 0, 0, 0, 0};
+    }
+    if (obs.occupied == 1) {
+      biMacObsMap[obs.cell].initOccupied += 1;
+    } else {
+      biMacObsMap[obs.cell].initFree += 1;
+    }
   }
 }
 
@@ -47,17 +50,19 @@ void CoverageRobot::_addTransitionObservation(
     const int &prevState, const int &nextState) {
 
   // Have we got an observation struct for this cell?
-  if (biMacObsMap.count(cell) == 0) {
-    biMacObsMap[cell] = BIMacObservation{cell, 0, 0, 0, 0, 0, 0};
-  }
-  if (prevState == 0 && nextState == 0) {
-    biMacObsMap[cell].freeToFree += 1;
-  } else if (prevState == 0 && nextState == 1) {
-    biMacObsMap[cell].freeToOccupied += 1;
-  } else if (prevState == 1 && nextState == 0) {
-    biMacObsMap[cell].occupiedToFree += 1;
-  } else {
-    biMacObsMap[cell].occupiedToOccupied += 1;
+  if (!cell.outOfBounds(0, this->_xDim, 0, this->_yDim)) {
+    if (biMacObsMap.count(cell) == 0) {
+      biMacObsMap[cell] = BIMacObservation{cell, 0, 0, 0, 0, 0, 0};
+    }
+    if (prevState == 0 && nextState == 0) {
+      biMacObsMap[cell].freeToFree += 1;
+    } else if (prevState == 0 && nextState == 1) {
+      biMacObsMap[cell].freeToOccupied += 1;
+    } else if (prevState == 1 && nextState == 0) {
+      biMacObsMap[cell].occupiedToFree += 1;
+    } else {
+      biMacObsMap[cell].occupiedToOccupied += 1;
+    }
   }
 }
 
@@ -74,14 +79,18 @@ std::vector<BIMacObservation> CoverageRobot::_generateBIMacObservations(
   // Deal with initial observation
   std::vector<IMacObservation> initObs{observations.at(0)};
   for (const IMacObservation &obs : initObs) {
-    prevObsMap[obs.cell] = obs.occupied;
-    this->_addInitObservation(biMacObsMap, obs);
+    if (!obs.cell.outOfBounds(0, this->_xDim, 0, this->_yDim)) {
+      prevObsMap[obs.cell] = obs.occupied;
+      this->_addInitObservation(biMacObsMap, obs);
+    }
   }
 
   // Iterate through each timestep
   for (int i{1}; i < observations.size(); ++i) {
     for (const IMacObservation &obs : observations.at(i)) {
-      currentObsMap[obs.cell] = obs.occupied;
+      if (!obs.cell.outOfBounds(0, this->_xDim, 0, this->_yDim)) {
+        currentObsMap[obs.cell] = obs.occupied;
+      }
     }
     // Iterate over preObsMap
     for (const auto &elem : prevObsMap) {

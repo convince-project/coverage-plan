@@ -55,6 +55,38 @@ TEST_CASE("Tests for RandomCoverageRobot executeAction with failure",
   REQUIRE(outcome.location.y == 0);
 }
 
+TEST_CASE(
+    "Tests for RandomCoverageRobot executeAction with out of bounds failure",
+    "[RandomCoverageRobot-executeAction-outOfBounds]") {
+
+  Eigen::MatrixXd entry{1, 2};
+  entry(0, 0) = 0;
+  entry(0, 1) = 1;
+
+  Eigen::MatrixXd exit{1, 2};
+  exit(0, 0) = 1;
+  exit(0, 1) = 0;
+
+  Eigen::MatrixXd init{1, 2};
+  init(0, 0) = 0;
+  init(0, 1) = 1;
+
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(entry, exit, init)};
+  std::shared_ptr<IMacExecutor> exec{std::make_shared<IMacExecutor>(imac)};
+  exec->restart();
+
+  std::unique_ptr<RandomCoverageRobot> robot{
+      std::make_unique<RandomCoverageRobot>(GridCell{0, 0}, 2, 2, 1, exec)};
+
+  ActionOutcome outcome{robot->executeAction(Action::left)};
+
+  // Always empty
+  REQUIRE(outcome.action == Action::left);
+  REQUIRE(outcome.success == false);
+  REQUIRE(outcome.location.x == 0);
+  REQUIRE(outcome.location.y == 0);
+}
+
 TEST_CASE("Tests for RandomCoverageRobot executeAction with success",
           "[RandomCoverageRobot-executeAction-succeed]") {
 

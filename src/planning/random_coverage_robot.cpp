@@ -77,7 +77,10 @@ ActionOutcome RandomCoverageRobot::_executeFn(const GridCell &currentLoc,
 
   bool succ{true};
   // Check for action failure (note flipped x and y)
-  if (nextState(nextLoc.y, nextLoc.x) == 1 && action != Action::wait) {
+  // Action failure occurs if intended location is occupied or intended location
+  // out of bounds
+  if (nextLoc.outOfBounds(0, nextState.cols(), 0, nextState.rows()) ||
+      (nextState(nextLoc.y, nextLoc.x) == 1 && action != Action::wait)) {
     succ = false;
     nextLoc.x = currentLoc.x;
     nextLoc.y = currentLoc.y;
