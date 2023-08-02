@@ -13,6 +13,8 @@
 #include "coverage_plan/planning/coverage_state.h"
 #include <Eigen/Dense>
 #include <algorithm>
+#include <despot/core/globals.h>
+#include <despot/interface/default_policy.h>
 #include <despot/interface/pomdp.h>
 #include <iostream>
 #include <map>
@@ -172,8 +174,18 @@ CoveragePOMDP::InitialBelief(const despot::State *start,
  */
 double CoveragePOMDP::GetMaxReward() const { return 1.0; }
 
-// TODO: GetBestAction
+/**
+ * Returns action with largest minimum immediate reward.
+ * For coverage problems, all actions have minimum immediate reward of 0.
+ * Therefore, I'll just choose up.
+ */
+despot::ValuedAction CoveragePOMDP::GetBestAction() const {
+  return despot::ValuedAction(ActionHelpers::toInt(Action::up), 0.0);
+}
 
+/**
+ * Prints a state.
+ */
 void CoveragePOMDP::PrintState(const despot::State &state,
                                std::ostream &out = std::cout) const {
   out << state.text();
