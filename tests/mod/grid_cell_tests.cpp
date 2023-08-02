@@ -47,4 +47,21 @@ TEST_CASE("Tests for GridCell", "[GridCell]") {
   REQUIRE(cell != cell7);
   REQUIRE(!(cell < cell7));
   REQUIRE(cell7 < cell);
+
+  int xMin{0};
+  int xMax{10};
+  int yMin{-1};
+  int yMax{1};
+
+  REQUIRE(!GridCell{0, 0}.outOfBounds(xMin, xMax, yMin, yMax));
+  REQUIRE(GridCell{-1, 0}.outOfBounds(xMin, xMax, yMin, yMax));
+  REQUIRE(!GridCell{9, 0}.outOfBounds(xMin, xMax, yMin, yMax));
+  REQUIRE(GridCell{10, 0}.outOfBounds(xMin, xMax, yMin, yMax));
+  REQUIRE(GridCell{11, 0}.outOfBounds(xMin, xMax, yMin, yMax));
+  REQUIRE(!GridCell{5, -1}.outOfBounds(xMin, xMax, yMin, yMax));
+  REQUIRE(GridCell{5, -2}.outOfBounds(xMin, xMax, yMin, yMax));
+  REQUIRE(!GridCell{5, 0}.outOfBounds(xMin, xMax, yMin, yMax));
+  REQUIRE(GridCell{5, 1}.outOfBounds(xMin, xMax, yMin, yMax));
+  REQUIRE(GridCell{5, 2}.outOfBounds(xMin, xMax, yMin, yMax));
+  REQUIRE(GridCell{20, 20}.outOfBounds(xMin, xMax, yMin, yMax));
 }

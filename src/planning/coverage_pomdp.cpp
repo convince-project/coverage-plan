@@ -80,7 +80,7 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
     uniqueCovered.insert(cell);
   }
 
-  int numCells{coverageState.map.rows() * coverageState.map.cols()};
+  int numCells{(int)(coverageState.map.rows() * coverageState.map.cols())};
 
   // Termination condition (time bound reached or all cells covered)
   if (coverageState.time >= this->_timeBound or
@@ -118,7 +118,7 @@ double CoveragePOMDP::ObsProb(despot::OBS_TYPE obs, const despot::State &state,
     int x{coverageState.robotPosition.x + imacObs.cell.x};
     int y{coverageState.robotPosition.y + imacObs.cell.y};
 
-    if (x < 0 or x >= coverageState.map.cols() or y < 0 or
+    if (x < 0 || x >= coverageState.map.cols() || y < 0 ||
         y >= coverageState.map.rows()) {
       // Out of bounds location should always be marked as occupied
       if (!imacObs.occupied) {
@@ -138,9 +138,8 @@ double CoveragePOMDP::ObsProb(despot::OBS_TYPE obs, const despot::State &state,
 /**
  * Return the initial belief, which corresponds to the initial IMac belief.
  */
-despot::Belief *
-CoveragePOMDP::InitialBelief(const despot::State *start,
-                             std::string type = "DEFAULT") const {
+despot::Belief *CoveragePOMDP::InitialBelief(const despot::State *start,
+                                             std::string type) const {
   // Assume default is our CoverageBelief
   if (type == "DEFAULT" || type == "COVERAGE_BELIEF") {
     // This should be the true initial state of the system which we have
@@ -187,7 +186,7 @@ despot::ValuedAction CoveragePOMDP::GetBestAction() const {
  * Prints a state.
  */
 void CoveragePOMDP::PrintState(const despot::State &state,
-                               std::ostream &out = std::cout) const {
+                               std::ostream &out) const {
   out << state.text();
 }
 
@@ -195,7 +194,7 @@ void CoveragePOMDP::PrintState(const despot::State &state,
  * Prints an observation.
  */
 void CoveragePOMDP::PrintObs(const despot::State &state, despot::OBS_TYPE obs,
-                             std::ostream &out = std::cout) const {
+                             std::ostream &out) const {
   std::pair<std::vector<IMacObservation>, bool> obsInfo{
       Observation::fromObsType(obs, this->_fov)};
 
@@ -207,10 +206,10 @@ void CoveragePOMDP::PrintObs(const despot::State &state, despot::OBS_TYPE obs,
   }
 
   const CoverageState &coverageState{static_cast<const CoverageState &>(state)};
-  int minX{coverageState.map.cols()};
-  int maxX{-1 * coverageState.map.cols()};
-  int minY{coverageState.map.rows()};
-  int maxY{-1 * coverageState.map.rows()};
+  int minX{(int)coverageState.map.cols()};
+  int maxX{-1 * (int)coverageState.map.cols()};
+  int minY{(int)coverageState.map.rows()};
+  int maxY{-1 * (int)coverageState.map.rows()};
 
   std::map<GridCell, bool> obsMap{};
 
@@ -255,7 +254,7 @@ void CoveragePOMDP::PrintObs(const despot::State &state, despot::OBS_TYPE obs,
  * Prints an action.
  */
 void CoveragePOMDP::PrintAction(despot::ACT_TYPE action,
-                                std::ostream &out = std::cout) const {
+                                std::ostream &out) const {
   // Just writes the action name, nothing fancy here
   switch (ActionHelpers::fromInt(action)) {
   case Action::up:
@@ -282,7 +281,7 @@ void CoveragePOMDP::PrintAction(despot::ACT_TYPE action,
  * Prints a belief.
  */
 void CoveragePOMDP::PrintBelief(const despot::Belief &belief,
-                                std::ostream &out = std::cout) const {
+                                std::ostream &out) const {
   out << belief.text();
 }
 
@@ -290,8 +289,7 @@ void CoveragePOMDP::PrintBelief(const despot::Belief &belief,
  * Allocate a state using the memory pool.
  * This is really just copying what was in the DESPOT tutorial.
  */
-despot::State *CoveragePOMDP::Allocate(int state_id = -1,
-                                       double weight = 0) const {
+despot::State *CoveragePOMDP::Allocate(int state_id, double weight) const {
   CoverageState *state = this->_memoryPool.Allocate();
   state->state_id = state_id;
   state->weight = weight;

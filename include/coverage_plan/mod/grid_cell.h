@@ -52,6 +52,19 @@ struct GridCell {
   bool operator!=(const GridCell &other) const {
     return this->x != other.x or this->y != other.y;
   }
+
+  /**
+   * Function to check if a grid cell is out of bounds on a given map.
+   * The bounds are defined as [xMin, xMax) and [yMin, yMax] (i.e. max is
+   * exclusive).
+   *
+   * @param xMin The min x value
+   * @param xMax The max x value
+   * @param yMin The min y value
+   * @param yMax The max y value
+   */
+  bool outOfBounds(const int &xMin, const int &xMax, const int &yMin,
+                   const int &yMax);
 };
 
 #endif

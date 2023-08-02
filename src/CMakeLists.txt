@@ -2,7 +2,8 @@
 add_library(mod STATIC mod/imac.cpp 
                        mod/imac_executor.cpp 
                        mod/bimac.cpp 
-                       mod/imac_belief_sampler.cpp)
+                       mod/imac_belief_sampler.cpp
+                       mod/grid_cell.cpp)
 target_include_directories(mod PUBLIC ../include)
 target_link_libraries(mod PUBLIC Eigen3::Eigen)
 target_link_libraries(mod PUBLIC Boost::headers)

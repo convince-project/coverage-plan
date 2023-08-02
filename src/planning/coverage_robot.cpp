@@ -193,8 +193,8 @@ void CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
   std::set<GridCell> uniqueCovered{};
 
   std::shared_ptr<IMac> imacForEpisode{this->_getIMacInstanceForEpisode()};
-  int numCells{imacForEpisode->getEntryMatrix().rows() *
-               imacForEpisode->getEntryMatrix().cols()};
+  int numCells{(int)(imacForEpisode->getEntryMatrix().rows() *
+                     imacForEpisode->getEntryMatrix().cols())};
 
   // At each timestep, we get a vector of observations
   std::vector<std::vector<IMacObservation>> observations{};
