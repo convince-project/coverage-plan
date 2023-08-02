@@ -74,6 +74,7 @@ int main() {
 
   // Initial IMac state
   Eigen::MatrixXi initState{executor->restart()};
+  initState(5, 5) = 0; // Initial state must be free
 
   std::shared_ptr<RandomCoverageRobot> coverageRobot{
       std::make_shared<RandomCoverageRobot>(GridCell{5, 5}, 100, 10, 10,

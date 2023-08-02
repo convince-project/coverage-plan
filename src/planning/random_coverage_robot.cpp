@@ -80,10 +80,15 @@ ActionOutcome RandomCoverageRobot::_executeFn(const GridCell &currentLoc,
   // Action failure occurs if intended location is occupied or intended location
   // out of bounds
   if (nextLoc.outOfBounds(0, nextState.cols(), 0, nextState.rows()) ||
-      (nextState(nextLoc.y, nextLoc.x) == 1 && action != Action::wait)) {
-    succ = false;
-    nextLoc.x = currentLoc.x;
-    nextLoc.y = currentLoc.y;
+      (nextState(nextLoc.y, nextLoc.x) == 1)) {
+    if (action != Action::wait) {
+      succ = false;
+      nextLoc.x = currentLoc.x;
+      nextLoc.y = currentLoc.y;
+    }
+    // Clear the robot's position (because of possible occupancy in sampling)
+    nextState(nextLoc.y, nextLoc.x) = 0;
+    this->_world->clearRobotPosition(nextLoc);
   }
 
   ActionOutcome outcome{action, succ, nextLoc};

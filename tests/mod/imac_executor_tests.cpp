@@ -251,3 +251,56 @@ TEST_CASE("Tests for the logMapDynamics function in IMacExecutor",
     REQUIRE(mapElems.at(i) == expected.at(i));
   }
 }
+
+TEST_CASE("Tests for clearRobotPosition in IMacExecutor",
+          "[clearRobotPosition]") {
+  // Create an iMac instant with dynamics which never change
+  Eigen::MatrixXd entryExit{Eigen::MatrixXd::Constant(1, 1, 0.0)};
+
+  // initially occupied
+  Eigen::MatrixXd init{1, 1};
+  init(0, 0) = 1;
+
+  std::shared_ptr<IMac> imac{
+      std::make_shared<IMac>(entryExit, entryExit, init)};
+
+  std::unique_ptr<IMacExecutor> exec{std::make_unique<IMacExecutor>(imac)};
+
+  Eigen::MatrixXi initState{exec->restart()};
+
+  REQUIRE(initState(0, 0) == 1);
+
+  exec->clearRobotPosition(GridCell{0, 0});
+
+  Eigen::MatrixXi nextState{exec->updateState(std::vector<IMacObservation>{})};
+  // Can only be correct if the clearing has worked
+  REQUIRE(nextState(0, 0) == 0);
+
+  exec->logMapDynamics("/tmp/clearTest.csv");
+
+  // Read file back in as vector of elements
+  std::vector<int> mapElems;
+  std::ifstream f("/tmp/clearTest.csv");
+
+  std::string rowString;
+  std::string entryString;
+
+  int numRows{0};
+
+  while (getline(f, rowString)) {
+    std::stringstream rowStream(rowString);
+    while (getline(rowStream, entryString, ',')) {
+      mapElems.push_back(std::stoi(entryString));
+    }
+    ++numRows;
+  }
+
+  std::vector<int> expected{0, 0, 0, 0, 1, 0, 0, 0};
+
+  // Length == 8
+  REQUIRE(mapElems.size() == expected.size());
+
+  for (int i{0}; i < mapElems.size(); ++i) {
+    REQUIRE(mapElems.at(i) == expected.at(i));
+  }
+}

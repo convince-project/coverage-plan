@@ -89,3 +89,11 @@ void IMacExecutor::logMapDynamics(const std::filesystem::path &outFile) {
   }
   f.close();
 }
+
+/**
+ * Clear the robot's position in the map.
+ */
+void IMacExecutor::clearRobotPosition(const GridCell &cell) {
+  this->_currentState(cell.y, cell.x) = 0;
+  this->_mapDynamics.at(this->_mapDynamics.size() - 1)(cell.y, cell.x) = 0;
+}

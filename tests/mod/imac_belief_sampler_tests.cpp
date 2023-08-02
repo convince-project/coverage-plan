@@ -17,6 +17,7 @@ TEST_CASE("Test deprecated functions.", "[IMacBeliefSampler::deprecated]") {
   REQUIRE_THROWS(sampler.restart());
   REQUIRE_THROWS(sampler.logMapDynamics("file.csv"));
   REQUIRE_THROWS(sampler.updateState(std::vector<IMacObservation>{}));
+  REQUIRE_THROWS(sampler.clearRobotPosition(GridCell{0, 0}));
 }
 
 TEST_CASE("Test sampleFromBelief.", "[IMacBeliefSampler::sampleFromBelief]") {

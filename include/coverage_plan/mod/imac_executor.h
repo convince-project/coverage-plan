@@ -112,6 +112,16 @@ public:
    * @param outFile The CSV file to write the map logs
    */
   virtual void logMapDynamics(const std::filesystem::path &outFile);
+
+  /**
+   * Clear the robot's position in the map.
+   *
+   * If a robot fails an action, it stays where it is. Due to sampling, this
+   * location may not be clear. This function clears it.
+   *
+   * @param cell The grid cell to clear
+   */
+  virtual void clearRobotPosition(const GridCell &cell);
 };
 
 #endif

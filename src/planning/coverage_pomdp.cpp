@@ -170,6 +170,10 @@ despot::Belief *CoveragePOMDP::InitialBelief(const despot::State *start,
         initMapBelief(absCell.y, absCell.x) =
             initState->map(absCell.y, absCell.x);
       }
+
+      // Robot's initial location must be unoccupied by obstacles
+      initMapBelief(initState->robotPosition.y, initState->robotPosition.x) =
+          0.0;
     }
 
     return new CoverageBelief(this, initState->robotPosition, initState->time,

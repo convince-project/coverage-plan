@@ -65,6 +65,13 @@ public:
   void logMapDynamics(const std::filesystem::path &outFile) {
     throw "logMapDynamics not implemented in IMacBeliefSampler.";
   }
+
+  /**
+   * Function not implemented in IMacBeliefSampler.
+   */
+  void clearRobotPosition(const GridCell &cell) {
+    throw "clearRobotPosition not implemented in IMacBeliefSampler.";
+  }
 };
 
 #endif
