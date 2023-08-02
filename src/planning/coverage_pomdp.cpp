@@ -73,9 +73,16 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
   }
   obs = Observation::toObsType(obsVec, outcome);
 
-  // Termination condition
-  if (coverageState.time >= this->_timeBound) {
-    // Or % covered == 100%
+  std::set<GridCell> uniqueCovered{};
+  for (const GridCell &cell : coverageState.covered) {
+    uniqueCovered.insert(cell);
+  }
+
+  int numCells{coverageState.map.rows() * coverageState.map.cols()};
+
+  // Termination condition (time bound reached or all cells covered)
+  if (coverageState.time >= this->_timeBound or
+      uniqueCovered.size() == numCells) {
     return true;
   }
   return false;

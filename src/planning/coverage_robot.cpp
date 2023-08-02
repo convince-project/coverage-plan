@@ -12,6 +12,7 @@
 #include <fstream>
 #include <map>
 #include <memory>
+#include <set>
 #include <vector>
 
 /**
@@ -188,16 +189,22 @@ void CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
   // Current timestep
   int t{0};
 
+  // Unique locations set for termination check
+  std::set<GridCell> uniqueCovered{};
+
   std::shared_ptr<IMac> imacForEpisode{this->_getIMacInstanceForEpisode()};
+  int numCells{imacForEpisode->getEntryMatrix().rows() *
+               imacForEpisode->getEntryMatrix().cols()};
 
   // At each timestep, we get a vector of observations
   std::vector<std::vector<IMacObservation>> observations{};
 
   // Add initial location to covered and take initial observations
   this->_covered.push_back(this->_currentLoc);
+  uniqueCovered.insert(this->_currentLoc);
   observations.push_back(this->makeObservations());
 
-  while (t < this->_timeBound) {
+  while (t < this->_timeBound and uniqueCovered.size() < numCells) {
 
     Action nextAction{this->planNextAction(
         t, imacForEpisode, observations.at(observations.size() - 1))};
@@ -210,6 +217,7 @@ void CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
     // Update location, covered and time
     this->_currentLoc = outcome.location;
     this->_covered.push_back(this->_currentLoc);
+    uniqueCovered.insert(this->_currentLoc);
     ++t;
   }
 
