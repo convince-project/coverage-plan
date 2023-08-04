@@ -94,10 +94,10 @@ std::string CoverageBelief::text() const {
                            (double)this->_mapBelief.size()))};
 
   // Write out pos, time, percentage covered
-  stream << std::setprecision(2) << "Robot Position: ("
-         << this->_robotPosition.x << ", " << this->_robotPosition.y
-         << "); Time: " << this->_time << "; Covered: " << pctCovered
-         << "%; Map Belief: \n";
+  stream << "Robot Position: (" << this->_robotPosition.x << ", "
+         << this->_robotPosition.y << "); Time: " << this->_time
+         << "; Covered: " << pctCovered << "%; Map Belief: \n"
+         << std::setprecision(2);
 
   // Write out the map belief to a string
   for (int x{0}; x < this->_mapBelief.cols(); ++x) {
