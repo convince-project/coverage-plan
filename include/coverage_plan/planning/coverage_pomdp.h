@@ -194,6 +194,6 @@ public:
    *
    * @return numParticles The number of active particles
    */
-  int NumActiveParticles() const = 0;
+  int NumActiveParticles() const;
 };
 #endif
