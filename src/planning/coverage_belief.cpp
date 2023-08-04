@@ -100,8 +100,8 @@ std::string CoverageBelief::text() const {
          << std::setprecision(2);
 
   // Write out the map belief to a string
-  for (int x{0}; x < this->_mapBelief.cols(); ++x) {
-    for (int y{0}; y < this->_mapBelief.rows(); ++y) {
+  for (int y{0}; y < this->_mapBelief.rows(); ++y) {
+    for (int x{0}; x < this->_mapBelief.cols(); ++x) {
       stream << this->_mapBelief(y, x) << " ";
     }
     stream << "\n";

@@ -117,7 +117,7 @@ TEST_CASE("Tests for CoverageBelief::MakeCopy", "[CoverageBelief::MakeCopy]") {
   delete beliefCp; // Original belief uses smart pointers, but copy doesn't
 }
 
-TEST_CASE("Tests for CoverageBelief::text", "[CoverageBelief::MakeCopy]") {
+TEST_CASE("Tests for CoverageBelief::text", "[CoverageBelief::text]") {
   Eigen::MatrixXd entry{1, 2};
   Eigen::MatrixXd exit{1, 2};
   Eigen::MatrixXd initBelief{1, 2};
@@ -181,7 +181,7 @@ TEST_CASE("Tests for CoverageBelief::Update", "[CoverageBelief::Update]") {
     REQUIRE(coverState->covered.at(1) == GridCell{1, 0});
     REQUIRE(coverState->map.size() == 2);
     REQUIRE(coverState->map(0, 0) == 1);
-    REQUIRE(coverState->map(1, 0) == 0);
+    REQUIRE(coverState->map(0, 1) == 0);
   }
 
   // Check update with failure
@@ -197,7 +197,7 @@ TEST_CASE("Tests for CoverageBelief::Update", "[CoverageBelief::Update]") {
     REQUIRE(coverState->covered.at(2) == GridCell{1, 0});
     REQUIRE(coverState->map.size() == 2);
     REQUIRE(coverState->map(0, 0) == 0);
-    REQUIRE(coverState->map(1, 0) == 0);
+    REQUIRE(coverState->map(0, 1) == 0);
   }
 
   // Check with no observations to test IMac forward step
@@ -215,10 +215,10 @@ TEST_CASE("Tests for CoverageBelief::Update", "[CoverageBelief::Update]") {
 
   std::unique_ptr<CoverageBelief> beliefTwo{std::make_unique<CoverageBelief>(
       pomdpTwo, GridCell{1, 0}, 1, std::vector<GridCell>{GridCell{1, 0}},
-      imacTwo->getInitialBelief(), imac, std::vector<GridCell>{})};
+      imacTwo->getInitialBelief(), imacTwo, std::vector<GridCell>{})};
 
   beliefTwo->Update(ActionHelpers::toInt(Action::wait), 1);
-  std::vector<despot::State *> particlesThree{belief->Sample(5)};
+  std::vector<despot::State *> particlesThree{beliefTwo->Sample(5)};
   for (despot::State *state : particlesThree) {
     CoverageState *coverState{static_cast<CoverageState *>(state)};
     REQUIRE(coverState->robotPosition == GridCell{1, 0});
@@ -228,7 +228,7 @@ TEST_CASE("Tests for CoverageBelief::Update", "[CoverageBelief::Update]") {
     REQUIRE(coverState->covered.at(1) == GridCell{1, 0});
     REQUIRE(coverState->map.size() == 2);
     REQUIRE(coverState->map(0, 0) == 1);
-    REQUIRE(coverState->map(1, 0) == 0);
+    REQUIRE(coverState->map(0, 1) == 0);
   }
 
   // Deallocate everything

@@ -15,6 +15,7 @@ add_library(planning STATIC planning/action.cpp
                             planning/random_coverage_robot.cpp
                             planning/coverage_state.cpp
                             planning/coverage_observation.cpp
+                            planning/coverage_belief.cpp
                             planning/coverage_pomdp.cpp)
 target_include_directories(planning PUBLIC ../include)
 target_link_libraries(planning PUBLIC mod)

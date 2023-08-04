@@ -253,8 +253,8 @@ void CoveragePOMDP::PrintObs(const despot::State &state, despot::OBS_TYPE obs,
   }
 
   // Print the observation as a grid
-  for (int x{minX}; x <= maxX; ++x) {
-    for (int y{minY}; y <= maxY; ++y) {
+  for (int y{minY}; y <= maxY; ++y) {
+    for (int x{minX}; x <= maxX; ++x) {
       if (x == 0 && y == 0) {
         out << "R "; // The robot
       } else if (obsMap.find(GridCell{x, y}) != obsMap.end()) {
