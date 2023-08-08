@@ -26,7 +26,50 @@ TEST_CASE("Test for CoveragePOMDP::NumActions", "[CoveragePOMDP::NumActions]") {
   REQUIRE(pomdp->NumActions() == 5);
 }
 
-// TODO: ObsProb
+TEST_CASE("Test for CoveragePOMDP::ObsProb", "[CoveragePOMDP::ObsProb]") {
+
+  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
+                            GridCell{0, 1}};
+
+  std::unique_ptr<CoveragePOMDP> pomdp{
+      std::make_unique<CoveragePOMDP>(fov, nullptr, 5)};
+
+  Eigen::MatrixXi map{3, 3};
+  map(0, 0) = 1;
+  map(0, 1) = 0;
+  map(0, 2) = 1;
+  map(1, 0) = 0;
+  map(1, 1) = 0;
+  map(1, 2) = 1;
+  map(2, 0) = 0;
+  map(2, 1) = 1;
+  map(2, 2) = 0;
+
+  std::vector<GridCell> covered{};
+
+  // Test 1: Out of bounds good
+  CoverageState state{GridCell{0, 1}, 0, map, covered, 1, -1};
+
+  REQUIRE(pomdp->ObsProb(18, state, ActionHelpers::toInt(Action::wait)) == 1.0);
+  REQUIRE(pomdp->ObsProb(8, state, ActionHelpers::toInt(Action::wait)) == 1.0);
+
+  // Test 2: Out of bounds bad
+  REQUIRE(pomdp->ObsProb(26, state, ActionHelpers::toInt(Action::wait)) == 0.0);
+  REQUIRE(pomdp->ObsProb(10, state, ActionHelpers::toInt(Action::wait)) == 0.0);
+
+  // Test 3: In bounds bad
+  CoverageState stateTwo{GridCell{1, 1}, 0, map, covered, 1, -1};
+  REQUIRE(pomdp->ObsProb(4, stateTwo, ActionHelpers::toInt(Action::wait)) ==
+          0.0);
+  REQUIRE(pomdp->ObsProb(20, stateTwo, ActionHelpers::toInt(Action::wait)) ==
+          0.0);
+
+  // Test 4: In bounds good
+  REQUIRE(pomdp->ObsProb(5, stateTwo, ActionHelpers::toInt(Action::wait)) ==
+          1.0);
+  REQUIRE(pomdp->ObsProb(21, stateTwo, ActionHelpers::toInt(Action::wait)) ==
+          1.0);
+}
 
 TEST_CASE("Test for CoveragePOMDP::InitialBelief",
           "[CoveragePOMDP::InitialBelief]") {
