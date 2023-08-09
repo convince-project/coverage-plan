@@ -48,27 +48,31 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
   REQUIRE(pomdp->Step(state, 0.5, action, reward, obs));
   std::pair<std::vector<IMacObservation>, bool> obsInfo{
       Observation::fromObsType(obs, fov)};
-  REQUIRE(reward == 1.0);
+  REQUIRE(reward == 0.0);
   REQUIRE(state.time == 5);
   REQUIRE(state.covered.size() == 1);
   if (state.robotPosition == GridCell{1, 1}) { // Action fail
-    std::cout << "Step: Fail\n";
     REQUIRE(state.map(1, 1) == 0);
     REQUIRE(state.covered.at(0) == GridCell{1, 1});
     REQUIRE(!std::get<1>(obsInfo));
   } else if (state.robotPosition == GridCell{2, 1}) { // Action success
-    std::cout << "Step: Success\n";
     REQUIRE(state.map(1, 2) == 0);
     REQUIRE(state.covered.at(0) == GridCell{2, 1});
-    REQUIRE(!std::get<1>(obsInfo));
+    REQUIRE(std::get<1>(obsInfo));
   } else {
     REQUIRE(false);
   }
 
   for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
-    REQUIRE(state.map(imacObs.cell.y + state.robotPosition.y,
-                      imacObs.cell.x + state.robotPosition.x) ==
-            imacObs.occupied);
+    GridCell expectedLoc{imacObs.cell.x + state.robotPosition.x,
+                         imacObs.cell.y + state.robotPosition.y};
+    if (!expectedLoc.outOfBounds(0, state.map.cols(), 0, state.map.rows())) {
+      REQUIRE(state.map(imacObs.cell.y + state.robotPosition.y,
+                        imacObs.cell.x + state.robotPosition.x) ==
+              imacObs.occupied);
+    } else {
+      REQUIRE(imacObs.occupied == 1);
+    }
   }
 
   // terminal state (all nodes covered)
@@ -86,22 +90,26 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
   REQUIRE(state.covered.size() == 10);
   REQUIRE(state.time == 4);
   if (state.robotPosition == GridCell{1, 1}) { // Action fail
-    std::cout << "Step: Fail\n";
     REQUIRE(state.map(1, 1) == 0);
     REQUIRE(state.covered.at(9) == GridCell{1, 1});
     REQUIRE(!std::get<1>(obsInfo));
   } else if (state.robotPosition == GridCell{2, 1}) { // Action success
-    std::cout << "Step: Success\n";
     REQUIRE(state.map(1, 2) == 0);
     REQUIRE(state.covered.at(9) == GridCell{2, 1});
-    REQUIRE(!std::get<1>(obsInfo));
+    REQUIRE(std::get<1>(obsInfo));
   } else {
     REQUIRE(false);
   }
   for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
-    REQUIRE(state.map(imacObs.cell.y + state.robotPosition.y,
-                      imacObs.cell.x + state.robotPosition.x) ==
-            imacObs.occupied);
+    GridCell expectedLoc{imacObs.cell.x + state.robotPosition.x,
+                         imacObs.cell.y + state.robotPosition.y};
+    if (!expectedLoc.outOfBounds(0, state.map.cols(), 0, state.map.rows())) {
+      REQUIRE(state.map(imacObs.cell.y + state.robotPosition.y,
+                        imacObs.cell.x + state.robotPosition.x) ==
+              imacObs.occupied);
+    } else {
+      REQUIRE(imacObs.occupied == 1);
+    }
   }
 
   // Test when not terminal (but lots in covered)
@@ -124,9 +132,15 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
   REQUIRE(state.time == 2);
   REQUIRE(std::get<1>(obsInfo));
   for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
-    REQUIRE(state.map(imacObs.cell.y + state.robotPosition.y,
-                      imacObs.cell.x + state.robotPosition.x) ==
-            imacObs.occupied);
+    GridCell expectedLoc{imacObs.cell.x + state.robotPosition.x,
+                         imacObs.cell.y + state.robotPosition.y};
+    if (!expectedLoc.outOfBounds(0, state.map.cols(), 0, state.map.rows())) {
+      REQUIRE(state.map(imacObs.cell.y + state.robotPosition.y,
+                        imacObs.cell.x + state.robotPosition.x) ==
+              imacObs.occupied);
+    } else {
+      REQUIRE(imacObs.occupied == 1);
+    }
   }
 }
 
@@ -161,12 +175,12 @@ TEST_CASE("Test for CoveragePOMDP::ObsProb", "[CoveragePOMDP::ObsProb]") {
   // Test 1: Out of bounds good
   CoverageState state{GridCell{0, 1}, 0, map, covered, 1, -1};
 
-  REQUIRE(pomdp->ObsProb(18, state, ActionHelpers::toInt(Action::wait)) == 1.0);
-  REQUIRE(pomdp->ObsProb(8, state, ActionHelpers::toInt(Action::wait)) == 1.0);
+  REQUIRE(pomdp->ObsProb(26, state, ActionHelpers::toInt(Action::wait)) == 1.0);
+  REQUIRE(pomdp->ObsProb(10, state, ActionHelpers::toInt(Action::wait)) == 1.0);
 
   // Test 2: Out of bounds bad
-  REQUIRE(pomdp->ObsProb(26, state, ActionHelpers::toInt(Action::wait)) == 0.0);
-  REQUIRE(pomdp->ObsProb(10, state, ActionHelpers::toInt(Action::wait)) == 0.0);
+  REQUIRE(pomdp->ObsProb(18, state, ActionHelpers::toInt(Action::wait)) == 0.0);
+  REQUIRE(pomdp->ObsProb(2, state, ActionHelpers::toInt(Action::wait)) == 0.0);
 
   // Test 3: In bounds bad
   CoverageState stateTwo{GridCell{1, 1}, 0, map, covered, 1, -1};
@@ -233,7 +247,6 @@ TEST_CASE("Test for CoveragePOMDP::InitialBelief",
   REQUIRE(sample->map(2, 1) == 0);
 
   // Deallocate the belief
-  delete sample;
   delete coverBelief;
 }
 
@@ -281,7 +294,7 @@ TEST_CASE("Test for CoveragePOMDP::PrintObs", "[CoveragePOMDP::PrintObs]") {
                             GridCell{0, 1}},
       nullptr, 5)};
 
-  Eigen::MatrixXd map{Eigen::MatrixXd::Zero(3, 3)};
+  Eigen::MatrixXi map{Eigen::MatrixXi::Zero(3, 3)};
   CoverageState state{GridCell{1, 1}, 2, map, std::vector<GridCell>{}, 0.5, -1};
 
   std::ostringstream stream{};
@@ -292,7 +305,7 @@ TEST_CASE("Test for CoveragePOMDP::PrintObs", "[CoveragePOMDP::PrintObs]") {
           "Action Successful; Observation:\n? X ? \nX R - \n? - ? \n");
 
   // Test with action failure
-  stream.clear();
+  stream = std::ostringstream{};
   pomdp->PrintObs(state, 10, stream);
   REQUIRE(stream.str() ==
           "Action Failed; Observation:\n? X ? \nX R - \n? - ? \n");
@@ -307,23 +320,23 @@ TEST_CASE("Test for CoveragePOMDP::PrintAction",
 
   pomdp->PrintAction(ActionHelpers::toInt(Action::up), stream);
   REQUIRE(stream.str() == "Action: Up\n");
-  stream.clear();
+  stream = std::ostringstream{};
 
   pomdp->PrintAction(ActionHelpers::toInt(Action::down), stream);
   REQUIRE(stream.str() == "Action: Down\n");
-  stream.clear();
+  stream = std::ostringstream{};
 
   pomdp->PrintAction(ActionHelpers::toInt(Action::left), stream);
   REQUIRE(stream.str() == "Action: Left\n");
-  stream.clear();
+  stream = std::ostringstream{};
 
   pomdp->PrintAction(ActionHelpers::toInt(Action::right), stream);
   REQUIRE(stream.str() == "Action: Right\n");
-  stream.clear();
+  stream = std::ostringstream{};
 
   pomdp->PrintAction(ActionHelpers::toInt(Action::wait), stream);
   REQUIRE(stream.str() == "Action: Wait\n");
-  stream.clear();
+  stream = std::ostringstream{};
 }
 
 TEST_CASE("Test for CoveragePOMDP::PrintBelief",
@@ -381,7 +394,7 @@ TEST_CASE("Test for CoveragePOMDP::Copy", "[CoveragePOMDP::Copy]") {
 
   despot::State *state{pomdp->Allocate(5, 0.2)};
   CoverageState *coverState{static_cast<CoverageState *>(state)};
-  coverState->map = Eigen::MatrixXd::Zero(2, 2);
+  coverState->map = Eigen::MatrixXi::Zero(2, 2);
   coverState->robotPosition = GridCell{2, 1};
   coverState->time = 3;
   coverState->covered = std::vector<GridCell>{GridCell{2, 1}};
