@@ -7,17 +7,128 @@
 
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
+#include "coverage_plan/mod/imac_executor.h"
 #include "coverage_plan/planning/action.h"
 #include "coverage_plan/planning/coverage_belief.h"
+#include "coverage_plan/planning/coverage_observation.h"
 #include "coverage_plan/planning/coverage_pomdp.h"
 #include <Eigen/Dense>
 #include <catch2/catch.hpp>
 #include <despot/interface/default_policy.h>
+#include <iostream>
 #include <memory>
 #include <sstream>
 #include <vector>
 
-// TODO: Step
+TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
+
+  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
+                            GridCell{0, 1}};
+
+  Eigen::MatrixXd imacMat{3, 3};
+  for (int i{0}; i < 3; ++i) {
+    for (int j{0}; j < 3; ++j) {
+      imacMat(i, j) = i * 0.3 + j * 0.1;
+    }
+  }
+
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(imacMat, imacMat, imacMat)};
+
+  std::unique_ptr<CoveragePOMDP> pomdp{
+      std::make_unique<CoveragePOMDP>(fov, imac, 5)};
+
+  CoverageState state{GridCell{1, 1}, 4, Eigen::MatrixXi::Zero(3, 3),
+                      std::vector<GridCell>{}, 1.0};
+  despot::ACT_TYPE action{ActionHelpers::toInt(Action::right)};
+  despot::OBS_TYPE obs{0};
+  double reward{0.0};
+
+  // Should return terminal state (time bound met)
+  // Also checks time, reward gain, covered addition
+  REQUIRE(pomdp->Step(state, 0.5, action, reward, obs));
+  std::pair<std::vector<IMacObservation>, bool> obsInfo{
+      Observation::fromObsType(obs, fov)};
+  REQUIRE(reward == 1.0);
+  REQUIRE(state.time == 5);
+  REQUIRE(state.covered.size() == 1);
+  if (state.robotPosition == GridCell{1, 1}) { // Action fail
+    std::cout << "Step: Fail\n";
+    REQUIRE(state.map(1, 1) == 0);
+    REQUIRE(state.covered.at(0) == GridCell{1, 1});
+    REQUIRE(!std::get<1>(obsInfo));
+  } else if (state.robotPosition == GridCell{2, 1}) { // Action success
+    std::cout << "Step: Success\n";
+    REQUIRE(state.map(1, 2) == 0);
+    REQUIRE(state.covered.at(0) == GridCell{2, 1});
+    REQUIRE(!std::get<1>(obsInfo));
+  } else {
+    REQUIRE(false);
+  }
+
+  for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
+    REQUIRE(state.map(imacObs.cell.y + state.robotPosition.y,
+                      imacObs.cell.x + state.robotPosition.x) ==
+            imacObs.occupied);
+  }
+
+  // terminal state (all nodes covered)
+  std::vector<GridCell> covered{};
+  for (int x{0}; x < 3; ++x) {
+    for (int y{0}; y < 3; ++y) {
+      covered.push_back(GridCell{x, y});
+    }
+  }
+  state = CoverageState{GridCell{1, 1}, 3, Eigen::MatrixXi::Zero(3, 3), covered,
+                        1.0};
+  REQUIRE(pomdp->Step(state, 0.4, action, reward, obs));
+  obsInfo = Observation::fromObsType(obs, fov);
+  REQUIRE(reward == 0.0);
+  REQUIRE(state.covered.size() == 10);
+  REQUIRE(state.time == 4);
+  if (state.robotPosition == GridCell{1, 1}) { // Action fail
+    std::cout << "Step: Fail\n";
+    REQUIRE(state.map(1, 1) == 0);
+    REQUIRE(state.covered.at(9) == GridCell{1, 1});
+    REQUIRE(!std::get<1>(obsInfo));
+  } else if (state.robotPosition == GridCell{2, 1}) { // Action success
+    std::cout << "Step: Success\n";
+    REQUIRE(state.map(1, 2) == 0);
+    REQUIRE(state.covered.at(9) == GridCell{2, 1});
+    REQUIRE(!std::get<1>(obsInfo));
+  } else {
+    REQUIRE(false);
+  }
+  for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
+    REQUIRE(state.map(imacObs.cell.y + state.robotPosition.y,
+                      imacObs.cell.x + state.robotPosition.x) ==
+            imacObs.occupied);
+  }
+
+  // Test when not terminal (but lots in covered)
+  // Wait actions always succeed
+  covered.clear();
+  for (int x{0}; x < 3; ++x) {
+    for (int y{0}; y < 3; ++y) {
+      covered.push_back(GridCell{1, 1});
+    }
+  }
+  state = CoverageState{GridCell{0, 1}, 1, Eigen::MatrixXi::Zero(3, 3), covered,
+                        1.0};
+  REQUIRE(!pomdp->Step(state, 0.3, ActionHelpers::toInt(Action::wait), reward,
+                       obs));
+  obsInfo = Observation::fromObsType(obs, fov);
+  REQUIRE(reward == 1.0);
+  REQUIRE(state.robotPosition == GridCell{0, 1});
+  REQUIRE(state.covered.size() == 10);
+  REQUIRE(state.covered.at(9) == GridCell{0, 1});
+  REQUIRE(state.time == 2);
+  REQUIRE(std::get<1>(obsInfo));
+  for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
+    REQUIRE(state.map(imacObs.cell.y + state.robotPosition.y,
+                      imacObs.cell.x + state.robotPosition.x) ==
+            imacObs.occupied);
+  }
+}
 
 TEST_CASE("Test for CoveragePOMDP::NumActions", "[CoveragePOMDP::NumActions]") {
   std::unique_ptr<CoveragePOMDP> pomdp{
