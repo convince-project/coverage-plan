@@ -125,6 +125,10 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
   REQUIRE(!pomdp->Step(state, 0.3, ActionHelpers::toInt(Action::wait), reward,
                        obs));
   obsInfo = Observation::fromObsType(obs, fov);
+  // Reward for wait should always be 0 in practice, but because I've spammed
+  // the covered list with complete nonsense, the robot's waiting location isn't
+  // included. As seed 0.3 leads to action success, we get a reward of 1
+  // so this still demonstrates the intended behaviour
   REQUIRE(reward == 1.0);
   REQUIRE(state.robotPosition == GridCell{0, 1});
   REQUIRE(state.covered.size() == 10);
