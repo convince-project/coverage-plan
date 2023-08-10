@@ -16,7 +16,8 @@ add_library(planning STATIC planning/action.cpp
                             planning/coverage_state.cpp
                             planning/coverage_observation.cpp
                             planning/coverage_belief.cpp
-                            planning/coverage_pomdp.cpp)
+                            planning/coverage_pomdp.cpp
+                            planning/coverage_world.cpp)
 target_include_directories(planning PUBLIC ../include)
 target_link_libraries(planning PUBLIC mod)
 target_link_libraries(planning PUBLIC Eigen3::Eigen)
