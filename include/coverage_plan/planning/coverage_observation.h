@@ -58,5 +58,20 @@ fromObsType(const despot::OBS_TYPE &obsInt, const std::vector<GridCell> &fov,
 despot::OBS_TYPE toObsType(const std::vector<IMacObservation> &obsVector,
                            const ActionOutcome &outcome);
 
+/**
+ * Compute the observation given the map, robot position and fov.
+ *
+ * @param map The Eigen matrix capturing the state of the environment
+ * @param robotPos The robot's position
+ * @param outcome The action outcome
+ * @param fov The robot's field of view as a vector of relative grid cells
+ *
+ * @return obs The observation as a number
+ */
+despot::OBS_TYPE computeObservation(const Eigen::MatrixXi &map,
+                                    const GridCell &robotPos,
+                                    const ActionOutcome &outcome,
+                                    const std::vector<GridCell> &fov);
+
 } // namespace Observation
 #endif

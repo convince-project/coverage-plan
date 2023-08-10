@@ -73,20 +73,8 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
   // Add to covered
   coverageState.covered.push_back(coverageState.robotPosition);
 
-  // Now get the observation
-  std::vector<IMacObservation> obsVec{};
-  for (const GridCell &cell : this->_fov) {
-    GridCell obsLoc{coverageState.robotPosition.x + cell.x,
-                    coverageState.robotPosition.y + cell.y};
-    if (!obsLoc.outOfBounds(0, coverageState.map.cols(), 0,
-                            coverageState.map.rows())) {
-      obsVec.push_back(
-          IMacObservation{cell, coverageState.map(obsLoc.y, obsLoc.x)});
-    } else { // Out of bounds cells are occupied
-      obsVec.push_back(IMacObservation{cell, 1});
-    }
-  }
-  obs = Observation::toObsType(obsVec, outcome);
+  obs = Observation::computeObservation(
+      coverageState.map, coverageState.robotPosition, outcome, this->_fov);
 
   std::set<GridCell> uniqueCovered{};
   for (const GridCell &cell : coverageState.covered) {
@@ -157,8 +145,7 @@ despot::Belief *CoveragePOMDP::InitialBelief(const despot::State *start,
     // Add initial observation into initial belief
     // The robot should be able to make an initial observation before moving
     for (const GridCell &cell : this->_fov) {
-      GridCell absCell{initState->robotPosition.x + cell.x,
-                       initState->robotPosition.y + cell.y};
+      GridCell absCell{initState->robotPosition + cell};
 
       if (!absCell.outOfBounds(0, initMapBelief.cols(), 0,
                                initMapBelief.rows())) {

@@ -70,3 +70,22 @@ Observation::toObsType(const std::vector<IMacObservation> &obsVector,
 
   return obsInt;
 }
+
+/**
+ * Compute the observation given the map, robot position and fov.
+ */
+despot::OBS_TYPE Observation::computeObservation(
+    const Eigen::MatrixXi &map, const GridCell &robotPos,
+    const ActionOutcome &outcome, const std::vector<GridCell> &fov) {
+  // Now get the observation
+  std::vector<IMacObservation> obsVec{};
+  for (const GridCell &cell : fov) {
+    GridCell obsLoc{robotPos + cell};
+    if (!obsLoc.outOfBounds(0, map.cols(), 0, map.rows())) {
+      obsVec.push_back(IMacObservation{cell, map(obsLoc.y, obsLoc.x)});
+    } else { // Out of bounds cells are occupied
+      obsVec.push_back(IMacObservation{cell, 1});
+    }
+  }
+  return Observation::toObsType(obsVec, outcome);
+}

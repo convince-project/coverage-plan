@@ -94,19 +94,8 @@ bool CoverageWorld::ExecuteAction(despot::ACT_TYPE action,
   coverState->covered.push_back(coverState->robotPosition);
 
   // Compute observation
-  std::vector<IMacObservation> obsVec{};
-  for (const GridCell &cell : this->_fov) {
-    GridCell absCell{coverState->robotPosition.x + cell.x,
-                     coverState->robotPosition.y + cell.y};
-    if (!absCell.outOfBounds(0, coverState->map.cols(), 0,
-                             coverState->map.rows())) {
-      obsVec.push_back(
-          IMacObservation{cell, coverState->map(absCell.y, absCell.x)});
-    } else {
-      obsVec.push_back(IMacObservation{cell, 1});
-    }
-  }
-  obs = Observation::toObsType(obsVec, outcome);
+  obs = Observation::computeObservation(
+      coverState->map, coverState->robotPosition, outcome, this->_fov);
 
   // Number of cells covered
   std::set<GridCell> uniqueCovered{};

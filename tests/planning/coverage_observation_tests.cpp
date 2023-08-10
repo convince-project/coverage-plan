@@ -7,6 +7,7 @@
 
 #include "coverage_plan/planning/action.h"
 #include "coverage_plan/planning/coverage_observation.h"
+#include <Eigen/Dense>
 #include <catch2/catch.hpp>
 #include <despot/core/globals.h>
 #include <tuple>
@@ -152,4 +153,33 @@ TEST_CASE("Unit test for Observation::toObsType", "[Observation::toObsType]") {
   outcome = ActionOutcome{Action::up, true, GridCell{1, 1}};
 
   REQUIRE_THROWS(Observation::toObsType(obsVector, outcome));
+}
+
+TEST_CASE("Unit test for Observation::computeObservation",
+          "[Observation::computeObservation]") {
+
+  Eigen::MatrixXi map{3, 3};
+  map(0, 0) = 1;
+  map(0, 1) = 0;
+  map(0, 2) = 1;
+  map(1, 0) = 0;
+  map(1, 1) = 0;
+  map(1, 2) = 1;
+  map(2, 0) = 1;
+  map(2, 1) = 1;
+  map(2, 2) = 2;
+
+  GridCell robotPos{1, 1};
+  ActionOutcome outcome{Action::right, true, robotPos};
+
+  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
+                            GridCell{0, 1}};
+
+  despot::OBS_TYPE obs{
+      Observation::computeObservation(map, robotPos, outcome, fov)};
+  REQUIRE(obs == 21);
+
+  outcome.success = false;
+  obs = Observation::computeObservation(map, robotPos, outcome, fov);
+  REQUIRE(obs == 5);
 }
