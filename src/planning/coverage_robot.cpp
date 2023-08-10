@@ -19,7 +19,11 @@
  * Return the IMac instance to be used for an episode.
  */
 std::shared_ptr<IMac> CoverageRobot::_getIMacInstanceForEpisode() {
-  return this->_bimac->posteriorSample();
+  if (this->_groundTruthIMac == nullptr) {
+    return this->_bimac->posteriorSample();
+  } else {
+    return this->_groundTruthIMac;
+  }
 }
 
 /**

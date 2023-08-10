@@ -80,10 +80,14 @@ public:
    * @param xDim The x dimension of the map
    * @param yDim The y dimension of the map
    * @param world The IMacExecutor representing the environment
+   * @param groundTruthIMac The ground truth IMac instance (if we don't want to
+   * use BiMac)
    */
   RandomCoverageRobot(const GridCell &currentLoc, int timeBound, int xDim,
-                      int yDim, std::shared_ptr<IMacExecutor> world)
-      : CoverageRobot{currentLoc, timeBound, xDim, yDim}, _world{world} {}
+                      int yDim, std::shared_ptr<IMacExecutor> world,
+                      std::shared_ptr<IMac> groundTruthIMac = nullptr)
+      : CoverageRobot{currentLoc, timeBound, xDim, yDim, groundTruthIMac},
+        _world{world} {}
 };
 
 #endif

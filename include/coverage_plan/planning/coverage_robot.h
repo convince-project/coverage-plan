@@ -15,6 +15,7 @@
 
 #include "coverage_plan/mod/bimac.h"
 #include "coverage_plan/mod/grid_cell.h"
+#include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
 #include "coverage_plan/planning/action.h"
 #include <filesystem>
@@ -43,6 +44,7 @@ private:
   const int _xDim{};
   const int _yDim{};
   std::shared_ptr<BIMac> _bimac{};
+  std::shared_ptr<IMac> _groundTruthIMac{};
 
   /**
    * Function gets the IMac instance to be used for an episode.
@@ -148,10 +150,14 @@ public:
    * @param timeBound: The maximum number of timesteps given to the robot
    * @param xDim The length of the x dimension of the environment
    * @param yDim The length of the y dimension of the environment
+   * @param groundTruthIMac The ground truth IMac (if we want to test planning
+   * without BiMac)
    */
-  CoverageRobot(const GridCell &currentLoc, int timeBound, int xDim, int yDim)
+  CoverageRobot(const GridCell &currentLoc, int timeBound, int xDim, int yDim,
+                std::shared_ptr<IMac> groundTruthIMac = nullptr)
       : _currentLoc{currentLoc}, _covered{}, _timeBound{timeBound}, _xDim{xDim},
-        _yDim{yDim}, _bimac{std::make_shared<BIMac>(xDim, yDim)} {}
+        _yDim{yDim}, _bimac{std::make_shared<BIMac>(xDim, yDim)},
+        _groundTruthIMac{groundTruthIMac} {}
 
   /**
    * Wrapper around _planFn which fills in the gaps from class members.
