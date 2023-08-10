@@ -189,7 +189,7 @@ TEST_CASE("Test for CoverageWorld::ExecuteAction under normal use",
   despot::OBS_TYPE obs{0};
 
   // Terminated as time bound reached
-  REQUIRE(!world.ExecuteAction(ActionHelpers::toInt(Action::up), obs));
+  REQUIRE(!world.ExecuteAction(ActionHelpers::toInt(Action::down), obs));
 
   CoverageState *succ{static_cast<CoverageState *>(world.GetCurrentState())};
   std::pair<std::vector<IMacObservation>, bool> obsInfo{
@@ -200,8 +200,8 @@ TEST_CASE("Test for CoverageWorld::ExecuteAction under normal use",
   if (succ->robotPosition == GridCell{0, 1}) { // Failure
     REQUIRE(succ->covered.at(1) == GridCell{0, 1});
     REQUIRE(!std::get<1>(obsInfo));
-  } else if (succ->robotPosition == GridCell{0, 0}) { // Success
-    REQUIRE(succ->covered.at(1) == GridCell{0, 0});
+  } else if (succ->robotPosition == GridCell{0, 2}) { // Success
+    REQUIRE(succ->covered.at(1) == GridCell{0, 2});
     REQUIRE(std::get<1>(obsInfo));
   } else {
     REQUIRE(false);
