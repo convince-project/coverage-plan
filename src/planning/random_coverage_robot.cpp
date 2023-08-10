@@ -87,8 +87,7 @@ ActionOutcome RandomCoverageRobot::_executeFn(const GridCell &currentLoc,
       nextLoc.y = currentLoc.y;
     }
     // Clear the robot's position (because of possible occupancy in sampling)
-    nextState(nextLoc.y, nextLoc.x) = 0;
-    this->_world->clearRobotPosition(nextLoc);
+    nextState = this->_world->clearRobotPosition(nextLoc);
   }
 
   ActionOutcome outcome{action, succ, nextLoc};

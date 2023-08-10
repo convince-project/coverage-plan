@@ -120,8 +120,10 @@ public:
    * location may not be clear. This function clears it.
    *
    * @param cell The grid cell to clear
+   *
+   * @return updatedState The updated currentState
    */
-  virtual void clearRobotPosition(const GridCell &cell);
+  virtual Eigen::MatrixXi clearRobotPosition(const GridCell &cell);
 };
 
 #endif

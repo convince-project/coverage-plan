@@ -81,9 +81,9 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
     if (!obsLoc.outOfBounds(0, coverageState.map.cols(), 0,
                             coverageState.map.rows())) {
       obsVec.push_back(
-          IMacObservation{obsLoc, coverageState.map(obsLoc.y, obsLoc.x)});
+          IMacObservation{cell, coverageState.map(obsLoc.y, obsLoc.x)});
     } else { // Out of bounds cells are occupied
-      obsVec.push_back(IMacObservation{obsLoc, 1});
+      obsVec.push_back(IMacObservation{cell, 1});
     }
   }
   obs = Observation::toObsType(obsVec, outcome);
@@ -93,11 +93,9 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
     uniqueCovered.insert(cell);
   }
 
-  int numCells{(int)(coverageState.map.rows() * coverageState.map.cols())};
-
   // Termination condition (time bound reached or all cells covered)
   if (coverageState.time >= this->_timeBound or
-      uniqueCovered.size() == numCells) {
+      uniqueCovered.size() == coverageState.map.size()) {
     return true;
   }
   return false;

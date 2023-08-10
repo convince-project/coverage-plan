@@ -7,8 +7,12 @@
 
 #include "coverage_plan/planning/coverage_world.h"
 #include "coverage_plan/mod/grid_cell.h"
+#include "coverage_plan/mod/imac_executor.h"
+#include "coverage_plan/planning/action.h"
+#include "coverage_plan/planning/coverage_observation.h"
 #include "coverage_plan/planning/coverage_state.h"
 #include <despot/interface/pomdp.h>
+#include <set>
 #include <vector>
 
 /**
@@ -48,4 +52,72 @@ despot::State *CoverageWorld::Initialize() {
  */
 void CoverageWorld::PrintState(const despot::State &s, ostream &out) const {
   out << s.text();
+}
+
+/**
+ * Execute action, update state, and make observation.
+ */
+bool CoverageWorld::ExecuteAction(despot::ACT_TYPE action,
+                                  despot::OBS_TYPE &obs) {
+
+  CoverageState *coverState{static_cast<CoverageState *>(this->state_)};
+
+  // Update map (no observations here)
+  coverState->map = this->_exec->updateState(std::vector<IMacObservation>{});
+
+  // Update time
+  ++coverState->time;
+
+  // Update robot position
+  GridCell succLoc{ActionHelpers::applySuccessfulAction(
+      coverState->robotPosition, ActionHelpers::fromInt(action))};
+
+  ActionOutcome outcome{};
+  outcome.action = ActionHelpers::fromInt(action);
+  outcome.success = true;
+
+  if ((succLoc.outOfBounds(0, coverState->map.cols(), 0,
+                           coverState->map.rows()) ||
+       (coverState->map(succLoc.y, succLoc.x) == 1)) &&
+      ActionHelpers::fromInt(action) != Action::wait) {
+    outcome.success = false;
+    succLoc = coverState->robotPosition;
+  }
+
+  outcome.location = succLoc;
+  coverState->robotPosition = succLoc;
+
+  // Update robot pos in map
+  coverState->map = this->_exec->clearRobotPosition(coverState->robotPosition);
+
+  // Update covered
+  coverState->covered.push_back(coverState->robotPosition);
+
+  // Compute observation
+  std::vector<IMacObservation> obsVec{};
+  for (const GridCell &cell : this->_fov) {
+    GridCell absCell{coverState->robotPosition.x + cell.x,
+                     coverState->robotPosition.y + cell.y};
+    if (!absCell.outOfBounds(0, coverState->map.cols(), 0,
+                             coverState->map.rows())) {
+      obsVec.push_back(
+          IMacObservation{cell, coverState->map(absCell.y, absCell.x)});
+    } else {
+      obsVec.push_back(IMacObservation{cell, 1});
+    }
+  }
+  obs = Observation::toObsType(obsVec, outcome);
+
+  // Number of cells covered
+  std::set<GridCell> uniqueCovered{};
+  for (const GridCell &cell : coverState->covered) {
+    uniqueCovered.insert(cell);
+  }
+
+  // Termination condition (time bound reached or all cells covered)
+  if (coverState->time >= this->_timeBound or
+      uniqueCovered.size() == coverState->map.size()) {
+    return true;
+  }
+  return false;
 }

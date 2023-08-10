@@ -270,7 +270,8 @@ TEST_CASE("Tests for clearRobotPosition in IMacExecutor",
 
   REQUIRE(initState(0, 0) == 1);
 
-  exec->clearRobotPosition(GridCell{0, 0});
+  initState = exec->clearRobotPosition(GridCell{0, 0});
+  REQUIRE(initState(0, 0) == 0);
 
   Eigen::MatrixXi nextState{exec->updateState(std::vector<IMacObservation>{})};
   // Can only be correct if the clearing has worked

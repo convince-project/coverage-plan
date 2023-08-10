@@ -69,7 +69,7 @@ public:
   /**
    * Function not implemented in IMacBeliefSampler.
    */
-  void clearRobotPosition(const GridCell &cell) {
+  Eigen::MatrixXi clearRobotPosition(const GridCell &cell) {
     throw "clearRobotPosition not implemented in IMacBeliefSampler.";
   }
 };

@@ -25,6 +25,7 @@
  * As in superclass, plus:
  * _initPos: Initial robot position
  * _initTime: The initial time the robot starts coverage
+ * _timeBound: The time bound on coverage planning
  * _exec: An IMacExecutor which we sample through
  */
 class CoverageWorld : public despot::World {
@@ -32,6 +33,7 @@ class CoverageWorld : public despot::World {
 private:
   const GridCell _initPos{};
   const int _initTime{};
+  const int _timeBound{};
   const std::vector<GridCell> _fov{};
   std::shared_ptr<IMacExecutor> _exec{};
 
@@ -40,14 +42,15 @@ public:
    *
    * @param initPos The initial position of the robot
    * @param initTime The time the robot starts coverage
+   * @param timeBound The time bound on coverage planning
    * @param fov The robot's FOV as a list of GridCells relative to its position
    * @param exec The IMac executor instance we are sampling with
    */
   CoverageWorld(const GridCell &initPos, const int &initTime,
-                const std::vector<GridCell> &fov,
+                const int &timeBound, const std::vector<GridCell> &fov,
                 std::shared_ptr<IMacExecutor> exec)
-      : World{}, _initPos{initPos}, _initTime{initTime}, _fov{fov}, _exec{
-                                                                        exec} {
+      : World{}, _initPos{initPos}, _initTime{initTime},
+        _timeBound{timeBound}, _fov{fov}, _exec{exec} {
     this->state_ = new CoverageState();
   }
 
@@ -61,21 +64,21 @@ public:
    *
    * @return success Always true
    */
-  virtual bool Connect();
+  bool Connect();
 
   /**
    * Resets the IMacExecutor and returns the initial coverage state.
    *
    * @return initState The initial CoverageState
    */
-  virtual despot::State *Initialize(); // TODO: Add init loc as observation!
+  despot::State *Initialize(); // TODO: Add init loc as observation!
 
   /**
    * Returns the current CoverageState of the system.
    *
    * @return currentState The current CoverageState
    */
-  virtual despot::State *GetCurrentState() const;
+  despot::State *GetCurrentState() const;
 
   /**
    * Print a state.
@@ -83,7 +86,7 @@ public:
    * @param s The state to print
    * @param out The stream to write to
    */
-  virtual void PrintState(const despot::State &s, ostream &out) const;
+  void PrintState(const despot::State &s, ostream &out) const;
 
   /**
    * Execute action, update state, and make observation.
@@ -93,7 +96,7 @@ public:
    *
    * @return terminal Is the current state a terminal state?
    */
-  virtual bool ExecuteAction(despot::ACT_TYPE action, despot::OBS_TYPE &obs);
+  bool ExecuteAction(despot::ACT_TYPE action, despot::OBS_TYPE &obs);
 };
 
 #endif
