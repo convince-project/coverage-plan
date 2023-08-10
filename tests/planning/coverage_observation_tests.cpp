@@ -54,6 +54,39 @@ TEST_CASE("Unit test for Observation::fromObsType",
 
   REQUIRE(std::get<1>(obs));
 
+  // Test with successful action and absolute position
+  obs = Observation::fromObsType(obsInt, fov, GridCell{2, 3});
+
+  obsVec = std::get<0>(obs);
+
+  REQUIRE(obsVec.size() == 8);
+  REQUIRE(obsVec.at(0).cell.x == 1);
+  REQUIRE(obsVec.at(0).cell.y == 2);
+  REQUIRE(obsVec.at(0).occupied == 0);
+  REQUIRE(obsVec.at(1).cell.x == 1);
+  REQUIRE(obsVec.at(1).cell.y == 3);
+  REQUIRE(obsVec.at(1).occupied == 1);
+  REQUIRE(obsVec.at(2).cell.x == 1);
+  REQUIRE(obsVec.at(2).cell.y == 4);
+  REQUIRE(obsVec.at(2).occupied == 1);
+  REQUIRE(obsVec.at(3).cell.x == 2);
+  REQUIRE(obsVec.at(3).cell.y == 2);
+  REQUIRE(obsVec.at(3).occupied == 1);
+  REQUIRE(obsVec.at(4).cell.x == 2);
+  REQUIRE(obsVec.at(4).cell.y == 4);
+  REQUIRE(obsVec.at(4).occupied == 0);
+  REQUIRE(obsVec.at(5).cell.x == 3);
+  REQUIRE(obsVec.at(5).cell.y == 2);
+  REQUIRE(obsVec.at(5).occupied == 0);
+  REQUIRE(obsVec.at(6).cell.x == 3);
+  REQUIRE(obsVec.at(6).cell.y == 3);
+  REQUIRE(obsVec.at(6).occupied == 0);
+  REQUIRE(obsVec.at(7).cell.x == 3);
+  REQUIRE(obsVec.at(7).cell.y == 4);
+  REQUIRE(obsVec.at(7).occupied == 1);
+
+  REQUIRE(std::get<1>(obs));
+
   // Test with failed action
   // 5 = 0101 in binary
   obsInt = 5;

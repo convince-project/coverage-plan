@@ -115,28 +115,25 @@ int CoveragePOMDP::NumActions() const { return 5; }
 double CoveragePOMDP::ObsProb(despot::OBS_TYPE obs, const despot::State &state,
                               despot::ACT_TYPE action) const {
 
-  // Don't need action success marker here, just the obs vector
-  std::vector<IMacObservation> obsVec{
-      std::get<0>(Observation::fromObsType(obs, this->_fov))};
-
   const CoverageState &coverageState{static_cast<const CoverageState &>(state)};
+
+  // Don't need action success marker here, just the obs vector
+  std::vector<IMacObservation> obsVec{std::get<0>(
+      Observation::fromObsType(obs, this->_fov, coverageState.robotPosition))};
 
   // If one cell doesn't match, we return 0.0. If all good, we return 1.0
   for (const IMacObservation &imacObs : obsVec) {
 
-    // Recall grid cells in obsVec are relative to robot's pos
-    GridCell obsLoc{coverageState.robotPosition.x + imacObs.cell.x,
-                    coverageState.robotPosition.y + imacObs.cell.y};
-
-    if (obsLoc.outOfBounds(0, coverageState.map.cols(), 0,
-                           coverageState.map.rows())) {
+    if (imacObs.cell.outOfBounds(0, coverageState.map.cols(), 0,
+                                 coverageState.map.rows())) {
       // Out of bounds location should always be marked as occupied
       if (!imacObs.occupied) {
         return 0.0;
       }
     } else {
       // coverageState.map has to be indexed (y,x)
-      if (coverageState.map(obsLoc.y, obsLoc.x) != imacObs.occupied) {
+      if (coverageState.map(imacObs.cell.y, imacObs.cell.x) !=
+          imacObs.occupied) {
         return 0.0;
       }
     }
@@ -214,6 +211,9 @@ void CoveragePOMDP::PrintState(const despot::State &state,
  */
 void CoveragePOMDP::PrintObs(const despot::State &state, despot::OBS_TYPE obs,
                              std::ostream &out) const {
+  const CoverageState &coverageState{static_cast<const CoverageState &>(state)};
+
+  // Want relative observationshere
   std::pair<std::vector<IMacObservation>, bool> obsInfo{
       Observation::fromObsType(obs, this->_fov)};
 
@@ -224,7 +224,6 @@ void CoveragePOMDP::PrintObs(const despot::State &state, despot::OBS_TYPE obs,
     out << "Action Failed; Observation:\n";
   }
 
-  const CoverageState &coverageState{static_cast<const CoverageState &>(state)};
   int minX{(int)coverageState.map.cols()};
   int maxX{-1 * (int)coverageState.map.cols()};
   int minY{(int)coverageState.map.rows()};

@@ -64,4 +64,12 @@ TEST_CASE("Tests for GridCell", "[GridCell]") {
   REQUIRE(GridCell{5, 1}.outOfBounds(xMin, xMax, yMin, yMax));
   REQUIRE(GridCell{5, 2}.outOfBounds(xMin, xMax, yMin, yMax));
   REQUIRE(GridCell{20, 20}.outOfBounds(xMin, xMax, yMin, yMax));
+
+  GridCell addOne{1, 2};
+  GridCell addTwo{5, 9};
+
+  GridCell sum{addOne + addTwo};
+  REQUIRE(sum == GridCell{6, 11});
+  REQUIRE(addOne == GridCell{1, 2});
+  REQUIRE(addTwo == GridCell{5, 9});
 }

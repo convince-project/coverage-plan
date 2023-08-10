@@ -55,6 +55,7 @@ void CoverageBelief::Update(despot::ACT_TYPE action, despot::OBS_TYPE obs) {
   // I'm not using the history, but store for completeness
   history_.Add(action, obs);
 
+  // First get relative observation just to get the success flag
   std::pair<std::vector<IMacObservation>, bool> obsInfo{
       Observation::fromObsType(obs, this->_fov)};
 
@@ -63,6 +64,9 @@ void CoverageBelief::Update(despot::ACT_TYPE action, despot::OBS_TYPE obs) {
     this->_robotPosition = ActionHelpers::applySuccessfulAction(
         this->_robotPosition, ActionHelpers::fromInt(action));
   }
+
+  // Now get absolute observation location
+  obsInfo = Observation::fromObsType(obs, this->_fov, this->_robotPosition);
 
   // Update time (time is observable)
   ++this->_time;
@@ -75,11 +79,9 @@ void CoverageBelief::Update(despot::ACT_TYPE action, despot::OBS_TYPE obs) {
   // Set robot position as being free of obstacles
   this->_mapBelief(this->_robotPosition.y, this->_robotPosition.x) = 0;
   for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
-    GridCell obsLoc{this->_robotPosition.x + imacObs.cell.x,
-                    this->_robotPosition.y + imacObs.cell.y};
-    if (!obsLoc.outOfBounds(0, this->_mapBelief.cols(), 0,
-                            this->_mapBelief.rows())) {
-      this->_mapBelief(obsLoc.y, obsLoc.x) = imacObs.occupied;
+    if (!imacObs.cell.outOfBounds(0, this->_mapBelief.cols(), 0,
+                                  this->_mapBelief.rows())) {
+      this->_mapBelief(imacObs.cell.y, imacObs.cell.x) = imacObs.occupied;
     }
   }
 }

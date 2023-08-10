@@ -47,7 +47,7 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
   // Also checks time, reward gain, covered addition
   REQUIRE(pomdp->Step(state, 0.5, action, reward, obs));
   std::pair<std::vector<IMacObservation>, bool> obsInfo{
-      Observation::fromObsType(obs, fov)};
+      Observation::fromObsType(obs, fov, state.robotPosition)};
   REQUIRE(reward == 0.0);
   REQUIRE(state.time == 5);
   REQUIRE(state.covered.size() == 1);
@@ -64,12 +64,8 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
   }
 
   for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
-    GridCell expectedLoc{imacObs.cell.x + state.robotPosition.x,
-                         imacObs.cell.y + state.robotPosition.y};
-    if (!expectedLoc.outOfBounds(0, state.map.cols(), 0, state.map.rows())) {
-      REQUIRE(state.map(imacObs.cell.y + state.robotPosition.y,
-                        imacObs.cell.x + state.robotPosition.x) ==
-              imacObs.occupied);
+    if (!imacObs.cell.outOfBounds(0, state.map.cols(), 0, state.map.rows())) {
+      REQUIRE(state.map(imacObs.cell.y, imacObs.cell.x) == imacObs.occupied);
     } else {
       REQUIRE(imacObs.occupied == 1);
     }
@@ -85,7 +81,7 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
   state = CoverageState{GridCell{1, 1}, 3, Eigen::MatrixXi::Zero(3, 3), covered,
                         1.0};
   REQUIRE(pomdp->Step(state, 0.4, action, reward, obs));
-  obsInfo = Observation::fromObsType(obs, fov);
+  obsInfo = Observation::fromObsType(obs, fov, state.robotPosition);
   REQUIRE(reward == 0.0);
   REQUIRE(state.covered.size() == 10);
   REQUIRE(state.time == 4);
@@ -101,12 +97,8 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
     REQUIRE(false);
   }
   for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
-    GridCell expectedLoc{imacObs.cell.x + state.robotPosition.x,
-                         imacObs.cell.y + state.robotPosition.y};
-    if (!expectedLoc.outOfBounds(0, state.map.cols(), 0, state.map.rows())) {
-      REQUIRE(state.map(imacObs.cell.y + state.robotPosition.y,
-                        imacObs.cell.x + state.robotPosition.x) ==
-              imacObs.occupied);
+    if (!imacObs.cell.outOfBounds(0, state.map.cols(), 0, state.map.rows())) {
+      REQUIRE(state.map(imacObs.cell.y, imacObs.cell.x) == imacObs.occupied);
     } else {
       REQUIRE(imacObs.occupied == 1);
     }
@@ -124,7 +116,7 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
                         1.0};
   REQUIRE(!pomdp->Step(state, 0.3, ActionHelpers::toInt(Action::wait), reward,
                        obs));
-  obsInfo = Observation::fromObsType(obs, fov);
+  obsInfo = Observation::fromObsType(obs, fov, state.robotPosition);
   // Reward for wait should always be 0 in practice, but because I've spammed
   // the covered list with complete nonsense, the robot's waiting location isn't
   // included. As seed 0.3 leads to action success, we get a reward of 1
@@ -136,12 +128,8 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
   REQUIRE(state.time == 2);
   REQUIRE(std::get<1>(obsInfo));
   for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
-    GridCell expectedLoc{imacObs.cell.x + state.robotPosition.x,
-                         imacObs.cell.y + state.robotPosition.y};
-    if (!expectedLoc.outOfBounds(0, state.map.cols(), 0, state.map.rows())) {
-      REQUIRE(state.map(imacObs.cell.y + state.robotPosition.y,
-                        imacObs.cell.x + state.robotPosition.x) ==
-              imacObs.occupied);
+    if (!imacObs.cell.outOfBounds(0, state.map.cols(), 0, state.map.rows())) {
+      REQUIRE(state.map(imacObs.cell.y, imacObs.cell.x) == imacObs.occupied);
     } else {
       REQUIRE(imacObs.occupied == 1);
     }

@@ -31,20 +31,24 @@ namespace Observation {
  * order
  * @param fov A vector of GridCells releative to the robot's position capturing
  * its field of view
+ * @param robotPos The robot's current position, allows the output vector to
+ * have absolute positions (optional, we may want the relative observations)
  *
- * @return obs A vector of observations capturing the robot's observation paired
- * with an action success flag
+ * @return obs A vector of observations capturing the robot's absolute
+ * observation paired with an action success flag
  *
  * @exception tooManyCells Raised if > 63 cells in FOV
  */
 std::pair<std::vector<IMacObservation>, bool>
-fromObsType(const despot::OBS_TYPE &obsInt, const std::vector<GridCell> &fov);
+fromObsType(const despot::OBS_TYPE &obsInt, const std::vector<GridCell> &fov,
+            const GridCell &robotPos = GridCell{0, 0});
 
 /**
  * Converts a vector of IMac observations and action success flag to a uint64_t
  * for use in DESPOT.
  *
- * @param obsVector A vector of IMacObservations in FOV order
+ * @param obsVector A vector of IMacObservations in FOV order (can be relative
+ * or absolute)
  * @param outcome An ActionOutcome struct capturing the robot's action success
  *
  * @return obsInt The observation as an integer

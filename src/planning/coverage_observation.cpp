@@ -20,7 +20,8 @@
  */
 std::pair<std::vector<IMacObservation>, bool>
 Observation::fromObsType(const despot::OBS_TYPE &obsInt,
-                         const std::vector<GridCell> &fov) {
+                         const std::vector<GridCell> &fov,
+                         const GridCell &robotPos) {
 
   int fovLength{(int)fov.size()};
   if (fovLength > 63) {
@@ -34,8 +35,9 @@ Observation::fromObsType(const despot::OBS_TYPE &obsInt,
 
   // Shift so bit of interest is rightmost. Then do a modulo check for 0 or 1
   for (int i{0}; i < fovLength; ++i) {
-    obsVector.push_back(
-        IMacObservation{fov.at(i), (int)(obsInt >> ((fovLength - 1) - i)) % 2});
+
+    obsVector.push_back(IMacObservation{
+        robotPos + fov.at(i), (int)(obsInt >> ((fovLength - 1) - i)) % 2});
   }
 
   return std::make_pair(obsVector, actSuccess);

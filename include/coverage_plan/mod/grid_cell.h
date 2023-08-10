@@ -54,6 +54,17 @@ struct GridCell {
   }
 
   /**
+   * Implement + to make field of view calaculations simpler.
+   *
+   * @param other The GridCell to add
+   *
+   * @return summed The summed grid cell.
+   */
+  GridCell operator+(const GridCell &other) const {
+    return GridCell{this->x + other.x, this->y + other.y};
+  }
+
+  /**
    * Function to check if a grid cell is out of bounds on a given map.
    * The bounds are defined as [xMin, xMax) and [yMin, yMax] (i.e. max is
    * exclusive).
