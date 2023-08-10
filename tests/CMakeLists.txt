@@ -10,6 +10,7 @@ add_executable(unitTests mod/imac_tests.cpp
                          planning/coverage_observation_tests.cpp
                          planning/coverage_belief_tests.cpp
                          planning/coverage_pomdp_tests.cpp
+                         planning/coverage_world_tests.cpp
                          util/seed_tests.cpp)
 target_link_libraries(unitTests PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(unitTests PUBLIC mod)

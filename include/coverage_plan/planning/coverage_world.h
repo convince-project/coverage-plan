@@ -71,7 +71,7 @@ public:
    *
    * @return initState The initial CoverageState
    */
-  despot::State *Initialize(); // TODO: Add init loc as observation!
+  despot::State *Initialize();
 
   /**
    * Returns the current CoverageState of the system.
