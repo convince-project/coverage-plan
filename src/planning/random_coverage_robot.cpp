@@ -7,6 +7,7 @@
 
 #include "coverage_plan/planning/random_coverage_robot.h"
 #include "coverage_plan/planning/action.h"
+#include "coverage_plan/planning/coverage_observation.h"
 #include "coverage_plan/util/seed.h"
 #include <Eigen/Dense>
 #include <iostream>
@@ -68,26 +69,16 @@ RandomCoverageRobot::_planFn(const GridCell &currentLoc,
  */
 ActionOutcome RandomCoverageRobot::_executeFn(const GridCell &currentLoc,
                                               const Action &action) {
-  // Apply action
-  GridCell nextLoc{ActionHelpers::applySuccessfulAction(currentLoc, action)};
 
-  // Unroll the next IMac state here so we can check occlusion
-  Eigen::MatrixXi nextState{
-      this->_world->updateState(std::vector<IMacObservation>{})};
+  // Apply action in CoverageWorld
+  despot::OBS_TYPE obs{0};
+  this->_world->ExecuteAction(ActionHelpers::toInt(action), obs);
 
-  bool succ{true};
-  // Check for action failure (note flipped x and y)
-  // Action failure occurs if intended location is occupied or intended location
-  // out of bounds
-  if (nextLoc.outOfBounds(0, nextState.cols(), 0, nextState.rows()) ||
-      (nextState(nextLoc.y, nextLoc.x) == 1)) {
-    if (action != Action::wait) {
-      succ = false;
-      nextLoc.x = currentLoc.x;
-      nextLoc.y = currentLoc.y;
-    }
-    // Clear the robot's position (because of possible occupancy in sampling)
-    nextState = this->_world->clearRobotPosition(nextLoc);
+  // Get the action outcome object out of the observation
+  bool succ{std::get<1>(Observation::fromObsType(obs, this->_fov))};
+  GridCell nextLoc{currentLoc};
+  if (succ) {
+    nextLoc = ActionHelpers::applySuccessfulAction(currentLoc, action);
   }
 
   ActionOutcome outcome{action, succ, nextLoc};
@@ -102,4 +93,14 @@ ActionOutcome RandomCoverageRobot::_executeFn(const GridCell &currentLoc,
 std::vector<IMacObservation>
 RandomCoverageRobot::_observeFn(const GridCell &currentLoc) {
   return std::vector<IMacObservation>{};
+}
+
+/**
+ * Resets all necessary members for the next episode.
+ */
+void RandomCoverageRobot::resetForNextEpisode(const GridCell &startLoc,
+                                              int timeBound) {
+  CoverageRobot::resetForNextEpisode(startLoc, timeBound);
+  this->_world->Connect();
+  this->_world->Initialize();
 }

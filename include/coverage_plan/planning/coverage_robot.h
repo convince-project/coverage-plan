@@ -193,7 +193,7 @@ public:
    * @param startLoc The robot's initial location for the episode
    * @param timeBound The episode time bound, which could change
    */
-  void resetForNextEpisode(const GridCell &startLoc, int timeBound);
+  virtual void resetForNextEpisode(const GridCell &startLoc, int timeBound);
 
   /**
    * Logs a set of visited nodes to file.

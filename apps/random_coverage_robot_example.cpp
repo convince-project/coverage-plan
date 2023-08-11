@@ -7,6 +7,7 @@
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
+#include "coverage_plan/planning/coverage_world.h"
 #include "coverage_plan/planning/random_coverage_robot.h"
 #include "coverage_plan/util/seed.h"
 #include <Eigen/Dense>
@@ -15,6 +16,7 @@
 #include <fstream>
 #include <memory>
 #include <random>
+#include <vector>
 
 /**
  * Create a random IMac instance for this example.
@@ -72,13 +74,17 @@ int main() {
   std::shared_ptr<IMacExecutor> executor{
       std::make_shared<IMacExecutor>(createIMac())};
 
-  // Initial IMac state
-  Eigen::MatrixXi initState{executor->restart()};
-  initState(5, 5) = 0; // Initial state must be free
+  // Not actually used
+  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}};
+
+  GridCell initPos{5, 5};
+  int timeBound{100};
+  std::shared_ptr<CoverageWorld> world{
+      std::make_shared<CoverageWorld>(initPos, 0, timeBound, fov, executor)};
 
   std::shared_ptr<RandomCoverageRobot> coverageRobot{
-      std::make_shared<RandomCoverageRobot>(GridCell{5, 5}, 100, 10, 10,
-                                            executor)};
+      std::make_shared<RandomCoverageRobot>(GridCell{5, 5}, timeBound, 10, 10,
+                                            world, fov)};
 
   // Start example
   coverageRobot->runCoverageEpisode(

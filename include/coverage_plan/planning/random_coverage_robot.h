@@ -8,19 +8,24 @@
 #ifndef RANDOM_COVERAGE_ROBOT_H
 #define RANDOM_COVERAGE_ROBOT_H
 
+#include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/planning/coverage_robot.h"
+#include "coverage_plan/planning/coverage_world.h"
+#include <vector>
 
 /**
  * A class for a random coverage robot, i.e. the robot moves randomly.
  *
  * Members:
  * As in superclass, plus:
- * _world: The IMacExecutor representing the environment
+ * _world: The CoverageWorld representing the environment
+ * _fov: The robot's FOV represented as a vector of relative grid cells
  */
 class RandomCoverageRobot : public CoverageRobot {
 
 private:
-  std::shared_ptr<IMacExecutor> _world{};
+  std::shared_ptr<CoverageWorld> _world{};
+  const std::vector<GridCell> _fov{};
 
   /**
    * Function for printing current transition to stdout.
@@ -80,14 +85,26 @@ public:
    * @param xDim The x dimension of the map
    * @param yDim The y dimension of the map
    * @param world The IMacExecutor representing the environment
+   * @param fov The robot's FOV as a vector of relative grid cells
    * @param groundTruthIMac The ground truth IMac instance (if we don't want to
    * use BiMac)
    */
   RandomCoverageRobot(const GridCell &currentLoc, int timeBound, int xDim,
-                      int yDim, std::shared_ptr<IMacExecutor> world,
+                      int yDim, std::shared_ptr<CoverageWorld> world,
+                      const std::vector<GridCell> &fov,
                       std::shared_ptr<IMac> groundTruthIMac = nullptr)
       : CoverageRobot{currentLoc, timeBound, xDim, yDim, groundTruthIMac},
-        _world{world} {}
+        _world{world}, _fov{fov} {
+    this->resetForNextEpisode(currentLoc, timeBound);
+  }
+
+  /**
+   * Resets all necessary members for the next episode.
+   *
+   * @param startLoc The robot's initial location for the episode
+   * @param timeBound The episode time bound, which could change
+   */
+  void resetForNextEpisode(const GridCell &startLoc, int timeBound);
 };
 
 #endif
