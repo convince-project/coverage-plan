@@ -39,6 +39,16 @@ private:
   std::shared_ptr<IMac> _planIMac{};
 
 public:
+  /**
+   * Calls super constructor and initialises attributes.
+   *
+   * @param initPos The robot's initial position
+   * @param initTime The robot's start time
+   * @param timeBound The time bound on planning
+   * @param fov The robot's field of view as a vector of relative grid cells
+   * @param exec The IMac executor which defines the world
+   * @param planIMac The IMac model used for planning
+   */
   CoveragePlanner(const GridCell &initPos, const int &initTime,
                   const int &timeBound, const std::vector<GridCell> &fov,
                   std::shared_ptr<IMacExecutor> exec,
@@ -51,6 +61,11 @@ public:
                 base_upper_bounds_str),
         _initPos{initPos}, _initTime{initTime},
         _timeBound{timeBound}, _fov{fov}, _exec{exec}, _planIMac{planIMac} {}
+
+  /**
+   * Empty destructor.
+   */
+  ~CoveragePlanner() {}
 
   /**
    * Create, initialize, and return a CoveragePOMDP model.
