@@ -14,14 +14,14 @@ FPS = 25
 TS_LEN = 10
 
 
-def read_covered(in_file):
-    """Read in the covered CSV file.
+def read_visited(in_file):
+    """Read in the visited CSV file.
 
     Args:
         in_file: The CSV file
 
     Returns:
-        covered: A list of (x,y) coordinates
+        visited: A list of (x,y) coordinates
     """
 
     with open(in_file) as csv_file:
@@ -79,11 +79,11 @@ def draw_grid(x_len, y_len, ax):
     return grid
 
 
-def animate(covered, map_dynamics, grid, robot, time_label, frame):
+def animate(visited, map_dynamics, grid, robot, time_label, frame):
     """Generate a given frame in the animation.
 
     Args:
-        covered: The covered locations of the robot
+        visited: The visited locations of the robot
         map_dynamics: The evolution of the map
         grid: The grid drawing ((x,y)->square)
         robot: The robot drawing
@@ -94,11 +94,11 @@ def animate(covered, map_dynamics, grid, robot, time_label, frame):
     ts = frame // TS_LEN
 
     # Where is the robot moving between?
-    prev_loc = covered[ts]
-    if ts < len(covered) - 1:
-        next_loc = covered[ts + 1]
+    prev_loc = visited[ts]
+    if ts < len(visited) - 1:
+        next_loc = visited[ts + 1]
     else:
-        next_loc = covered[ts]
+        next_loc = visited[ts]
 
     # Have robot move smoothly between grid cells
     fraction = (frame % TS_LEN) / TS_LEN
@@ -112,7 +112,7 @@ def animate(covered, map_dynamics, grid, robot, time_label, frame):
 
     # Set grid cells
     for cell in map_dynamics[ts]:
-        if cell in covered[: ts + 1]:
+        if cell in visited[: ts + 1]:
             if map_dynamics[ts][cell] == 1:
                 grid[cell].set_facecolor("#007500")
             else:
@@ -173,19 +173,19 @@ def generate_time(x_len, y_len, ax):
     )
 
 
-def run_animation(x_len, y_len, covered_file, map_file, output_path=None):
+def run_animation(x_len, y_len, visited_file, map_file, output_path=None):
     """Run the animation of the coverage run.
 
     Args:
         x_len: The x dimension of the map
         y_len: The y dimension of the map
-        covered_file: The covered CSV file
+        visited_file: The visited CSV file
         map_file: The map CSV file
         output_path: The location to store the video
     """
 
     # Read in from files
-    covered = read_covered(covered_file)
+    visited = read_visited(visited_file)
     map_dynamics = read_map(map_file)
 
     # Set up axis
@@ -196,18 +196,18 @@ def run_animation(x_len, y_len, covered_file, map_file, output_path=None):
     grid = draw_grid(x_len, y_len, ax)
 
     # Draw the robot
-    robot = generate_robot(covered[0], y_len, ax)
+    robot = generate_robot(visited[0], y_len, ax)
 
     # Draw timestep
     time_label = generate_time(x_len, y_len, ax)
 
     # Now set up the animation
-    frames = TS_LEN * len(covered)
+    frames = TS_LEN * len(visited)
     interval = (1.0 / FPS) * 1000
 
     anim = animation.FuncAnimation(
         fig,
-        lambda i: animate(covered, map_dynamics, grid, robot, time_label, i),
+        lambda i: animate(visited, map_dynamics, grid, robot, time_label, i),
         frames=int(frames),
         interval=interval,
         blit=False,
@@ -234,8 +234,8 @@ if __name__ == "__main__":
     x_len = 10
     y_len = 10
 
-    covered_file = os.path.join(
-        "../../data/results/randomCoverageRobotExampleCovered.csv"
+    visited_file = os.path.join(
+        "../../data/results/randomCoverageRobotExampleVisited.csv"
     )
 
     map_file = os.path.join("../../data/results/randomCoverageRobotExampleMap.csv")
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     run_animation(
         x_len,
         y_len,
-        covered_file,
+        visited_file,
         map_file,
         "../../data/videos/randomCoverageRobotRunVideo.mp4",
     )

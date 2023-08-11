@@ -54,7 +54,7 @@ Action
 RandomCoverageRobot::_planFn(const GridCell &currentLoc,
                              const std::vector<Action> &enabledActions, int ts,
                              int timeBound, std::shared_ptr<IMac> imac,
-                             const std::vector<GridCell> &covered,
+                             const std::vector<GridCell> &visited,
                              const std::vector<IMacObservation> &currentObs) {
   std::mt19937_64 gen{SeedHelpers::genRandomDeviceSeed()};
   std::uniform_int_distribution<> sampler{0, (int)enabledActions.size() - 1};

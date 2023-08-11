@@ -154,7 +154,7 @@ Action
 CoverageRobot::planNextAction(int time, std::shared_ptr<IMac> imac,
                               const std::vector<IMacObservation> &obsVector) {
   return this->_planFn(this->_currentLoc, this->_getEnabledActions(), time,
-                       this->_timeBound, imac, this->_covered, obsVector);
+                       this->_timeBound, imac, this->_visited, obsVector);
 }
 
 /**
@@ -176,18 +176,18 @@ std::vector<IMacObservation> CoverageRobot::makeObservations() {
  */
 void CoverageRobot::resetForNextEpisode(const GridCell &startLoc,
                                         int timeBound) {
-  this->_covered.clear();
+  this->_visited.clear();
   this->_currentLoc = startLoc;
   this->_timeBound = timeBound;
 }
 
 /**
- * Logs a set of covered nodes to file.
+ * Logs a set of visited nodes to file.
  */
-void CoverageRobot::logCoveredLocations(const std::filesystem::path &outFile) {
+void CoverageRobot::logVisitedLocations(const std::filesystem::path &outFile) {
   std::ofstream f{outFile};
   if (f.is_open()) {
-    for (const GridCell &cell : this->_covered) {
+    for (const GridCell &cell : this->_visited) {
       f << cell.x << ',' << cell.y << '\n';
     }
     f.close();
@@ -203,7 +203,7 @@ void CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
   int t{0};
 
   // Unique locations set for termination check
-  std::set<GridCell> uniqueCovered{};
+  std::set<GridCell> covered{};
 
   std::shared_ptr<IMac> imacForEpisode{this->_getIMacInstanceForEpisode()};
   int numCells{(int)(imacForEpisode->getEntryMatrix().rows() *
@@ -212,25 +212,25 @@ void CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
   // At each timestep, we get a vector of observations
   std::vector<std::vector<IMacObservation>> observations{};
 
-  // Add initial location to covered and take initial observations
-  this->_covered.push_back(this->_currentLoc);
-  uniqueCovered.insert(this->_currentLoc);
+  // Add initial location to visited and take initial observations
+  this->_visited.push_back(this->_currentLoc);
+  covered.insert(this->_currentLoc);
   observations.push_back(this->makeObservations());
 
-  while (t < this->_timeBound and uniqueCovered.size() < numCells) {
+  while (t < this->_timeBound and covered.size() < numCells) {
 
     Action nextAction{this->planNextAction(
         t, imacForEpisode, observations.at(observations.size() - 1))};
 
     ActionOutcome outcome{this->executeAction(nextAction)};
 
-    // Add current observation and location to covered and observations
+    // Add current observation to observations
     observations.push_back(this->makeObservations());
 
-    // Update location, covered and time
+    // Update location, visited, covered, and time
     this->_currentLoc = outcome.location;
-    this->_covered.push_back(this->_currentLoc);
-    uniqueCovered.insert(this->_currentLoc);
+    this->_visited.push_back(this->_currentLoc);
+    covered.insert(this->_currentLoc);
     ++t;
   }
 
@@ -238,5 +238,5 @@ void CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
   this->_bimac->updatePosterior(this->_generateBIMacObservations(observations));
 
   // Log results
-  this->logCoveredLocations(outFile);
+  this->logVisitedLocations(outFile);
 }

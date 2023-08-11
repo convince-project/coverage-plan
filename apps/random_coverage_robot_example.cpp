@@ -83,7 +83,7 @@ int main() {
   // Start example
   coverageRobot->runCoverageEpisode(
       "/home/charlie/work/coverage-plan/data/results/"
-      "randomCoverageRobotExampleCovered.csv");
+      "randomCoverageRobotExampleVisited.csv");
 
   // Log the map over time
   executor->logMapDynamics("/home/charlie/work/coverage-plan/data/results/"

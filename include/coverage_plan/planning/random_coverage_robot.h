@@ -40,7 +40,7 @@ private:
    * @param ts The current timestep
    * @param timeBound The time bound
    * @param imac The current IMac instance
-   * @param covered The vector of covered locations
+   * @param visited The vector of visited locations
    * @param currentObs The most recent observations
    *
    * @return nextAction The next action to be executed
@@ -48,7 +48,7 @@ private:
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,
                  int timeBound, std::shared_ptr<IMac> imac,
-                 const std::vector<GridCell> &covered,
+                 const std::vector<GridCell> &visited,
                  const std::vector<IMacObservation> &currentObs);
 
   /**

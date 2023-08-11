@@ -21,7 +21,7 @@ private:
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,
                  int timeBound, std::shared_ptr<IMac> imac,
-                 const std::vector<GridCell> &covered,
+                 const std::vector<GridCell> &visited,
                  const std::vector<IMacObservation> &currentObs) {
     return Action::up;
   }
@@ -46,7 +46,7 @@ private:
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,
                  int timeBound, std::shared_ptr<IMac> imac,
-                 const std::vector<GridCell> &covered,
+                 const std::vector<GridCell> &visited,
                  const std::vector<IMacObservation> &currentObs) {
     return Action::up;
   }
@@ -72,7 +72,7 @@ private:
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,
                  int timeBound, std::shared_ptr<IMac> imac,
-                 const std::vector<GridCell> &covered,
+                 const std::vector<GridCell> &visited,
                  const std::vector<IMacObservation> &currentObs) {
     return Action::up;
   }
@@ -99,7 +99,7 @@ private:
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,
                  int timeBound, std::shared_ptr<IMac> imac,
-                 const std::vector<GridCell> &covered,
+                 const std::vector<GridCell> &visited,
                  const std::vector<IMacObservation> &currentObs) {
     return enabledActions.at(enabledActions.size() - 1);
   }
@@ -179,8 +179,8 @@ TEST_CASE("Test for reset", "[CoverageRobot::resetForNextEpisode]") {
   }
 }
 
-TEST_CASE("Test for logCoveredLocations",
-          "[CoverageRobot::logCoveredLocations]") {
+TEST_CASE("Test for logVisitedLocations",
+          "[CoverageRobot::logVisitedLocations]") {
 
   std::unique_ptr<TestCoverageRobotTwo> robot{
       std::make_unique<TestCoverageRobotTwo>(GridCell{2, 1}, 10, 5, 5)};

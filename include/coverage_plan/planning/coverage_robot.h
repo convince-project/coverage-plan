@@ -30,7 +30,7 @@
  *
  * Members:
  * _currentLoc: The robot's current GridCell
- * _covered: A vector of locations covered by the robot
+ * _visited: A vector of locations visited by the robot (i.e. the history)
  * _timeBound: The maximum number of timesteps given to the robot
  * _xDim: The x dimension of the map
  * _yDim: The y dimension of the map
@@ -39,7 +39,7 @@
 class CoverageRobot {
 private:
   GridCell _currentLoc{};
-  std::vector<GridCell> _covered{};
+  std::vector<GridCell> _visited{};
   int _timeBound{};
   const int _xDim{};
   const int _yDim{};
@@ -106,7 +106,7 @@ protected:
    * @param ts The current timestep
    * @param timeBound The time bound
    * @param imac The current IMac instance
-   * @param covered The vector of covered locations
+   * @param visited The vector of visited locations
    * @param currentObs The most recent observations
    *
    * @return nextAction The next action to be executed
@@ -114,7 +114,7 @@ protected:
   virtual Action _planFn(const GridCell &currentLoc,
                          const std::vector<Action> &enabledActions, int ts,
                          int timeBound, std::shared_ptr<IMac> imac,
-                         const std::vector<GridCell> &covered,
+                         const std::vector<GridCell> &visited,
                          const std::vector<IMacObservation> &currentObs) = 0;
 
   /**
@@ -155,7 +155,7 @@ public:
    */
   CoverageRobot(const GridCell &currentLoc, int timeBound, int xDim, int yDim,
                 std::shared_ptr<IMac> groundTruthIMac = nullptr)
-      : _currentLoc{currentLoc}, _covered{}, _timeBound{timeBound}, _xDim{xDim},
+      : _currentLoc{currentLoc}, _visited{}, _timeBound{timeBound}, _xDim{xDim},
         _yDim{yDim}, _bimac{std::make_shared<BIMac>(xDim, yDim)},
         _groundTruthIMac{groundTruthIMac} {}
 
@@ -196,16 +196,16 @@ public:
   void resetForNextEpisode(const GridCell &startLoc, int timeBound);
 
   /**
-   * Logs a set of covered nodes to file.
+   * Logs a set of visited nodes to file.
    *
-   * @param outFile The csv file to write the covered locations to
+   * @param outFile The csv file to write the visited locations to
    */
-  void logCoveredLocations(const std::filesystem::path &outFile);
+  void logVisitedLocations(const std::filesystem::path &outFile);
 
   /**
    * Run the plan-execute-observe cycle for a single episode, up to _timeBound.
    *
-   * @param outFile The csv file to output covered locations to
+   * @param outFile The csv file to output visited locations to
    */
   void runCoverageEpisode(const std::filesystem::path &outFile);
 
