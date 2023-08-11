@@ -15,6 +15,7 @@
 #include <despot/interface/belief.h>
 #include <despot/interface/pomdp.h>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -39,7 +40,7 @@ class CoverageBelief : public despot::Belief {
 private:
   GridCell _robotPosition{};
   int _time{};
-  std::vector<GridCell> _covered{};
+  std::set<GridCell> _covered{};
   Eigen::MatrixXd _mapBelief{};
   std::shared_ptr<IMac> _imac{};
   const std::vector<GridCell> _fov{};
@@ -58,7 +59,7 @@ public:
    * @param fov The robot's FOV as a vector of relative grid cells
    */
   CoverageBelief(const despot::DSPOMDP *model, const GridCell &initPos,
-                 const int &initTime, const std::vector<GridCell> &initCovered,
+                 const int &initTime, const std::set<GridCell> &initCovered,
                  const Eigen::MatrixXd &initBelief, std::shared_ptr<IMac> imac,
                  const std::vector<GridCell> &fov)
       : Belief{model}, _robotPosition{initPos}, _time{initTime},

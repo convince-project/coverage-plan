@@ -72,7 +72,7 @@ void CoverageBelief::Update(despot::ACT_TYPE action, despot::OBS_TYPE obs) {
   ++this->_time;
 
   // Update covered (location is observable)
-  this->_covered.push_back(this->_robotPosition);
+  this->_covered.insert(this->_robotPosition);
 
   // Update map belief (forward step of IMac model and setting known locations)
   this->_mapBelief = this->_imac->forwardStep(this->_mapBelief);

@@ -41,7 +41,7 @@ TEST_CASE("Test for CoverageWorld::Initialize", "[CoverageWorld::Initialize]") {
   REQUIRE(coverState->robotPosition == GridCell{0, 1});
   REQUIRE(coverState->time == 2);
   REQUIRE(coverState->covered.size() == 1);
-  REQUIRE(coverState->covered.at(0) == GridCell{0, 1});
+  REQUIRE(coverState->covered.count(GridCell{0, 1}) == 1);
   REQUIRE(coverState->map.size() == 4);
   REQUIRE(coverState->map(0, 0) == 1);
   REQUIRE(coverState->map(0, 1) == 1);
@@ -115,13 +115,14 @@ TEST_CASE("Test for CoverageWorld::ExecuteAction with time bound exceeded",
   std::pair<std::vector<IMacObservation>, bool> obsInfo{
       Observation::fromObsType(obs, fov, succ->robotPosition)};
   REQUIRE(succ->time == 5);
-  REQUIRE(succ->covered.size() == 2);
 
   if (succ->robotPosition == GridCell{0, 1}) { // Failure
-    REQUIRE(succ->covered.at(1) == GridCell{0, 1});
+    REQUIRE(succ->covered.count(GridCell{0, 1}) == 1);
+    REQUIRE(succ->covered.size() == 1);
     REQUIRE(!std::get<1>(obsInfo));
   } else if (succ->robotPosition == GridCell{1, 1}) { // Sucess
-    REQUIRE(succ->covered.at(1) == GridCell{1, 1});
+    REQUIRE(succ->covered.count(GridCell{1, 1}) == 1);
+    REQUIRE(succ->covered.size() == 2);
     REQUIRE(std::get<1>(obsInfo));
   } else {
     REQUIRE(false);
@@ -157,8 +158,8 @@ TEST_CASE("Test for CoverageWorld::ExecuteAction with all covered",
   std::pair<std::vector<IMacObservation>, bool> obsInfo{
       Observation::fromObsType(obs, fov, succ->robotPosition)};
   REQUIRE(succ->time == 2);
-  REQUIRE(succ->covered.size() == 2);
-  REQUIRE(succ->covered.at(1) == GridCell{0, 0});
+  REQUIRE(succ->covered.size() == 1);
+  REQUIRE(succ->covered.count(GridCell{0, 0}) == 1);
   REQUIRE(std::get<1>(obsInfo));
   REQUIRE(succ->robotPosition == GridCell{0, 0});
   REQUIRE(succ->map(0, 0) == 0);
@@ -195,13 +196,14 @@ TEST_CASE("Test for CoverageWorld::ExecuteAction under normal use",
   std::pair<std::vector<IMacObservation>, bool> obsInfo{
       Observation::fromObsType(obs, fov, succ->robotPosition)};
   REQUIRE(succ->time == 2);
-  REQUIRE(succ->covered.size() == 2);
 
   if (succ->robotPosition == GridCell{0, 1}) { // Failure
-    REQUIRE(succ->covered.at(1) == GridCell{0, 1});
+    REQUIRE(succ->covered.count(GridCell{0, 1}) == 1);
+    REQUIRE(succ->covered.size() == 1);
     REQUIRE(!std::get<1>(obsInfo));
   } else if (succ->robotPosition == GridCell{0, 2}) { // Success
-    REQUIRE(succ->covered.at(1) == GridCell{0, 2});
+    REQUIRE(succ->covered.count(GridCell{0, 2}) == 1);
+    REQUIRE(succ->covered.size() == 2);
     REQUIRE(std::get<1>(obsInfo));
   } else {
     REQUIRE(false);

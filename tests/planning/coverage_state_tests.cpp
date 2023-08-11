@@ -7,7 +7,7 @@
 #include "coverage_plan/planning/coverage_state.h"
 #include <Eigen/Dense>
 #include <catch2/catch.hpp>
-#include <vector>
+#include <set>
 
 TEST_CASE("Tests for the CoverageState constructors",
           "[CoverageState-constructors]") {
@@ -23,8 +23,8 @@ TEST_CASE("Tests for the CoverageState constructors",
   map(1, 0) = 3;
   map(1, 1) = 4;
   CoverageState stateTwo{GridCell{1, 2}, 3, map,
-                         std::vector<GridCell>{GridCell{0, 0}, GridCell{0, 1},
-                                               GridCell{1, 1}, GridCell{1, 2}},
+                         std::set<GridCell>{GridCell{0, 0}, GridCell{0, 1},
+                                            GridCell{1, 1}, GridCell{1, 2}},
                          0.5};
 
   REQUIRE(stateTwo.robotPosition.x == 1);
@@ -37,14 +37,10 @@ TEST_CASE("Tests for the CoverageState constructors",
   REQUIRE(stateTwo.map(1, 0) == 3);
   REQUIRE(stateTwo.map(1, 1) == 4);
   REQUIRE(stateTwo.covered.size() == 4);
-  REQUIRE(stateTwo.covered.at(0).x == 0);
-  REQUIRE(stateTwo.covered.at(0).y == 0);
-  REQUIRE(stateTwo.covered.at(1).x == 0);
-  REQUIRE(stateTwo.covered.at(1).y == 1);
-  REQUIRE(stateTwo.covered.at(2).x == 1);
-  REQUIRE(stateTwo.covered.at(2).y == 1);
-  REQUIRE(stateTwo.covered.at(3).x == 1);
-  REQUIRE(stateTwo.covered.at(3).y == 2);
+  REQUIRE(stateTwo.covered.count(GridCell{0, 0}) == 1);
+  REQUIRE(stateTwo.covered.count(GridCell{0, 1}) == 1);
+  REQUIRE(stateTwo.covered.count(GridCell{1, 1}) == 1);
+  REQUIRE(stateTwo.covered.count(GridCell{1, 2}) == 1);
   REQUIRE(stateTwo.state_id == -1);
   REQUIRE(stateTwo.weight == 0.5);
 }
@@ -52,8 +48,8 @@ TEST_CASE("Tests for the CoverageState constructors",
 TEST_CASE("Tests for the CoverageState text function", "[CoverageState-text]") {
 
   CoverageState state{GridCell{1, 1}, 3, Eigen::MatrixXi::Zero(2, 2),
-                      std::vector<GridCell>{GridCell{0, 0}, GridCell{0, 1},
-                                            GridCell{1, 1}, GridCell{1, 2}},
+                      std::set<GridCell>{GridCell{0, 0}, GridCell{0, 1},
+                                         GridCell{1, 1}, GridCell{1, 2}},
                       0.5};
 
   std::string expected{"Time: 3; Coverage: 100%\n\x1b[1;32m- \033[1;0m- "

@@ -49,12 +49,7 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
     outcome.success = true;
 
     // Get a reward if we reach an previously unreached state
-    if (std::find(coverageState.covered.begin(), coverageState.covered.end(),
-                  expectedLoc) == coverageState.covered.end()) {
-      reward = 1.0;
-    } else {
-      reward = 0.0;
-    }
+    reward = 1.0 - (double)coverageState.covered.count(expectedLoc);
 
   } else {
     // If action failed, the robot's old location must be free
@@ -71,19 +66,14 @@ bool CoveragePOMDP::Step(despot::State &state, double random_num,
   outcome.location = coverageState.robotPosition;
 
   // Add to covered
-  coverageState.covered.push_back(coverageState.robotPosition);
+  coverageState.covered.insert(coverageState.robotPosition);
 
   obs = Observation::computeObservation(
       coverageState.map, coverageState.robotPosition, outcome, this->_fov);
 
-  std::set<GridCell> uniqueCovered{};
-  for (const GridCell &cell : coverageState.covered) {
-    uniqueCovered.insert(cell);
-  }
-
   // Termination condition (time bound reached or all cells covered)
   if (coverageState.time >= this->_timeBound or
-      uniqueCovered.size() == coverageState.map.size()) {
+      coverageState.covered.size() == coverageState.map.size()) {
     return true;
   }
   return false;

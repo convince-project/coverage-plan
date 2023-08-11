@@ -21,11 +21,6 @@ std::string CoverageState::text() const {
   std::ostringstream stream{};
   stream << std::setprecision(2);
 
-  // Convert to set for quicker lookup
-  std::set<GridCell> coveredSet{};
-  std::copy(this->covered.begin(), this->covered.end(),
-            std::inserter(coveredSet, coveredSet.end()));
-
   // Write out timestep and coverage %
   stream << "Time: " << this->time << "; Coverage: "
          << int(round(100 * ((double)this->covered.size()) /
@@ -36,7 +31,7 @@ std::string CoverageState::text() const {
   for (int y{0}; y < this->map.rows(); ++y) {
     for (int x{0}; x < this->map.cols(); ++x) {
       // Write covered cells in green
-      if (coveredSet.find(GridCell{x, y}) != coveredSet.end()) {
+      if (this->covered.count(GridCell{x, y}) == 1) {
         stream << "\x1b[1;32m";
       } else {
         stream << "\033[1;0m";

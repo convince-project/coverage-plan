@@ -17,6 +17,7 @@
 #include <despot/interface/default_policy.h>
 #include <iostream>
 #include <memory>
+#include <set>
 #include <sstream>
 #include <vector>
 
@@ -38,7 +39,7 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
       std::make_unique<CoveragePOMDP>(fov, imac, 5)};
 
   CoverageState state{GridCell{1, 1}, 4, Eigen::MatrixXi::Zero(3, 3),
-                      std::vector<GridCell>{}, 1.0};
+                      std::set<GridCell>{}, 1.0};
   despot::ACT_TYPE action{ActionHelpers::toInt(Action::right)};
   despot::OBS_TYPE obs{0};
   double reward{0.0};
@@ -53,11 +54,11 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
   REQUIRE(state.covered.size() == 1);
   if (state.robotPosition == GridCell{1, 1}) { // Action fail
     REQUIRE(state.map(1, 1) == 0);
-    REQUIRE(state.covered.at(0) == GridCell{1, 1});
+    REQUIRE(state.covered.count(GridCell{1, 1}) == 1);
     REQUIRE(!std::get<1>(obsInfo));
   } else if (state.robotPosition == GridCell{2, 1}) { // Action success
     REQUIRE(state.map(1, 2) == 0);
-    REQUIRE(state.covered.at(0) == GridCell{2, 1});
+    REQUIRE(state.covered.count(GridCell{2, 1}) == 1);
     REQUIRE(std::get<1>(obsInfo));
   } else {
     REQUIRE(false);
@@ -72,10 +73,10 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
   }
 
   // terminal state (all nodes covered)
-  std::vector<GridCell> covered{};
+  std::set<GridCell> covered{};
   for (int x{0}; x < 3; ++x) {
     for (int y{0}; y < 3; ++y) {
-      covered.push_back(GridCell{x, y});
+      covered.insert(GridCell{x, y});
     }
   }
   state = CoverageState{GridCell{1, 1}, 3, Eigen::MatrixXi::Zero(3, 3), covered,
@@ -83,15 +84,15 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
   REQUIRE(pomdp->Step(state, 0.4, action, reward, obs));
   obsInfo = Observation::fromObsType(obs, fov, state.robotPosition);
   REQUIRE(reward == 0.0);
-  REQUIRE(state.covered.size() == 10);
+  REQUIRE(state.covered.size() == 9);
   REQUIRE(state.time == 4);
   if (state.robotPosition == GridCell{1, 1}) { // Action fail
     REQUIRE(state.map(1, 1) == 0);
-    REQUIRE(state.covered.at(9) == GridCell{1, 1});
+    REQUIRE(state.covered.count(GridCell{1, 1}) == 1);
     REQUIRE(!std::get<1>(obsInfo));
   } else if (state.robotPosition == GridCell{2, 1}) { // Action success
     REQUIRE(state.map(1, 2) == 0);
-    REQUIRE(state.covered.at(9) == GridCell{2, 1});
+    REQUIRE(state.covered.count(GridCell{2, 1}) == 1);
     REQUIRE(std::get<1>(obsInfo));
   } else {
     REQUIRE(false);
@@ -104,16 +105,10 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
     }
   }
 
-  // Test when not terminal (but lots in covered)
+  // Test when not terminal
   // Wait actions always succeed
-  covered.clear();
-  for (int x{0}; x < 3; ++x) {
-    for (int y{0}; y < 3; ++y) {
-      covered.push_back(GridCell{1, 1});
-    }
-  }
-  state = CoverageState{GridCell{0, 1}, 1, Eigen::MatrixXi::Zero(3, 3), covered,
-                        1.0};
+  state = CoverageState{GridCell{0, 1}, 1, Eigen::MatrixXi::Zero(3, 3),
+                        std::set<GridCell>{GridCell{1, 1}}, 1.0};
   REQUIRE(!pomdp->Step(state, 0.3, ActionHelpers::toInt(Action::wait), reward,
                        obs));
   obsInfo = Observation::fromObsType(obs, fov, state.robotPosition);
@@ -123,8 +118,8 @@ TEST_CASE("Test for CoveragePOMDP::Step", "[CoveragePOMDP::Step]") {
   // so this still demonstrates the intended behaviour
   REQUIRE(reward == 1.0);
   REQUIRE(state.robotPosition == GridCell{0, 1});
-  REQUIRE(state.covered.size() == 10);
-  REQUIRE(state.covered.at(9) == GridCell{0, 1});
+  REQUIRE(state.covered.size() == 2);
+  REQUIRE(state.covered.count(GridCell{0, 1}) == 1);
   REQUIRE(state.time == 2);
   REQUIRE(std::get<1>(obsInfo));
   for (const IMacObservation &imacObs : std::get<0>(obsInfo)) {
@@ -162,7 +157,7 @@ TEST_CASE("Test for CoveragePOMDP::ObsProb", "[CoveragePOMDP::ObsProb]") {
   map(2, 1) = 1;
   map(2, 2) = 0;
 
-  std::vector<GridCell> covered{};
+  std::set<GridCell> covered{};
 
   // Test 1: Out of bounds good
   CoverageState state{GridCell{0, 1}, 0, map, covered, 1, -1};
@@ -216,7 +211,7 @@ TEST_CASE("Test for CoveragePOMDP::InitialBelief",
   map(2, 1) = 0;
   map(2, 2) = 0;
   CoverageState coverState{
-      GridCell{1, 1}, 2, map, std::vector<GridCell>{GridCell{1, 1}}, 0.2, -1};
+      GridCell{1, 1}, 2, map, std::set<GridCell>{GridCell{1, 1}}, 0.2, -1};
 
   despot::Belief *belief{pomdp->InitialBelief(&coverState)};
   CoverageBelief *coverBelief{static_cast<CoverageBelief *>(belief)};
@@ -228,7 +223,7 @@ TEST_CASE("Test for CoveragePOMDP::InitialBelief",
   REQUIRE(sample->robotPosition == GridCell{1, 1});
   REQUIRE(sample->time == 2);
   REQUIRE(sample->covered.size() == 1);
-  REQUIRE(sample->covered.at(0) == GridCell{1, 1});
+  REQUIRE(sample->covered.count(GridCell{1, 1}) == 1);
   REQUIRE(sample->weight == 1.0 / 1.0);
   REQUIRE(sample->state_id == -1);
   REQUIRE(sample->map.size() == 9);
@@ -266,8 +261,8 @@ TEST_CASE("Tests for CoveragePOMDP::PrintState",
       std::make_unique<CoveragePOMDP>(std::vector<GridCell>{}, nullptr, 5)};
 
   CoverageState state{GridCell{1, 1}, 3, Eigen::MatrixXi::Zero(2, 2),
-                      std::vector<GridCell>{GridCell{0, 0}, GridCell{0, 1},
-                                            GridCell{1, 1}, GridCell{1, 2}},
+                      std::set<GridCell>{GridCell{0, 0}, GridCell{0, 1},
+                                         GridCell{1, 1}, GridCell{1, 2}},
                       0.5};
 
   // Same as test in CoverageState but through CoveragePOMDP
@@ -287,7 +282,7 @@ TEST_CASE("Test for CoveragePOMDP::PrintObs", "[CoveragePOMDP::PrintObs]") {
       nullptr, 5)};
 
   Eigen::MatrixXi map{Eigen::MatrixXi::Zero(3, 3)};
-  CoverageState state{GridCell{1, 1}, 2, map, std::vector<GridCell>{}, 0.5, -1};
+  CoverageState state{GridCell{1, 1}, 2, map, std::set<GridCell>{}, 0.5, -1};
 
   std::ostringstream stream{};
 
@@ -351,7 +346,7 @@ TEST_CASE("Test for CoveragePOMDP::PrintBelief",
 
   // Test copying using sampling and deterministic belief
   std::unique_ptr<CoverageBelief> belief{std::make_unique<CoverageBelief>(
-      pomdp, GridCell{0, 1}, 1, std::vector<GridCell>{GridCell{0, 0}},
+      pomdp, GridCell{0, 1}, 1, std::set<GridCell>{GridCell{0, 0}},
       imac->getInitialBelief(), imac, fov)};
 
   // Same as test in CoverageBelief but through CoveragePOMDP
@@ -389,7 +384,7 @@ TEST_CASE("Test for CoveragePOMDP::Copy", "[CoveragePOMDP::Copy]") {
   coverState->map = Eigen::MatrixXi::Zero(2, 2);
   coverState->robotPosition = GridCell{2, 1};
   coverState->time = 3;
-  coverState->covered = std::vector<GridCell>{GridCell{2, 1}};
+  coverState->covered = std::set<GridCell>{GridCell{2, 1}};
 
   despot::State *stateTwo{pomdp->Copy(coverState)};
   CoverageState *coverStateTwo{static_cast<CoverageState *>(stateTwo)};
@@ -399,7 +394,7 @@ TEST_CASE("Test for CoveragePOMDP::Copy", "[CoveragePOMDP::Copy]") {
   REQUIRE(coverState->robotPosition == coverStateTwo->robotPosition);
   REQUIRE(coverState->time == coverStateTwo->time);
   REQUIRE(coverState->covered.size() == coverStateTwo->covered.size());
-  REQUIRE(coverState->covered.at(0) == coverStateTwo->covered.at(0));
+  REQUIRE(coverState->covered == coverStateTwo->covered);
   coverStateTwo->time = 4;
   REQUIRE(coverState->time != coverStateTwo->time);
 

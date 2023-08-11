@@ -38,7 +38,7 @@ despot::State *CoverageWorld::Initialize() {
 
   coverState->robotPosition = this->_initPos;
   coverState->time = this->_initTime;
-  coverState->covered = std::vector<GridCell>{this->_initPos};
+  coverState->covered = std::set<GridCell>{this->_initPos};
 
   // Make sure to set the robot's initial position to free :)
   coverState->map = this->_exec->restart(
@@ -91,21 +91,15 @@ bool CoverageWorld::ExecuteAction(despot::ACT_TYPE action,
   coverState->map = this->_exec->clearRobotPosition(coverState->robotPosition);
 
   // Update covered
-  coverState->covered.push_back(coverState->robotPosition);
+  coverState->covered.insert(coverState->robotPosition);
 
   // Compute observation
   obs = Observation::computeObservation(
       coverState->map, coverState->robotPosition, outcome, this->_fov);
 
-  // Number of cells covered
-  std::set<GridCell> uniqueCovered{};
-  for (const GridCell &cell : coverState->covered) {
-    uniqueCovered.insert(cell);
-  }
-
   // Termination condition (time bound reached or all cells covered)
   if (coverState->time >= this->_timeBound or
-      uniqueCovered.size() == coverState->map.size()) {
+      coverState->covered.size() == coverState->map.size()) {
     return true;
   }
   return false;

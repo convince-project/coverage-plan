@@ -37,7 +37,7 @@ TEST_CASE("Tests for CoverageBelief::Sample.", "[CoverageBelief::Sample]") {
   const CoveragePOMDP *pomdp{new CoveragePOMDP{fov, imac, 5}};
 
   std::unique_ptr<CoverageBelief> belief{std::make_unique<CoverageBelief>(
-      pomdp, GridCell{0, 0}, 1, std::vector<GridCell>{GridCell{0, 0}},
+      pomdp, GridCell{0, 0}, 1, std::set<GridCell>{GridCell{0, 0}},
       imac->getInitialBelief(), imac, fov)};
 
   // Sample 5 states
@@ -50,7 +50,7 @@ TEST_CASE("Tests for CoverageBelief::Sample.", "[CoverageBelief::Sample]") {
     REQUIRE(coverState->robotPosition == GridCell{0, 0});
     REQUIRE(coverState->time == 1);
     REQUIRE(coverState->covered.size() == 1);
-    REQUIRE(coverState->covered.at(0) == GridCell{0, 0});
+    REQUIRE(coverState->covered.count(GridCell{0, 0}) == 1);
     REQUIRE(coverState->map.size() == 2);
     REQUIRE(coverState->map(0, 0) == 0);
     REQUIRE((coverState->map(0, 1) == 0 || coverState->map(0, 1) == 1));
@@ -85,7 +85,7 @@ TEST_CASE("Tests for CoverageBelief::MakeCopy", "[CoverageBelief::MakeCopy]") {
 
   // Test copying using sampling and deterministic belief
   std::unique_ptr<CoverageBelief> belief{std::make_unique<CoverageBelief>(
-      pomdp, GridCell{0, 0}, 1, std::vector<GridCell>{GridCell{0, 0}},
+      pomdp, GridCell{0, 0}, 1, std::set<GridCell>{GridCell{0, 0}},
       imac->getInitialBelief(), imac, fov)};
 
   std::vector<despot::State *> particles{belief->Sample(1)};
@@ -101,7 +101,7 @@ TEST_CASE("Tests for CoverageBelief::MakeCopy", "[CoverageBelief::MakeCopy]") {
   REQUIRE(coverState->robotPosition == coverStateCp->robotPosition);
   REQUIRE(coverState->time == coverStateCp->time);
   REQUIRE(coverState->covered.size() == coverStateCp->covered.size());
-  REQUIRE(coverState->covered.at(0) == coverStateCp->covered.at(0));
+  REQUIRE(coverState->covered == coverStateCp->covered);
   REQUIRE(coverState->map.size() == coverStateCp->map.size());
   REQUIRE(coverState->map(0, 0) == coverStateCp->map(0, 0));
   REQUIRE(coverState->map(0, 1) == coverStateCp->map(0, 1));
@@ -136,7 +136,7 @@ TEST_CASE("Tests for CoverageBelief::text", "[CoverageBelief::text]") {
 
   // Test copying using sampling and deterministic belief
   std::unique_ptr<CoverageBelief> belief{std::make_unique<CoverageBelief>(
-      pomdp, GridCell{0, 1}, 1, std::vector<GridCell>{GridCell{0, 0}},
+      pomdp, GridCell{0, 1}, 1, std::set<GridCell>{GridCell{0, 0}},
       imac->getInitialBelief(), imac, fov)};
 
   REQUIRE(belief->text() == "Robot Position: (0, 1); Time: 1; Covered: 50%; "
@@ -165,7 +165,7 @@ TEST_CASE("Tests for CoverageBelief::Update", "[CoverageBelief::Update]") {
 
   // Test copying using sampling and deterministic belief
   std::unique_ptr<CoverageBelief> belief{std::make_unique<CoverageBelief>(
-      pomdp, GridCell{0, 0}, 1, std::vector<GridCell>{GridCell{0, 0}},
+      pomdp, GridCell{0, 0}, 1, std::set<GridCell>{GridCell{0, 0}},
       imac->getInitialBelief(), imac, fov)};
 
   // Check update with success
@@ -177,8 +177,8 @@ TEST_CASE("Tests for CoverageBelief::Update", "[CoverageBelief::Update]") {
     REQUIRE(coverState->robotPosition == GridCell{1, 0});
     REQUIRE(coverState->time == 2);
     REQUIRE(coverState->covered.size() == 2);
-    REQUIRE(coverState->covered.at(0) == GridCell{0, 0});
-    REQUIRE(coverState->covered.at(1) == GridCell{1, 0});
+    REQUIRE(coverState->covered.count(GridCell{0, 0}) == 1);
+    REQUIRE(coverState->covered.count(GridCell{1, 0}) == 1);
     REQUIRE(coverState->map.size() == 2);
     REQUIRE(coverState->map(0, 0) == 1);
     REQUIRE(coverState->map(0, 1) == 0);
@@ -191,10 +191,9 @@ TEST_CASE("Tests for CoverageBelief::Update", "[CoverageBelief::Update]") {
     CoverageState *coverState{static_cast<CoverageState *>(state)};
     REQUIRE(coverState->robotPosition == GridCell{1, 0});
     REQUIRE(coverState->time == 3);
-    REQUIRE(coverState->covered.size() == 3);
-    REQUIRE(coverState->covered.at(0) == GridCell{0, 0});
-    REQUIRE(coverState->covered.at(1) == GridCell{1, 0});
-    REQUIRE(coverState->covered.at(2) == GridCell{1, 0});
+    REQUIRE(coverState->covered.size() == 2);
+    REQUIRE(coverState->covered.count(GridCell{0, 0}) == 1);
+    REQUIRE(coverState->covered.count(GridCell{1, 0}) == 1);
     REQUIRE(coverState->map.size() == 2);
     REQUIRE(coverState->map(0, 0) == 0);
     REQUIRE(coverState->map(0, 1) == 0);
@@ -214,7 +213,7 @@ TEST_CASE("Tests for CoverageBelief::Update", "[CoverageBelief::Update]") {
       new CoveragePOMDP{std::vector<GridCell>{}, imacTwo, 5}};
 
   std::unique_ptr<CoverageBelief> beliefTwo{std::make_unique<CoverageBelief>(
-      pomdpTwo, GridCell{1, 0}, 1, std::vector<GridCell>{GridCell{1, 0}},
+      pomdpTwo, GridCell{1, 0}, 1, std::set<GridCell>{GridCell{1, 0}},
       imacTwo->getInitialBelief(), imacTwo, std::vector<GridCell>{})};
 
   beliefTwo->Update(ActionHelpers::toInt(Action::wait), 1);
@@ -223,9 +222,8 @@ TEST_CASE("Tests for CoverageBelief::Update", "[CoverageBelief::Update]") {
     CoverageState *coverState{static_cast<CoverageState *>(state)};
     REQUIRE(coverState->robotPosition == GridCell{1, 0});
     REQUIRE(coverState->time == 2);
-    REQUIRE(coverState->covered.size() == 2);
-    REQUIRE(coverState->covered.at(0) == GridCell{1, 0});
-    REQUIRE(coverState->covered.at(1) == GridCell{1, 0});
+    REQUIRE(coverState->covered.size() == 1);
+    REQUIRE(coverState->covered.count(GridCell{1, 0}) == 1);
     REQUIRE(coverState->map.size() == 2);
     REQUIRE(coverState->map(0, 0) == 1);
     REQUIRE(coverState->map(0, 1) == 0);
