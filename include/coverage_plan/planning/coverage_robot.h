@@ -207,8 +207,10 @@ public:
    * Run the plan-execute-observe cycle for a single episode, up to _timeBound.
    *
    * @param outFile The csv file to output visited locations to
+   *
+   * @return propCovered The proportion of the environment covered
    */
-  void runCoverageEpisode(const std::filesystem::path &outFile);
+  double runCoverageEpisode(const std::filesystem::path &outFile);
 
   /**
    * Runs necessary setup for an episode, such as creating a planner.

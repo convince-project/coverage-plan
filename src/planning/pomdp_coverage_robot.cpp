@@ -115,10 +115,9 @@ void POMDPCoverageRobot::episodeSetup(const GridCell &startLoc, const int &ts,
   std::string world_type{"DEFAULT"};
   std::string belief_type{"DEFAULT"};
   int time_limit{-1};
-  char *argv[] = {"NAME", NULL}; // Dummy parameters
 
   despot::option::Option *options = this->_planner->InitializeParamers(
-      1, argv, solver_type, search_solver, num_runs, world_type, belief_type,
+      0, {}, solver_type, search_solver, num_runs, world_type, belief_type,
       time_limit);
   if (options == NULL) {
     exit(0);

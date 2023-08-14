@@ -208,7 +208,10 @@ TEST_CASE("Test for runCoverageEpisode",
   std::unique_ptr<TestCoverageRobotThree> robot{
       std::make_unique<TestCoverageRobotThree>(GridCell{2, 1}, 10, 5, 5)};
 
-  robot->runCoverageEpisode("/tmp/runEpisodeTest.csv");
+  double propCovered{robot->runCoverageEpisode("/tmp/runEpisodeTest.csv")};
+
+  REQUIRE_THAT(propCovered, Catch::Matchers::WithinRel(11.0 / 25.0, 0.001));
+
   // Test log has got everything in the right order
   std::ifstream logOne{"/tmp/runEpisodeTest.csv"};
   std::string line{};

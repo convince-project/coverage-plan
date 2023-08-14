@@ -240,7 +240,7 @@ void CoverageRobot::logVisitedLocations(const std::filesystem::path &outFile) {
 /**
  * Run the plan-execute-observe cycle for a single episode, up to _timeBound.
  */
-void CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
+double CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
 
   // Current timestep
   int t{0};
@@ -288,4 +288,12 @@ void CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
 
   // Clean up
   this->episodeCleanup();
+
+  double propCovered{(double)covered.size() /
+                     (double)(this->_xDim * this->_yDim)};
+
+  std::cout << "Episode finished at time " << t << " with " << propCovered * 100
+            << "\% of the environment covered\n";
+
+  return propCovered;
 }
