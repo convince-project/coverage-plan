@@ -28,15 +28,6 @@ private:
   const std::vector<GridCell> _fov{};
 
   /**
-   * Function for printing current transition to stdout.
-   *
-   * @param startLoc The robot's location at the start of the transition
-   * @param outcome The action outcome
-   */
-  void _printCurrentTransition(const GridCell &startLoc,
-                               const ActionOutcome &outcome);
-
-  /**
    * Synthesises a random valid action for the coverage robot.
    * Recall that x goes from left to right, y from top to bottom.
    *

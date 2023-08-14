@@ -10,42 +10,7 @@
 #include "coverage_plan/planning/coverage_observation.h"
 #include "coverage_plan/util/seed.h"
 #include <Eigen/Dense>
-#include <iostream>
 #include <random>
-
-/**
- * Function for printing current transition to stdout.
- *
- */
-void RandomCoverageRobot::_printCurrentTransition(
-    const GridCell &startLoc, const ActionOutcome &outcome) {
-
-  // Bools written as strings
-  std::cout << std::boolalpha;
-
-  std::cout << "STATE: (" << startLoc.x << ',' << startLoc.y << "); ACTION: ";
-  // Get action string
-  switch (outcome.action) {
-  case Action::up:
-    std::cout << "up";
-    break;
-  case Action::down:
-    std::cout << "down";
-    break;
-  case Action::left:
-    std::cout << "left";
-    break;
-  case Action::right:
-    std::cout << "right";
-    break;
-  case Action::wait:
-    std::cout << "wait";
-    break;
-  }
-
-  std::cout << "; SUCCESS: " << outcome.success << "; SUCCESSOR: (";
-  std::cout << outcome.location.x << ',' << outcome.location.y << ")\n";
-}
 
 /**
  * Synthesises a random valid action for the coverage robot.

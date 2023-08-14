@@ -94,6 +94,15 @@ private:
   std::vector<Action> _getEnabledActions();
 
 protected:
+  /**
+   * Function for printing current transition to stdout.
+   *
+   * @param startLoc The robot's location at the start of the transition
+   * @param outcome The action outcome
+   */
+  void _printCurrentTransition(const GridCell &startLoc,
+                               const ActionOutcome &outcome);
+
   // Pure virtual functions making CoverageRobot an abstract base class
 
   /**
