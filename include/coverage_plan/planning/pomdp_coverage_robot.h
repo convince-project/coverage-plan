@@ -1,34 +1,35 @@
 /**
- * Header file for the RandomCoverageRobot class.
+ * Header file for the POMDPCoverageRobot class.
  *
- * This is an implementation of CoverageRobot which takes random actions.
+ * This is an implementation of CoverageRobot which uses the POMDP planner.
  *
  * @author Charlie Street
  */
-#ifndef RANDOM_COVERAGE_ROBOT_H
-#define RANDOM_COVERAGE_ROBOT_H
+#ifndef POMDP_COVERAGE_ROBOT_H
+#define POMDP_COVERAGE_ROBOT_H
 
 #include "coverage_plan/mod/grid_cell.h"
+#include "coverage_plan/mod/imac_executor.h"
+#include "coverage_plan/planning/coverage_planner.h"
 #include "coverage_plan/planning/coverage_robot.h"
-#include "coverage_plan/planning/coverage_world.h"
+#include <memory>
 #include <vector>
-
 /**
- * A class for a random coverage robot, i.e. the robot moves randomly.
+ * A class for a coverage robot which uses the POMDP planner.
  *
  * Members:
  * As in superclass, plus:
- * _world: The CoverageWorld representing the environment
- * _fov: The robot's FOV represented as a vector of relative grid cells
  */
-class RandomCoverageRobot : public CoverageRobot {
+class POMDPCoverageRobot : public CoverageRobot {
 
 private:
-  std::shared_ptr<CoverageWorld> _world{};
+  std::shared_ptr<IMacExecutor> _exec{};
   const std::vector<GridCell> _fov{};
+  std::vector<IMacObservation> _latestObs{};
+  std::unique_ptr<CoveragePlanner> _planner{};
 
   /**
-   * Synthesises a random valid action for the coverage robot.
+   * Synthesises an action using the POMDP planner
    * Recall that x goes from left to right, y from top to bottom.
    *
    * @param currentLoc The robot's current location
@@ -48,7 +49,7 @@ private:
                  const std::vector<IMacObservation> &currentObs);
 
   /**
-   * Executes an action by checking against the CoverageWorld object.
+   * Executes an action using a CoverageWorld object.
    * Just applies the action to the grid and checks the outcome.
    *
    * @param currentLoc The robot's current location
@@ -59,7 +60,7 @@ private:
   ActionOutcome _executeFn(const GridCell &currentLoc, const Action &action);
 
   /**
-   *  Dummy observation function which returns an empty vector.
+   *  Returns the latest observation obtained from the CoverageWorld.
    *
    * @param currentLoc The robot's current location
    *
@@ -67,21 +68,9 @@ private:
    */
   std::vector<IMacObservation> _observeFn(const GridCell &currentLoc);
 
-  /**
-   * Runs necessary setup for an episode, like resetting the CoverageWorld.
-   *
-   * @param startLoc The robot's initial location for the episode
-   * @param ts The initial timestep
-   * @param timeBound The episode time bound, which could change
-   * @param imacForEpisode The IMac instance being used for the planning episode
-   */
-  void _episodeSetup(const GridCell &startLoc, const int &ts,
-                     const int &timeBound,
-                     std::shared_ptr<IMac> imacForEpisode);
-
 public:
   /**
-   * Constructor calls super constructor and initialises _world.
+   * Constructor calls super constructor and initialises the planner.
    *
    * @param currentLoc The robot's current location
    * @param timeBound The planning time bound
@@ -92,12 +81,28 @@ public:
    * @param groundTruthIMac The ground truth IMac instance (if we don't want to
    * use BiMac)
    */
-  RandomCoverageRobot(const GridCell &currentLoc, int timeBound, int xDim,
-                      int yDim, std::shared_ptr<CoverageWorld> world,
-                      const std::vector<GridCell> &fov,
-                      std::shared_ptr<IMac> groundTruthIMac = nullptr)
+  POMDPCoverageRobot(const GridCell &currentLoc, int timeBound, int xDim,
+                     int yDim, const std::vector<GridCell> &fov,
+                     std::shared_ptr<IMacExecutor> exec,
+                     std::shared_ptr<IMac> groundTruthIMac = nullptr)
       : CoverageRobot{currentLoc, timeBound, xDim, yDim, groundTruthIMac},
-        _world{world}, _fov{fov} {}
+        _exec{exec}, _fov{fov}, _latestObs{}, _planner{nullptr} {
+    this->resetForNextEpisode(currentLoc, timeBound);
+  }
+
+  /**
+   * Destructor calls resetForNextEpisode which will hapndle memory management.
+   * TODO: Not convinced by this
+   */
+  ~POMDPCoverageRobot() { this->resetForNextEpisode(GridCell{0, 0}, 0); }
+
+  /**
+   * Resets all necessary members for the next episode.
+   *
+   * @param startLoc The robot's initial location for the episode
+   * @param timeBound The episode time bound, which could change
+   */
+  void resetForNextEpisode(const GridCell &startLoc, int timeBound);
 };
 
 #endif

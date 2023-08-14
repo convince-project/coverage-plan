@@ -103,6 +103,23 @@ protected:
   void _printCurrentTransition(const GridCell &startLoc,
                                const ActionOutcome &outcome);
 
+  /**
+   * Runs necessary setup for an episode, such as creating a planner.
+   *
+   * @param startLoc The robot's initial location for the episode
+   * @param ts The initial timestep
+   * @param timeBound The episode time bound, which could change
+   * @param imacForEpisode The IMac instance being used for the planning episode
+   */
+  virtual void _episodeSetup(const GridCell &startLoc, const int &ts,
+                             const int &timeBound,
+                             std::shared_ptr<IMac> imacForEpisode);
+
+  /**
+   * Used for cleaning up memory/resetting things upon the end of an episode
+   */
+  virtual void _episodeCleanup();
+
   // Pure virtual functions making CoverageRobot an abstract base class
 
   /**
@@ -195,14 +212,6 @@ public:
    * @return obsVector A vector of observations
    */
   std::vector<IMacObservation> makeObservations();
-
-  /**
-   * Resets all necessary members for the next episode.
-   *
-   * @param startLoc The robot's initial location for the episode
-   * @param timeBound The episode time bound, which could change
-   */
-  virtual void resetForNextEpisode(const GridCell &startLoc, int timeBound);
 
   /**
    * Logs a set of visited nodes to file.

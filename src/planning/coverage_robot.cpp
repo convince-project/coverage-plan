@@ -207,14 +207,22 @@ std::vector<IMacObservation> CoverageRobot::makeObservations() {
 }
 
 /**
- * Resets all necessary members for the next episode.
+ * Runs necessary setup for an episode, such as creating a planner.
  */
-void CoverageRobot::resetForNextEpisode(const GridCell &startLoc,
-                                        int timeBound) {
+void CoverageRobot::_episodeSetup(const GridCell &startLoc, const int &ts,
+                                  const int &timeBound,
+                                  std::shared_ptr<IMac> imacForEpisode) {
   this->_visited.clear();
   this->_currentLoc = startLoc;
   this->_timeBound = timeBound;
 }
+
+/**
+ * Used for cleaning up memory/resetting things upon the end of an episode.
+ *
+ * Empty in this class
+ */
+void CoverageRobot::_episodeCleanup() {}
 
 /**
  * Logs a set of visited nodes to file.
@@ -247,6 +255,9 @@ void CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
   // At each timestep, we get a vector of observations
   std::vector<std::vector<IMacObservation>> observations{};
 
+  // Additional setup for the episode
+  this->_episodeSetup(this->_currentLoc, t, this->_timeBound, imacForEpisode);
+
   // Add initial location to visited and take initial observations
   this->_visited.push_back(this->_currentLoc);
   covered.insert(this->_currentLoc);
@@ -274,4 +285,7 @@ void CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
 
   // Log results
   this->logVisitedLocations(outFile);
+
+  // Clean up
+  this->_episodeCleanup();
 }

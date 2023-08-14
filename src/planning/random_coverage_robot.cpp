@@ -61,11 +61,12 @@ RandomCoverageRobot::_observeFn(const GridCell &currentLoc) {
 }
 
 /**
- * Resets all necessary members for the next episode.
+ * Runs necessary setup for an episode.
  */
-void RandomCoverageRobot::resetForNextEpisode(const GridCell &startLoc,
-                                              int timeBound) {
-  CoverageRobot::resetForNextEpisode(startLoc, timeBound);
+void RandomCoverageRobot::_episodeSetup(const GridCell &startLoc, const int &ts,
+                                        const int &timeBound,
+                                        std::shared_ptr<IMac> imacForEpisode) {
+  CoverageRobot::_episodeSetup(startLoc, ts, timeBound, imacForEpisode);
   this->_world->Connect();
   this->_world->Initialize();
 }
