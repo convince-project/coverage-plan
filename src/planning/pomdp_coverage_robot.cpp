@@ -86,13 +86,12 @@ POMDPCoverageRobot::_initialObservation(const GridCell &startLoc) {
   CoverageState *state{
       static_cast<CoverageState *>(this->_world->GetCurrentState())};
 
-  for (const GridCell &cell : this->_fov) {
-    GridCell absCell{startLoc + cell};
-    this->_latestObs.push_back(
-        IMacObservation{absCell, state->map(absCell.y, absCell.x)});
-  }
+  // The action here doesn't matter
+  despot::OBS_TYPE obs{Observation::computeObservation(
+      state->map, startLoc, ActionOutcome{Action::wait, true, startLoc},
+      this->_fov)};
 
-  return initObs;
+  return std::get<0>(Observation::fromObsType(obs, this->_fov, startLoc));
 }
 
 /**
@@ -101,8 +100,10 @@ POMDPCoverageRobot::_initialObservation(const GridCell &startLoc) {
 void POMDPCoverageRobot::episodeSetup(const GridCell &startLoc, const int &ts,
                                       const int &timeBound,
                                       std::shared_ptr<IMac> imacForEpisode) {
+  // Call superclass function
+  CoverageRobot::episodeSetup(startLoc, ts, timeBound, imacForEpisode);
 
-  // First, make planner
+  // Make planner
   this->_planner = std::make_unique<CoveragePlanner>(
       startLoc, ts, timeBound, this->_fov, this->_exec, imacForEpisode);
 
