@@ -223,7 +223,7 @@ public:
                             std::shared_ptr<IMac> imacForEpisode);
 
   /**
-   * Used for cleaning up memory/resetting things upon the end of an episode
+   * Used for cleaning up memory/resetting things upon the end of an episode.
    */
   virtual void episodeCleanup();
 

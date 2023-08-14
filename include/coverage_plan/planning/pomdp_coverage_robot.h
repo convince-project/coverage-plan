@@ -10,8 +10,12 @@
 
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac_executor.h"
+#include "coverage_plan/planning/coverage_belief.h"
 #include "coverage_plan/planning/coverage_planner.h"
+#include "coverage_plan/planning/coverage_pomdp.h"
 #include "coverage_plan/planning/coverage_robot.h"
+#include "coverage_plan/planning/coverage_world.h"
+#include <despot/core/solver.h>
 #include <memory>
 #include <vector>
 /**
@@ -27,6 +31,10 @@ private:
   const std::vector<GridCell> _fov{};
   std::vector<IMacObservation> _latestObs{};
   std::unique_ptr<CoveragePlanner> _planner{};
+  CoveragePOMDP *_pomdp{};
+  CoverageWorld *_world{};
+  CoverageBelief *_belief{};
+  despot::Solver *_solver{};
 
   /**
    * Synthesises an action using the POMDP planner
@@ -68,6 +76,15 @@ private:
    */
   std::vector<IMacObservation> _observeFn(const GridCell &currentLoc);
 
+  /**
+   * Computes initial observation, which is different to others.
+   *
+   * @param startLoc The robot's start location
+   *
+   * @return initObs The initial observation as a vector of IMacObservations
+   */
+  std::vector<IMacObservation> _initialObservation(const GridCell &startLoc);
+
 public:
   /**
    * Constructor calls super constructor and initialises the planner.
@@ -86,23 +103,30 @@ public:
                      std::shared_ptr<IMacExecutor> exec,
                      std::shared_ptr<IMac> groundTruthIMac = nullptr)
       : CoverageRobot{currentLoc, timeBound, xDim, yDim, groundTruthIMac},
-        _exec{exec}, _fov{fov}, _latestObs{}, _planner{nullptr} {
-    this->resetForNextEpisode(currentLoc, timeBound);
-  }
+        _exec{exec}, _fov{fov}, _latestObs{}, _planner{nullptr},
+        _pomdp{nullptr}, _world{nullptr}, _belief{nullptr}, _solver{nullptr} {}
 
   /**
-   * Destructor calls resetForNextEpisode which will hapndle memory management.
-   * TODO: Not convinced by this
+   * Ensures everything is cleaned up on object deletion.
+   * episodeCleanup will only deallocate if not nullptrs.
    */
-  ~POMDPCoverageRobot() { this->resetForNextEpisode(GridCell{0, 0}, 0); }
+  ~POMDPCoverageRobot() { this->episodeCleanup(); }
 
   /**
-   * Resets all necessary members for the next episode.
+   * Runs necessary setup for creating the POMDP planner.
    *
    * @param startLoc The robot's initial location for the episode
+   * @param ts The initial timestep
    * @param timeBound The episode time bound, which could change
+   * @param imacForEpisode The IMac instance being used for the planning episode
    */
-  void resetForNextEpisode(const GridCell &startLoc, int timeBound);
+  void episodeSetup(const GridCell &startLoc, const int &ts,
+                    const int &timeBound, std::shared_ptr<IMac> imacForEpisode);
+
+  /**
+   * Deallocates objects used by the CoveragePlanner object.
+   */
+  void episodeCleanup();
 };
 
 #endif
