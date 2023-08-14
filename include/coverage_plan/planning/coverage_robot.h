@@ -103,23 +103,6 @@ protected:
   void _printCurrentTransition(const GridCell &startLoc,
                                const ActionOutcome &outcome);
 
-  /**
-   * Runs necessary setup for an episode, such as creating a planner.
-   *
-   * @param startLoc The robot's initial location for the episode
-   * @param ts The initial timestep
-   * @param timeBound The episode time bound, which could change
-   * @param imacForEpisode The IMac instance being used for the planning episode
-   */
-  virtual void _episodeSetup(const GridCell &startLoc, const int &ts,
-                             const int &timeBound,
-                             std::shared_ptr<IMac> imacForEpisode);
-
-  /**
-   * Used for cleaning up memory/resetting things upon the end of an episode
-   */
-  virtual void _episodeCleanup();
-
   // Pure virtual functions making CoverageRobot an abstract base class
 
   /**
@@ -226,6 +209,23 @@ public:
    * @param outFile The csv file to output visited locations to
    */
   void runCoverageEpisode(const std::filesystem::path &outFile);
+
+  /**
+   * Runs necessary setup for an episode, such as creating a planner.
+   *
+   * @param startLoc The robot's initial location for the episode
+   * @param ts The initial timestep
+   * @param timeBound The episode time bound, which could change
+   * @param imacForEpisode The IMac instance being used for the planning episode
+   */
+  virtual void episodeSetup(const GridCell &startLoc, const int &ts,
+                            const int &timeBound,
+                            std::shared_ptr<IMac> imacForEpisode);
+
+  /**
+   * Used for cleaning up memory/resetting things upon the end of an episode
+   */
+  virtual void episodeCleanup();
 
   /**
    * Getter for the BIMac model.

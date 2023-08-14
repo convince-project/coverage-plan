@@ -70,6 +70,7 @@ TEST_CASE("Tests for RandomCoverageRobot executeAction with failure",
       std::make_unique<RandomCoverageRobot>(GridCell{0, 0}, 2, 2, 1, world,
                                             std::vector<GridCell>{})};
 
+  robot->episodeSetup(GridCell{0, 0}, 0, 2, nullptr);
   ActionOutcome outcome{robot->executeAction(Action::right)};
 
   // Always empty
@@ -105,6 +106,7 @@ TEST_CASE(
       std::make_unique<RandomCoverageRobot>(GridCell{0, 0}, 2, 2, 1, world,
                                             std::vector<GridCell>{})};
 
+  robot->episodeSetup(GridCell{0, 0}, 0, 2, nullptr);
   ActionOutcome outcome{robot->executeAction(Action::left)};
 
   // Always empty
@@ -139,6 +141,7 @@ TEST_CASE("Tests for RandomCoverageRobot executeAction with success",
       std::make_unique<RandomCoverageRobot>(GridCell{0, 0}, 2, 2, 1, world,
                                             std::vector<GridCell>{})};
 
+  robot->episodeSetup(GridCell{0, 0}, 0, 2, nullptr);
   ActionOutcome outcome{robot->executeAction(Action::right)};
 
   // Always empty

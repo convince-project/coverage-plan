@@ -141,14 +141,14 @@ TEST_CASE("Tests for plan-execute-observe wrapper functions",
   REQUIRE(obsVector.at(0).occupied == 1);
 }
 
-TEST_CASE("Test for reset", "[CoverageRobot::resetForNextEpisode]") {
+TEST_CASE("Test for episodeSetup", "[CoverageRobot::episodeSetup]") {
 
   std::unique_ptr<TestCoverageRobotOne> robot{
       std::make_unique<TestCoverageRobotOne>(GridCell{2, 1}, 0, 5, 5)};
 
   robot->runCoverageEpisode("/tmp/resetTestOne.csv");
 
-  robot->resetForNextEpisode(GridCell{3, 3}, 10);
+  robot->episodeSetup(GridCell{3, 3}, 0, 10, nullptr);
 
   robot->runCoverageEpisode("/tmp/resetTestTwo.csv");
 

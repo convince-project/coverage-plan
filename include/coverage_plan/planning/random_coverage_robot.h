@@ -67,18 +67,6 @@ private:
    */
   std::vector<IMacObservation> _observeFn(const GridCell &currentLoc);
 
-  /**
-   * Runs necessary setup for an episode, like resetting the CoverageWorld.
-   *
-   * @param startLoc The robot's initial location for the episode
-   * @param ts The initial timestep
-   * @param timeBound The episode time bound, which could change
-   * @param imacForEpisode The IMac instance being used for the planning episode
-   */
-  void _episodeSetup(const GridCell &startLoc, const int &ts,
-                     const int &timeBound,
-                     std::shared_ptr<IMac> imacForEpisode);
-
 public:
   /**
    * Constructor calls super constructor and initialises _world.
@@ -98,6 +86,17 @@ public:
                       std::shared_ptr<IMac> groundTruthIMac = nullptr)
       : CoverageRobot{currentLoc, timeBound, xDim, yDim, groundTruthIMac},
         _world{world}, _fov{fov} {}
+
+  /**
+   * Runs necessary setup for an episode, like resetting the CoverageWorld.
+   *
+   * @param startLoc The robot's initial location for the episode
+   * @param ts The initial timestep
+   * @param timeBound The episode time bound, which could change
+   * @param imacForEpisode The IMac instance being used for the planning episode
+   */
+  void episodeSetup(const GridCell &startLoc, const int &ts,
+                    const int &timeBound, std::shared_ptr<IMac> imacForEpisode);
 };
 
 #endif
