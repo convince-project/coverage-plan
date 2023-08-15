@@ -18,3 +18,7 @@ target_link_libraries(randomCoverageRobotExample PUBLIC mod planning)
 # Add executable for POMDP coverage example
 add_executable(pomdpCoverageExample pomdp_coverage_example.cpp)
 target_link_libraries(pomdpCoverageExample PUBLIC mod planning util)
+
+# Add executable for multi-episode test
+add_executable(multiEpisodeTest multi_episode_test.cpp)
+target_link_libraries(multiEpisodeTest PUBLIC mod planning util)
