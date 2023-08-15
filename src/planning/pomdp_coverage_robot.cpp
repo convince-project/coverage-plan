@@ -64,7 +64,7 @@ ActionOutcome POMDPCoverageRobot::_executeFn(const GridCell &currentLoc,
   this->_latestObs = std::get<0>(obsInfo);
 
   // Now do a belief update (has to be done here as we need the action)
-  this->_belief->Update(ActionHelpers::toInt(action), obs);
+  this->_solver->BeliefUpdate(ActionHelpers::toInt(action), obs);
   return outcome;
 }
 
