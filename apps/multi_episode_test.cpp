@@ -28,9 +28,9 @@ std::shared_ptr<IMac> createIMac() {
   Eigen::MatrixXd initialBelief{4, 4};
 
   int numSet{0};
-  const int staticObsLimit{3};
-  const int staticFreeLimit{9};
-  const int semiStaticLimit{13};
+  const int staticObsLimit{2};
+  const int staticFreeLimit{10};
+  const int semiStaticLimit{12};
 
   // Random order of cells on grid map
   std::vector<GridCell> cells{};
@@ -81,8 +81,8 @@ void writeResults(const std::vector<std::vector<double>> &results,
       for (const double &propCovered : currentRes) {
         f << propCovered << ',';
       }
+      f << '\n';
     }
-    f << '\n';
   }
   f.close();
 }
@@ -97,8 +97,8 @@ int main() {
 
   GridCell initPos{0, 0};
   int timeBound{25};
-  int numRepeats{2};  // 10
-  int numEpisodes{2}; // 200
+  int numRepeats{10};
+  int numEpisodes{100};
 
   std::vector<std::vector<double>> results{};
 
@@ -119,7 +119,11 @@ int main() {
       currentRes.push_back(
           robot->runCoverageEpisode("/tmp/episodeVisited.csv"));
     }
+
+    results.push_back(currentRes);
   }
+
+  writeResults(results, "../../data/results/multiEpisodeTestResults.csv");
 
   return 0;
 }
