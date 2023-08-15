@@ -8,6 +8,7 @@ Owner: Charlie Street
 from matplotlib import animation
 import matplotlib.pyplot as plt
 import csv
+import sys
 import os
 
 FPS = 25
@@ -213,8 +214,8 @@ def run_animation(x_len, y_len, visited_file, map_file, output_path=None):
         blit=False,
     )
 
-    plt.xlim([0, 10])
-    plt.ylim([0, 11])
+    plt.xlim([0, x_len])
+    plt.ylim([0, y_len + 1])
     plt.axis("off")
 
     if output_path is not None:
@@ -231,19 +232,19 @@ def run_animation(x_len, y_len, visited_file, map_file, output_path=None):
 
 
 if __name__ == "__main__":
-    x_len = 10
-    y_len = 10
+    if len(sys.argv) < 5:
+        print(
+            "python3 animate_coverage_run.py <x_len> <y_len> <visited_file> "
+            "<map_dynamics_file> <video_file (optional)>"
+        )
+    else:
+        x_len = int(sys.argv[1])
+        y_len = int(sys.argv[2])
+        visited_file = os.path.abspath(sys.argv[3])
+        map_file = os.path.abspath(sys.argv[4])
+        if len(sys.argv) >= 6:
+            output_path = sys.argv[5]
+        else:
+            output_path = None
 
-    visited_file = os.path.join(
-        "../../data/results/randomCoverageRobotExampleVisited.csv"
-    )
-
-    map_file = os.path.join("../../data/results/randomCoverageRobotExampleMap.csv")
-
-    run_animation(
-        x_len,
-        y_len,
-        visited_file,
-        map_file,
-        "../../data/videos/randomCoverageRobotRunVideo.mp4",
-    )
+    run_animation(x_len, y_len, visited_file, map_file, output_path)
