@@ -256,7 +256,7 @@ double CoverageRobot::runCoverageEpisode(const std::filesystem::path &outFile) {
   std::vector<std::vector<IMacObservation>> observations{};
 
   // Additional setup for the episode
-  this->episodeSetup(this->_currentLoc, t, this->_timeBound, imacForEpisode);
+  this->episodeSetup(this->_initLoc, t, this->_timeBound, imacForEpisode);
 
   // Add initial location to visited and take initial observations
   this->_visited.push_back(this->_currentLoc);

@@ -148,7 +148,7 @@ TEST_CASE("Test for episodeSetup", "[CoverageRobot::episodeSetup]") {
 
   robot->runCoverageEpisode("/tmp/resetTestOne.csv");
 
-  robot->episodeSetup(GridCell{3, 3}, 0, 10, nullptr);
+  robot = std::make_unique<TestCoverageRobotOne>(GridCell{3, 3}, 10, 5, 5);
 
   robot->runCoverageEpisode("/tmp/resetTestTwo.csv");
 

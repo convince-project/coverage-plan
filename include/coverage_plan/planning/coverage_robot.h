@@ -29,6 +29,7 @@
  * Handles the plan/execute/observe cycle.
  *
  * Members:
+ * _initLoc: The robot's initial location for each episode
  * _currentLoc: The robot's current GridCell
  * _visited: A vector of locations visited by the robot (i.e. the history)
  * _timeBound: The maximum number of timesteps given to the robot
@@ -38,6 +39,7 @@
  */
 class CoverageRobot {
 private:
+  const GridCell _initLoc{};
   GridCell _currentLoc{};
   std::vector<GridCell> _visited{};
   int _timeBound{};
@@ -155,18 +157,19 @@ public:
   /**
    * Initialises all member variables.
    *
-   * @param currentLoc The robot's current grid cell
+   * @param initLoc The robot's initial grid cell
    * @param timeBound: The maximum number of timesteps given to the robot
    * @param xDim The length of the x dimension of the environment
    * @param yDim The length of the y dimension of the environment
    * @param groundTruthIMac The ground truth IMac (if we want to test planning
    * without BiMac)
    */
-  CoverageRobot(const GridCell &currentLoc, int timeBound, int xDim, int yDim,
+  CoverageRobot(const GridCell &initLoc, int timeBound, int xDim, int yDim,
                 std::shared_ptr<IMac> groundTruthIMac = nullptr)
-      : _currentLoc{currentLoc}, _visited{}, _timeBound{timeBound}, _xDim{xDim},
-        _yDim{yDim}, _bimac{std::make_shared<BIMac>(xDim, yDim)},
-        _groundTruthIMac{groundTruthIMac} {}
+      : _initLoc{initLoc}, _currentLoc{initLoc}, _visited{},
+        _timeBound{timeBound}, _xDim{xDim}, _yDim{yDim},
+        _bimac{std::make_shared<BIMac>(xDim, yDim)}, _groundTruthIMac{
+                                                         groundTruthIMac} {}
 
   /**
    * Wrapper around _planFn which fills in the gaps from class members.
