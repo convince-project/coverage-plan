@@ -52,7 +52,7 @@ despot::ACT_TYPE GreedyCoverageDefaultPolicy::Action(
     for (int a{0}; a < this->model_->NumActions(); ++a) {
       GridCell succLoc{ActionHelpers::applySuccessfulAction(
           coverState->robotPosition, ActionHelpers::fromInt(a))};
-      if (coverState->covered.count(succLoc) != 0 &&
+      if (coverState->covered.count(succLoc) == 0 &&
           !succLoc.outOfBounds(
               0, this->_imacEntry.cols(), 0,
               this->_imacEntry.rows())) { // Not already covered and in bounds
@@ -67,6 +67,7 @@ despot::ACT_TYPE GreedyCoverageDefaultPolicy::Action(
       }
     }
   }
+
   // Get location of max element (max action)
   return std::distance(immRewards.begin(),
                        std::max_element(immRewards.begin(), immRewards.end()));

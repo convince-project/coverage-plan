@@ -70,7 +70,9 @@ TEST_CASE("Tests for GreedyCoverageDefaultPolicy",
   std::unique_ptr<CoveragePOMDP> pomdp{
       std::make_unique<CoveragePOMDP>(fov, imac, 5)};
 
-  GreedyCoverageDefaultPolicy policy{pomdp.get(), nullptr, imac};
+  ZeroParticleLowerBound zeroBound{};
+
+  GreedyCoverageDefaultPolicy policy{pomdp.get(), &zeroBound, imac};
 
   despot::History history{};
   despot::RandomStreams streams{3, 10};
@@ -107,8 +109,8 @@ TEST_CASE("Tests for GreedyCoverageDefaultPolicy",
     state->time = 3;
     state->map = Eigen::MatrixXi::Zero(3, 3);
     state->map(1, 0) = 1;
-    state->map(1, 2) = 1;
-    state->covered = std::set<GridCell>{};
+    state->map(2, 1) = 1;
+    state->covered = std::set<GridCell>{GridCell{1, 1}};
     particles.push_back(state);
   }
 
@@ -136,18 +138,18 @@ TEST_CASE("Tests for GreedyCoverageDefaultPolicy",
   stateOne->time = 3;
   stateOne->map = Eigen::MatrixXi::Zero(3, 3);
   stateOne->map(1, 0) = 1;
-  stateOne->map(1, 2) = 1;
-  stateOne->covered = std::set<GridCell>{};
+  stateOne->map(2, 1) = 1;
+  stateOne->covered = std::set<GridCell>{GridCell{1, 1}};
   particles.push_back(stateOne);
 
   CoverageState *stateTwo{
       static_cast<CoverageState *>(pomdp->Allocate(-1, 0.6))};
-  stateOne->robotPosition = GridCell{2, 1};
-  stateOne->time = 3;
-  stateOne->map = Eigen::MatrixXi::Zero(3, 3);
-  stateOne->map(2, 2) = 1;
-  stateOne->map(0, 2) = 1;
-  stateOne->covered = std::set<GridCell>{};
+  stateTwo->robotPosition = GridCell{2, 1};
+  stateTwo->time = 3;
+  stateTwo->map = Eigen::MatrixXi::Zero(3, 3);
+  stateTwo->map(2, 2) = 1;
+  stateTwo->map(0, 2) = 1;
+  stateTwo->covered = std::set<GridCell>{GridCell{2, 1}};
   particles.push_back(stateTwo);
 
   action = policy.Action(particles, streams, history);

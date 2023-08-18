@@ -27,7 +27,7 @@
  *  _numCells: The number of cells in the map
  * _timeBound: The max time bound on planning
  */
-class MaxCellsUpperBound : despot::ParticleUpperBound {
+class MaxCellsUpperBound : public despot::ParticleUpperBound {
 private:
   const int _numCells{};
   const int _timeBound{};
@@ -57,7 +57,7 @@ public:
  * A very simple lower bound which just returns zero.
  * This is part of my effort to enforce a finite horizon within despot.
  */
-class ZeroParticleLowerBound : despot::ParticleLowerBound {
+class ZeroParticleLowerBound : public despot::ParticleLowerBound {
 public:
   /**
    * Initialise model to nullptr as not used.
@@ -84,7 +84,7 @@ public:
  * _imacExit: The IMac exit matrix
  *
  */
-class GreedyCoverageDefaultPolicy : despot::DefaultPolicy {
+class GreedyCoverageDefaultPolicy : public despot::DefaultPolicy {
 
 private:
   const Eigen::MatrixXd _imacEntry{};
