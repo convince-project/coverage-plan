@@ -89,6 +89,7 @@ class GreedyCoverageDefaultPolicy : public despot::DefaultPolicy {
 private:
   const Eigen::MatrixXd _imacEntry{};
   const Eigen::MatrixXd _imacExit{};
+  const despot::ParticleLowerBound *particlePtrToDelete{};
 
 public:
   /**

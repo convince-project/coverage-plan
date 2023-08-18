@@ -12,8 +12,12 @@
 
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_belief_sampler.h"
+#include "coverage_plan/planning/coverage_bounds.h"
 #include "coverage_plan/planning/coverage_state.h"
+#include <despot/interface/default_policy.h>
+#include <despot/interface/lower_bound.h>
 #include <despot/interface/pomdp.h>
+#include <despot/interface/upper_bound.h>
 #include <despot/util/memorypool.h>
 #include <memory>
 #include <string>
@@ -42,8 +46,8 @@ public:
   /**
    * Constructor initialises members.
    *
-   * @param fov The robot's field of view as a vector of grid cells relative to
-   * the robot's position
+   * @param fov The robot's field of view as a vector of grid cells relative
+   * to the robot's position
    * @param imac The IMac instance used for planning
    * @param timeBound The planning horizon in timesteps
    */
@@ -124,6 +128,36 @@ public:
    * @return bestAction The action with the largest minimum reward
    */
   despot::ValuedAction GetBestAction() const;
+
+  /**
+   * Override to allow for MaxCellsUpperBound.
+   * @param name 				  Name of the upper bound
+   * @param particleBoundName Name of the base ParticleUpperBound
+   *
+   * @return upperBound The upper bound
+   */
+  despot::ScenarioUpperBound *
+  CreateScenarioUpperBound(std::string name = "DEFAULT",
+                           std::string particleBoundName = "DEFAULT") const;
+
+  /**
+   * Override to allow for ZeroParticleLowerBound.
+   *
+   * @param name Name of the particle lower bound
+   *
+   * @return pLowerBound The particle lower bound
+   */
+  despot::ParticleLowerBound *
+  CreateParticleLowerBound(std::string name = "DEFAULT") const;
+
+  /**
+   * Override to allow for GreedyCoverageDefaultPolicy.
+   * @param name 				  Name of the lower bound
+   * @param particleBoundName Name of the ParticleLowerBound to be used
+   */
+  despot::ScenarioLowerBound *
+  CreateScenarioLowerBound(std::string bound_name = "DEFAULT",
+                           std::string particleBoundName = "DEFAULT") const;
 
   /**
    * Prints a state.

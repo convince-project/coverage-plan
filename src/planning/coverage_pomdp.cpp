@@ -13,11 +13,15 @@
 #include "coverage_plan/planning/coverage_state.h"
 #include <Eigen/Dense>
 #include <algorithm>
+#include <despot/core/builtin_lower_bounds.h>
+#include <despot/core/builtin_policy.h>
+#include <despot/core/builtin_upper_bounds.h>
 #include <despot/core/globals.h>
 #include <despot/interface/default_policy.h>
 #include <despot/interface/pomdp.h>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <set>
 
 /**
@@ -173,6 +177,69 @@ double CoveragePOMDP::GetMaxReward() const { return 1.0; }
  */
 despot::ValuedAction CoveragePOMDP::GetBestAction() const {
   return despot::ValuedAction(ActionHelpers::toInt(Action::up), 0.0);
+}
+
+/**
+ * Override to allow for MaxCellsUpperBound.
+ */
+despot::ScenarioUpperBound *
+CoveragePOMDP::CreateScenarioUpperBound(std::string name,
+                                        std::string particleBoundName) const {
+  if (name == "MAX_CELLS" || name == "DEFAULT") {
+    return new MaxCellsUpperBound{(int)this->_imac->getEntryMatrix().size(),
+                                  this->_timeBound};
+  } else if (name == "TRIVIAL") {
+    return new despot::TrivialParticleUpperBound{this};
+  } else {
+    if (name != "print")
+      std::cerr << "Unsupported upper bound: " << name << '\n';
+    std::cerr << "Supported types: TRIVIAL, MAX_CELLS (default)" << '\n';
+    exit(1);
+    return NULL;
+  }
+}
+
+/**
+ * Override to allow for ZeroParticleLowerBound.
+ */
+despot::ParticleLowerBound *
+CoveragePOMDP::CreateParticleLowerBound(std::string name) const {
+  if (name == "ZERO" || name == "DEFAULT") {
+    return new ZeroParticleLowerBound{};
+  } else if (name == "TRIVIAL") {
+    return new despot::TrivialParticleLowerBound{this};
+  } else {
+    if (name != "print")
+      std::cerr << "Unsupported particle lower bound: " << name << '\n';
+    std::cerr << "Supported types: TRIVIAL; ZERO(default)" << '\n';
+    exit(1);
+    return NULL;
+  }
+}
+
+/**
+ * Override to allow for GreedyCoverageDefaultPolicy.
+ * @param name 				  Name of the lower bound
+ * @param particleBoundName Name of the ParticleLowerBound to be used
+ */
+despot::ScenarioLowerBound *
+CoveragePOMDP::CreateScenarioLowerBound(std::string name,
+                                        std::string particleBoundName) const {
+  if (name == "GREEDY" || name == "DEFAULT") {
+    return new GreedyCoverageDefaultPolicy(
+        this, this->CreateParticleLowerBound("ZERO"), this->_imac);
+  } else if (name == "TRIVIAL") {
+    return new despot::TrivialParticleLowerBound{this};
+  } else if (name == "RANDOM") {
+    return new despot::RandomPolicy{
+        this, this->CreateParticleLowerBound(particleBoundName)};
+  } else {
+    if (name != "print")
+      std::cerr << "Unsupported lower bound: " << name << '\n';
+    std::cerr << "Supported types: TRIVIAL; RANDOM; GREEDY(default)" << '\n';
+    exit(1);
+    return NULL;
+  }
 }
 
 /**

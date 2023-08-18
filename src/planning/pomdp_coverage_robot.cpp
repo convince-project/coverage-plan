@@ -176,6 +176,12 @@ void POMDPCoverageRobot::episodeCleanup() {
   }
 
   if (this->_solver != nullptr) {
+    // The following three lines are about as good as I can manage re
+    // memory management. If any bounds have additional bound objects within
+    // them, these will sadly cause memory leaks
+    despot::DESPOT *despotSolver{static_cast<despot::DESPOT *>(this->_solver)};
+    delete despotSolver->lower_bound();
+    delete despotSolver->upper_bound();
     delete this->_solver;
     this->_solver = nullptr;
   }
