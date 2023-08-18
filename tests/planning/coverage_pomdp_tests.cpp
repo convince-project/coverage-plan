@@ -255,6 +255,136 @@ TEST_CASE("Test for CoveragePOMDP::GetBestAction",
   REQUIRE(bestAction.value == 0.0);
 }
 
+TEST_CASE("Tests for CoveragePOMDP::CreateScenarioUpperBound",
+          "[CoveragePOMDP::CreateScenarioUpperBound]") {
+  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
+                            GridCell{0, 1}};
+
+  Eigen::MatrixXd imacMat{3, 3};
+  for (int i{0}; i < 3; ++i) {
+    for (int j{0}; j < 3; ++j) {
+      imacMat(i, j) = i * 0.3 + j * 0.1;
+    }
+  }
+
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(imacMat, imacMat, imacMat)};
+
+  std::unique_ptr<CoveragePOMDP> pomdp{
+      std::make_unique<CoveragePOMDP>(fov, imac, 5)};
+  despot::History history{};
+  despot::RandomStreams streams{3, 10};
+
+  despot::ScenarioUpperBound *bound{pomdp->CreateScenarioUpperBound()};
+  CoverageState state{GridCell{0, 0}, 1, Eigen::MatrixXi::Zero(3, 3),
+                      std::set<GridCell>{}, 1.0};
+  REQUIRE_THAT(
+      bound->Value(std::vector<despot::State *>{&state}, streams, history),
+      Catch::Matchers::WithinRel(4.0, 0.001));
+  delete bound;
+
+  bound = pomdp->CreateScenarioUpperBound("MAX_CELLS");
+  REQUIRE_THAT(
+      bound->Value(std::vector<despot::State *>{&state}, streams, history),
+      Catch::Matchers::WithinRel(4.0, 0.001));
+  delete bound;
+
+  bound = pomdp->CreateScenarioUpperBound("TRIVIAL");
+  despot::Globals::config.discount = 0.5;
+  REQUIRE_THAT(
+      bound->Value(std::vector<despot::State *>{&state}, streams, history),
+      Catch::Matchers::WithinRel(2.0, 0.001));
+  delete bound;
+}
+
+TEST_CASE("Tests for CoveragePOMDP::CreateParticleLowerBound",
+          "[CoveragePOMDP::CreateParticleLowerBound]") {
+  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
+                            GridCell{0, 1}};
+
+  Eigen::MatrixXd imacMat{3, 3};
+  for (int i{0}; i < 3; ++i) {
+    for (int j{0}; j < 3; ++j) {
+      imacMat(i, j) = i * 0.3 + j * 0.1;
+    }
+  }
+
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(imacMat, imacMat, imacMat)};
+
+  std::unique_ptr<CoveragePOMDP> pomdp{
+      std::make_unique<CoveragePOMDP>(fov, imac, 5)};
+
+  despot::ParticleLowerBound *bound{pomdp->CreateParticleLowerBound()};
+  CoverageState state{GridCell{0, 0}, 1, Eigen::MatrixXi::Zero(3, 3),
+                      std::set<GridCell>{}, 1.0};
+  REQUIRE_THAT(bound->Value(std::vector<despot::State *>{&state}).value,
+               Catch::Matchers::WithinRel(0.0, 0.001));
+  delete bound;
+
+  bound = pomdp->CreateParticleLowerBound("ZERO");
+  REQUIRE_THAT(bound->Value(std::vector<despot::State *>{&state}).value,
+               Catch::Matchers::WithinRel(0.0, 0.001));
+  delete bound;
+
+  bound = pomdp->CreateParticleLowerBound("TRIVIAL");
+  REQUIRE_THAT(bound->Value(std::vector<despot::State *>{&state}).value,
+               Catch::Matchers::WithinRel(0.0, 0.001));
+  delete bound;
+}
+
+TEST_CASE("Tests for CoveragePOMDP::CreateScenarioLowerBound",
+          "[CoveragePOMDP::CreateScenarioLowerBound]") {
+  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
+                            GridCell{0, 1}};
+
+  Eigen::MatrixXd imacMat{3, 3};
+  for (int i{0}; i < 3; ++i) {
+    for (int j{0}; j < 3; ++j) {
+      imacMat(i, j) = i * 0.3 + j * 0.1;
+    }
+  }
+
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(imacMat, imacMat, imacMat)};
+
+  std::unique_ptr<CoveragePOMDP> pomdp{
+      std::make_unique<CoveragePOMDP>(fov, imac, 5)};
+
+  despot::ScenarioLowerBound *bound{pomdp->CreateScenarioLowerBound()};
+
+  std::vector<despot::State *> particles{};
+  for (int i{0}; i < 5; ++i) {
+    CoverageState *state{
+        static_cast<CoverageState *>(pomdp->Allocate(-1, 0.2))};
+    state->robotPosition = GridCell{1, 1};
+    state->time = 3;
+    state->map = Eigen::MatrixXi::Zero(3, 3);
+    state->map(1, 0) = 1;
+    state->map(2, 1) = 1;
+    state->covered = std::set<GridCell>{GridCell{1, 1}, GridCell{1, 0}};
+    particles.push_back(state);
+  }
+
+  despot::RandomStreams streams{3, 10};
+  despot::History history{};
+
+  despot::ValuedAction va{bound->Value(particles, streams, history)};
+  REQUIRE(va.action == ActionHelpers::toInt(Action::down));
+  delete bound;
+
+  bound = pomdp->CreateScenarioLowerBound("GREEDY");
+  va = bound->Value(particles, streams, history);
+  REQUIRE(va.action == ActionHelpers::toInt(Action::down));
+  delete bound;
+
+  bound = pomdp->CreateScenarioLowerBound("TRIVIAL");
+  va = bound->Value(particles, streams, history);
+  REQUIRE(va.action == ActionHelpers::toInt(Action::up));
+  delete bound;
+
+  for (despot::State *state : particles) {
+    pomdp->Free(state);
+  }
+}
+
 TEST_CASE("Tests for CoveragePOMDP::PrintState",
           "[CoveragePOMDP::PrintState]") {
   std::unique_ptr<CoveragePOMDP> pomdp{
