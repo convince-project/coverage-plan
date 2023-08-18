@@ -48,8 +48,7 @@ void CoveragePlanner::InitializeDefaultParameters() {
   // num_scenarios left at default TODO: Figure this out
   despot::Globals::config.search_depth = this->_timeBound + 1;       // Max out
   despot::Globals::config.max_policy_sim_len = this->_timeBound + 1; // Max out
-  despot::Globals::config.discount =
-      0.99999; // Can't set to 1 because of issue in trivial bounds. TODO: Fix
+  despot::Globals::config.discount = 1.0; // We have a finite horizon problem
   despot::Globals::config.pruning_constant = 0.01; // TODO: Figure this out
   // xi left at the default for now TODO: Figure this out
   // root_seed calculation copied from Ricardo's PR and plannerbase.cpp

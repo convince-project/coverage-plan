@@ -53,10 +53,10 @@ public:
                   const int &timeBound, const std::vector<GridCell> &fov,
                   std::shared_ptr<IMacExecutor> exec,
                   std::shared_ptr<IMac> planIMac,
-                  string lower_bounds_str = "TRIVIAL",
-                  string base_lower_bounds_str = "TRIVIAL",
-                  string upper_bounds_str = "TRIVIAL",
-                  string base_upper_bounds_str = "TRIVIAL")
+                  std::string lower_bounds_str = "TRIVIAL",
+                  std::string base_lower_bounds_str = "TRIVIAL",
+                  std::string upper_bounds_str = "TRIVIAL",
+                  std::string base_upper_bounds_str = "TRIVIAL")
       : Planner(lower_bounds_str, base_lower_bounds_str, upper_bounds_str,
                 base_upper_bounds_str),
         _initPos{initPos}, _initTime{initTime},
