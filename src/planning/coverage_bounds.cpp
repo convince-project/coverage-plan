@@ -6,6 +6,7 @@
  */
 
 #include "coverage_plan/planning/coverage_bounds.h"
+#include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/planning/action.h"
 #include "coverage_plan/planning/coverage_state.h"
 #include <algorithm>
@@ -51,7 +52,10 @@ despot::ACT_TYPE GreedyCoverageDefaultPolicy::Action(
     for (int a{0}; a < this->model_->NumActions(); ++a) {
       GridCell succLoc{ActionHelpers::applySuccessfulAction(
           coverState->robotPosition, ActionHelpers::fromInt(a))};
-      if (coverState->covered.count(succLoc) != 0) { // If not already covered
+      if (coverState->covered.count(succLoc) != 0 &&
+          !succLoc.outOfBounds(
+              0, this->_imacEntry.cols(), 0,
+              this->_imacEntry.rows())) { // Not already covered and in bounds
         // prob of being free in next step weighted by particle weight
         if (coverState->map(succLoc.y, succLoc.x) == 1) { // occupied, use exit
           immRewards.at(a) +=
