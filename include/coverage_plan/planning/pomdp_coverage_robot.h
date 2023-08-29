@@ -17,7 +17,9 @@
 #include "coverage_plan/planning/coverage_world.h"
 #include <despot/core/solver.h>
 #include <memory>
+#include <string>
 #include <vector>
+
 /**
  * A class for a coverage robot which uses the POMDP planner.
  *
@@ -35,6 +37,7 @@ private:
   CoverageWorld *_world{};
   CoverageBelief *_belief{};
   despot::Solver *_solver{};
+  const std::string _boundType{};
 
   /**
    * Synthesises an action using the POMDP planner
@@ -97,14 +100,17 @@ public:
    * @param fov The robot's FOV as a vector of relative grid cells
    * @param groundTruthIMac The ground truth IMac instance (if we don't want to
    * use BiMac)
+   * @param boundType The type of upper and lower bounds to use
    */
   POMDPCoverageRobot(const GridCell &currentLoc, int timeBound, int xDim,
                      int yDim, const std::vector<GridCell> &fov,
                      std::shared_ptr<IMacExecutor> exec,
-                     std::shared_ptr<IMac> groundTruthIMac = nullptr)
+                     std::shared_ptr<IMac> groundTruthIMac = nullptr,
+                     std::string boundType = "DEFAULT")
       : CoverageRobot{currentLoc, timeBound, xDim, yDim, groundTruthIMac},
         _exec{exec}, _fov{fov}, _latestObs{}, _planner{nullptr},
-        _pomdp{nullptr}, _world{nullptr}, _belief{nullptr}, _solver{nullptr} {}
+        _pomdp{nullptr}, _world{nullptr}, _belief{nullptr}, _solver{nullptr},
+        _boundType{boundType} {}
 
   /**
    * Ensures everything is cleaned up on object deletion.

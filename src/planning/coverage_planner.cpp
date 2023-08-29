@@ -49,6 +49,10 @@ void CoveragePlanner::InitializeDefaultParameters() {
   despot::Globals::config.search_depth = this->_timeBound + 1;       // Max out
   despot::Globals::config.max_policy_sim_len = this->_timeBound + 1; // Max out
   despot::Globals::config.discount = 1.0; // We have a finite horizon problem
+  if (this->_boundType == "TRIVIAL") {
+    // If trivial bounds, can't set discount factor to 1 since divide by 0
+    despot::Globals::config.discount = 0.99999;
+  }
   despot::Globals::config.pruning_constant = 0.01; // TODO: Figure this out
   // xi left at the default for now TODO: Figure this out
   // root_seed calculation copied from Ricardo's PR and plannerbase.cpp
@@ -59,6 +63,34 @@ void CoveragePlanner::InitializeDefaultParameters() {
   // default_action only used with POMDPX models, can ignore
   // noise only used with POMDPX models, can ignore
   despot::Globals::config.silence = false;
+}
+
+/**
+ * A wrapper around InitializeParamers which feeds in custom argv.
+ */
+despot::option::Option *CoveragePlanner::InitializeParameters(
+    std::string &solver_type, bool &search_solver, int &num_runs,
+    std::string &simulator_type, std::string &belief_type, int &time_limit) {
+
+  // Make custom argv (lots of annoying type conversions here)
+  char *argv[9];
+  std::string dummyVal{"DUMMY"};
+  std::string lFlag{"-l"};
+  std::string uFlag{"-u"};
+  std::string blFlag{"--blbtype"};
+  std::string buFlag{"--bubtype"};
+  argv[0] = &*dummyVal.begin();
+  argv[1] = &*lFlag.begin();
+  argv[2] = &*this->_boundType.begin();
+  argv[3] = &*uFlag.begin();
+  argv[4] = &*this->_boundType.begin();
+  argv[5] = &*blFlag.begin();
+  argv[6] = &*this->_boundType.begin();
+  argv[7] = &*buFlag.begin();
+  argv[8] = &*this->_boundType.begin();
+
+  return this->InitializeParamers(9, argv, solver_type, search_solver, num_runs,
+                                  simulator_type, belief_type, time_limit);
 }
 
 /**
