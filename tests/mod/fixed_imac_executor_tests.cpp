@@ -64,10 +64,10 @@ TEST_CASE("Test for FixedIMacExecutor", "[FixedIMacExecutor]") {
 
   // Should be equal to episodeTwo
   std::vector<Eigen::MatrixXi> fixedFour{};
-  fixedThree.push_back(fixedExec->restart());
-  fixedThree.push_back(fixedExec->updateState(std::vector<IMacObservation>{}));
-  fixedThree.push_back(fixedExec->updateState(std::vector<IMacObservation>{}));
-  fixedThree.push_back(fixedExec->updateState(std::vector<IMacObservation>{}));
+  fixedFour.push_back(fixedExec->restart());
+  fixedFour.push_back(fixedExec->updateState(std::vector<IMacObservation>{}));
+  fixedFour.push_back(fixedExec->updateState(std::vector<IMacObservation>{}));
+  fixedFour.push_back(fixedExec->updateState(std::vector<IMacObservation>{}));
 
   // Going beyond the length of the episode, should throw exception
   REQUIRE_THROWS(fixedExec->updateState(std::vector<IMacObservation>{}));

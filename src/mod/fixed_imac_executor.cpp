@@ -37,6 +37,7 @@ void FixedIMacExecutor::_setCurrentEpisode() {
         currentMat(matAtTs.at(i + 1), matAtTs.at(i)) = matAtTs.at(i + 2);
       }
       this->_currentEpisode.push_back(currentMat);
+      matAtTs.clear();
     }
   }
 }
@@ -45,8 +46,7 @@ void FixedIMacExecutor::_setCurrentEpisode() {
  * Restart the simulation and start running the next episode.
  */
 Eigen::MatrixXi
-FixedIMacExecutor::restart(const std::vector<IMacObservation> &observations =
-                               std::vector<IMacObservation>{}) {
+FixedIMacExecutor::restart(const std::vector<IMacObservation> &observations) {
   this->_mapDynamics.clear(); // Clear as new run
   ++this->_episode;
   this->_ts = 0;
