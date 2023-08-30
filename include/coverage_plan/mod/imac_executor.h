@@ -46,19 +46,18 @@ struct IMacObservation {
 class IMacExecutor {
 private:
   std::shared_ptr<IMac> _imac{};
-  Eigen::MatrixXi _currentState{};
   // Used for random sampling - create once at start of class
   std::uniform_real_distribution<double> _sampler{};
+
+protected:
+  Eigen::MatrixXi _currentState{};
+  std::mt19937_64 _gen{}; // Used for random sampling alongside _sampler
   std::vector<Eigen::MatrixXi> _mapDynamics{};
 
   /**
    * Store the current state of the map for logging purposes.
    */
   void _addMapForTs();
-
-protected:
-  // Used for random sampling alongside _sampler
-  std::mt19937_64 _gen{};
 
   /**
    * Helper function which samples an MoD state from a distribution matrix.
