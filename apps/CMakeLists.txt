@@ -13,7 +13,7 @@ target_link_libraries(bimacLearningExperiment PUBLIC mod)
 
 # Add executable for random coverage robot example
 add_executable(randomCoverageRobotExample random_coverage_robot_example.cpp)
-target_link_libraries(randomCoverageRobotExample PUBLIC mod planning)
+target_link_libraries(randomCoverageRobotExample PUBLIC mod planning baselines)
 
 # Add executable for POMDP coverage example
 add_executable(pomdpCoverageExample pomdp_coverage_example.cpp)

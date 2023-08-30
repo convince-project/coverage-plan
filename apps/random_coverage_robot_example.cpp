@@ -4,11 +4,11 @@
  * @author: Charlie Street
  */
 
+#include "coverage_plan/baselines/random_coverage_robot.h"
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
 #include "coverage_plan/planning/coverage_world.h"
-#include "coverage_plan/planning/random_coverage_robot.h"
 #include "coverage_plan/util/seed.h"
 #include <Eigen/Dense>
 #include <algorithm>

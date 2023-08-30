@@ -12,8 +12,7 @@ target_link_libraries(mod PUBLIC util)
 
 # Create library for coverage planner
 add_library(planning STATIC planning/action.cpp 
-                            planning/coverage_robot.cpp 
-                            planning/random_coverage_robot.cpp
+                            planning/coverage_robot.cpp
                             planning/coverage_state.cpp
                             planning/coverage_observation.cpp
                             planning/coverage_belief.cpp
@@ -31,3 +30,11 @@ target_link_libraries(planning PUBLIC util)
 # Create library for utility functions
 add_library(util STATIC util/seed.cpp)
 target_include_directories(util PUBLIC ../include)
+
+# Create library for baselines
+add_library(baselines STATIC baselines/random_coverage_robot.cpp)
+target_include_directories(baselines PUBLIC ../include)
+target_link_libraries(baselines PUBLIC mod)
+target_link_libraries(baselines PUBLIC planning)
+target_link_libraries(baselines PUBLIC Eigen3::Eigen)
+target_link_libraries(baselines PUBLIC util)

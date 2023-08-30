@@ -4,10 +4,10 @@
  * @author Charlie Street
  */
 
+#include "coverage_plan/baselines/random_coverage_robot.h"
 #include "coverage_plan/mod/imac_executor.h"
 #include "coverage_plan/planning/action.h"
 #include "coverage_plan/planning/coverage_world.h"
-#include "coverage_plan/planning/random_coverage_robot.h"
 #include <Eigen/Dense>
 #include <catch2/catch.hpp>
 #include <memory>

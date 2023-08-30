@@ -5,7 +5,7 @@
  * @author Charlie Street
  */
 
-#include "coverage_plan/planning/random_coverage_robot.h"
+#include "coverage_plan/baselines/random_coverage_robot.h"
 #include "coverage_plan/planning/action.h"
 #include "coverage_plan/planning/coverage_observation.h"
 #include "coverage_plan/util/seed.h"
