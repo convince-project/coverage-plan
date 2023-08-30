@@ -30,13 +30,13 @@ GreedyCoverageRobot::_planFn(const GridCell &currentLoc,
   std::vector<Action> bestAct{};
   double maxReward{0.0};
 
-  // Get reward for each action
+  // Get expected reward for each action (prob of it being free and unvisited)
   for (const Action &act : enabledActions) {
     GridCell nextLoc{ActionHelpers::applySuccessfulAction(currentLoc, act)};
     // If not out of bounds and not visited yet
     if ((!nextLoc.outOfBounds(0, nextBelief.cols(), 0, nextBelief.rows())) &&
         std::count(visited.begin(), visited.end(), nextLoc) == 0) {
-      double reward{nextBelief(nextLoc.y, nextLoc.x)};
+      double reward{1.0 - nextBelief(nextLoc.y, nextLoc.x)};
       if (reward > maxReward) {
         maxReward = reward;
         bestAct.clear();

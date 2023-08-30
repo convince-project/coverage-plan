@@ -15,7 +15,8 @@ add_executable(unitTests mod/imac_tests.cpp
                          planning/pomdp_coverage_robot_tests.cpp
                          planning/coverage_bounds_tests.cpp
                          util/seed_tests.cpp
-                         baselines/random_coverage_robot_tests.cpp)
+                         baselines/random_coverage_robot_tests.cpp
+                         baselines/greedy_coverage_robot_tests.cpp)
 target_link_libraries(unitTests PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(unitTests PUBLIC mod)
 target_link_libraries(unitTests PUBLIC planning)

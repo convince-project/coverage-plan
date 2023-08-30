@@ -12,7 +12,9 @@
 /**
  * Subclass of POMDPCoverageRobot which instead uses a greedy policy.
  *
- * The greedy policy maximises immediate reward given a current belief.
+ * The greedy policy maximises immediate expected reward given a current belief.
+ * The immediate expected reward is the probability of the successor cell being
+ * free in the next time step, if unvisited (in which case there is no reward.)
  * As its over a belief, not a state, we can't use the implementation in the
  * bounds classes.
  *
