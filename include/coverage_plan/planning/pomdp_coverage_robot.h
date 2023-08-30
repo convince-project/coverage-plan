@@ -92,7 +92,7 @@ protected: // Protected members are needed for subclassing
 
 public:
   /**
-   * Constructor calls super constructor and initialises the planner.
+   * Constructor calls super constructor and initialises new members.
    *
    * @param currentLoc The robot's current location
    * @param timeBound The planning time bound
