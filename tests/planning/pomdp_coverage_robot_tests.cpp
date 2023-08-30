@@ -15,6 +15,7 @@
 #include "coverage_plan/planning/pomdp_coverage_robot.h"
 #include <Eigen/Dense>
 #include <catch2/catch.hpp>
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -170,4 +171,22 @@ TEST_CASE("Tests for POMDPCoverageRobot planning",
 
   // Just checking a valid action is output
   REQUIRE_NOTHROW(robot.planNextAction(0, imac, robot.makeObservations()));
+}
+
+TEST_CASE("Tests for POMDPCoverageRobot bound setting",
+          "[POMDPCoverageRobot::boundSetting]") {
+  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
+                            GridCell{0, 1}};
+
+  Eigen::MatrixXd entry{Eigen::MatrixXd::Zero(5, 5)};
+  Eigen::MatrixXd exit{Eigen::MatrixXd::Ones(5, 5)};
+  Eigen::MatrixXd init{Eigen::MatrixXd::Zero(5, 5)};
+
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(entry, exit, init)};
+
+  std::shared_ptr<IMacExecutor> exec{std::make_shared<IMacExecutor>(imac)};
+
+  POMDPCoverageRobot robot{GridCell{1, 0}, 5, 5, 5, fov, exec, imac, "TRIVIAL"};
+  std::cout << "Bound Setting Test: Bounds Should be Trivial:\n";
+  robot.episodeSetup(GridCell{1, 0}, 0, 5, imac);
 }
