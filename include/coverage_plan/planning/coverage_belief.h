@@ -99,6 +99,13 @@ public:
    * @return beliefCpy A copy of this
    */
   despot::Belief *MakeCopy() const;
+
+  /**
+   * Return the occupancy map belief.
+   *
+   * @return mapBelief The occupancy map belief
+   */
+  Eigen::MatrixXd getMapBelief() const;
 };
 
 #endif

@@ -243,3 +243,34 @@ TEST_CASE("Tests for CoverageBelief::Update", "[CoverageBelief::Update]") {
   }
   delete pomdpTwo;
 }
+
+TEST_CASE("Tests for CoverageBelief::getMapBelief",
+          "[CoverageBelief::getMapBelief]") {
+  Eigen::MatrixXd entry{1, 2};
+  Eigen::MatrixXd exit{1, 2};
+  Eigen::MatrixXd initBelief{1, 2};
+  entry(0, 0) = 1;
+  entry(0, 1) = 1;
+  exit(0, 0) = 0;
+  exit(0, 1) = 0;
+  initBelief(0, 0) = 0.7;
+  initBelief(0, 1) = 0.4;
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(entry, exit, initBelief)};
+
+  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
+                            GridCell{0, 1}};
+
+  const CoveragePOMDP *pomdp{new CoveragePOMDP{fov, imac, 5}};
+
+  // Test copying using sampling and deterministic belief
+  std::unique_ptr<CoverageBelief> belief{std::make_unique<CoverageBelief>(
+      pomdp, GridCell{0, 1}, 1, std::set<GridCell>{GridCell{0, 0}},
+      imac->getInitialBelief(), imac, fov)};
+
+  Eigen::MatrixXd mapBelief{belief->getMapBelief()};
+  REQUIRE(mapBelief(0, 0) == 0.7);
+  REQUIRE(mapBelief(0, 1) == 0.4);
+
+  // Deallocate everything
+  delete pomdp;
+}

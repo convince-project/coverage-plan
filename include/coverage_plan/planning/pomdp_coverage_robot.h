@@ -35,29 +35,8 @@ private:
   std::unique_ptr<CoveragePlanner> _planner{};
   CoveragePOMDP *_pomdp{};
   CoverageWorld *_world{};
-  CoverageBelief *_belief{};
   despot::Solver *_solver{};
   const std::string _boundType{};
-
-  /**
-   * Synthesises an action using the POMDP planner
-   * Recall that x goes from left to right, y from top to bottom.
-   *
-   * @param currentLoc The robot's current location
-   * @param enabledActions A vector of enabled actions in this state
-   * @param ts The current timestep
-   * @param timeBound The time bound
-   * @param imac The current IMac instance
-   * @param visited The vector of visited locations
-   * @param currentObs The most recent observations
-   *
-   * @return nextAction The next action to be executed
-   */
-  Action _planFn(const GridCell &currentLoc,
-                 const std::vector<Action> &enabledActions, int ts,
-                 int timeBound, std::shared_ptr<IMac> imac,
-                 const std::vector<GridCell> &visited,
-                 const std::vector<IMacObservation> &currentObs);
 
   /**
    * Executes an action using a CoverageWorld object.
@@ -87,6 +66,29 @@ private:
    * @return initObs The initial observation as a vector of IMacObservations
    */
   std::vector<IMacObservation> _initialObservation(const GridCell &startLoc);
+
+protected: // Protected members are needed for subclassing
+  CoverageBelief *_belief{};
+
+  /**
+   * Synthesises an action using the POMDP planner
+   * Recall that x goes from left to right, y from top to bottom.
+   *
+   * @param currentLoc The robot's current location
+   * @param enabledActions A vector of enabled actions in this state
+   * @param ts The current timestep
+   * @param timeBound The time bound
+   * @param imac The current IMac instance
+   * @param visited The vector of visited locations
+   * @param currentObs The most recent observations
+   *
+   * @return nextAction The next action to be executed
+   */
+  Action _planFn(const GridCell &currentLoc,
+                 const std::vector<Action> &enabledActions, int ts,
+                 int timeBound, std::shared_ptr<IMac> imac,
+                 const std::vector<GridCell> &visited,
+                 const std::vector<IMacObservation> &currentObs);
 
 public:
   /**

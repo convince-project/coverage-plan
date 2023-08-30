@@ -11,6 +11,7 @@
 #include "coverage_plan/planning/action.h"
 #include "coverage_plan/planning/coverage_observation.h"
 #include "coverage_plan/planning/coverage_state.h"
+#include <Eigen/Dense>
 #include <despot/interface/belief.h>
 #include <despot/interface/pomdp.h>
 #include <iomanip>
@@ -120,4 +121,12 @@ despot::Belief *CoverageBelief::MakeCopy() const {
   return new CoverageBelief(this->model_, this->_robotPosition, this->_time,
                             this->_covered, this->_mapBelief, this->_imac,
                             this->_fov);
+}
+
+/**
+ * Return the occupancy map belief.
+ *
+ */
+Eigen::MatrixXd CoverageBelief::getMapBelief() const {
+  return this->_mapBelief;
 }
