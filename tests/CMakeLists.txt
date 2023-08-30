@@ -3,6 +3,7 @@ add_executable(unitTests mod/imac_tests.cpp
                          mod/bimac_tests.cpp
                          mod/grid_cell_tests.cpp
                          mod/imac_belief_sampler_tests.cpp
+                         mod/fixed_imac_executor_tests.cpp
                          planning/action_tests.cpp
                          planning/coverage_robot_tests.cpp
                          planning/random_coverage_robot_tests.cpp
