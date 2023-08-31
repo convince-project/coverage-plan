@@ -46,3 +46,24 @@ TEST_CASE("Test for GreedyCoverageRobot when no cells visited",
 
   REQUIRE(act == Action::right);
 }
+
+TEST_CASE(
+    "Test for GreedyCoverageRobot which tests visited nodes aren't chosen",
+    "[GreedyCoverageRobot::visited]") {
+  Eigen::MatrixXd entry{Eigen::MatrixXd::Zero(3, 1)};
+
+  Eigen::MatrixXd exit{Eigen::MatrixXd::Ones(3, 1)};
+
+  Eigen::MatrixXd init{Eigen::MatrixXd::Zero(3, 1)};
+
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(entry, exit, init)};
+  std::shared_ptr<IMacExecutor> exec{std::make_shared<IMacExecutor>(imac)};
+
+  std::unique_ptr<GreedyCoverageRobot> robot{
+      std::make_unique<GreedyCoverageRobot>(GridCell{0, 0}, 2, 1, 3,
+                                            std::vector<GridCell>{}, exec)};
+
+  double propCovered{robot->runCoverageEpisode("/tmp/dummy.csv")};
+
+  REQUIRE_THAT(propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+}
