@@ -22,3 +22,7 @@ target_link_libraries(pomdpCoverageExample PUBLIC mod planning util)
 # Add executable for multi-episode test
 add_executable(multiEpisodeTest multi_episode_test.cpp)
 target_link_libraries(multiEpisodeTest PUBLIC mod planning util)
+
+# Add executable for random imac environment generation
+add_executable(randomIMacGen random_imac_gen.cpp)
+target_link_libraries(randomIMacGen PUBLIC mod planning util)
