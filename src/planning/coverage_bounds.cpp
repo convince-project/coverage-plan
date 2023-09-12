@@ -13,6 +13,7 @@
 #include <despot/core/globals.h>
 #include <despot/interface/default_policy.h>
 #include <iterator>
+#include <math.h>
 
 /**
  * Returns an upper bound on the max reward obtainable from state.
@@ -68,7 +69,20 @@ despot::ACT_TYPE GreedyCoverageDefaultPolicy::Action(
     }
   }
 
-  // Get location of max element (max action)
-  return std::distance(immRewards.begin(),
-                       std::max_element(immRewards.begin(), immRewards.end()));
+  // Get best set of actions
+  std::vector<int> bestAct{};
+  double maxReward{0.0};
+  for (int a{0}; a < this->model_->NumActions(); ++a) {
+    if (immRewards.at(a) > maxReward) {
+      maxReward = immRewards.at(a);
+      bestAct.clear();
+      bestAct.push_back(a);
+    } else if (fabs(immRewards.at(a) - maxReward) < 0.0001) {
+      bestAct.push_back(a);
+    }
+  }
+
+  // Sample one of the best actions at random
+  std::uniform_int_distribution<> sampler{0, (int)bestAct.size() - 1};
+  return bestAct.at(sampler(this->_rng));
 }

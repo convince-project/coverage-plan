@@ -9,6 +9,7 @@
 
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/planning/action.h"
+#include "coverage_plan/util/seed.h"
 #include <Eigen/Dense>
 #include <despot/core/globals.h>
 #include <despot/core/history.h>
@@ -18,6 +19,7 @@
 #include <despot/interface/upper_bound.h>
 #include <despot/random_streams.h>
 #include <memory>
+#include <random>
 #include <vector>
 
 /**
@@ -89,7 +91,7 @@ class GreedyCoverageDefaultPolicy : public despot::DefaultPolicy {
 private:
   const Eigen::MatrixXd _imacEntry{};
   const Eigen::MatrixXd _imacExit{};
-  const despot::ParticleLowerBound *particlePtrToDelete{};
+  mutable std::mt19937_64 _rng{};
 
 public:
   /**
@@ -103,7 +105,8 @@ public:
                               despot::ParticleLowerBound *particleLowerBound,
                               std::shared_ptr<IMac> imac)
       : DefaultPolicy{model, particleLowerBound},
-        _imacEntry{imac->getEntryMatrix()}, _imacExit{imac->getExitMatrix()} {}
+        _imacEntry{imac->getEntryMatrix()}, _imacExit{imac->getExitMatrix()},
+        _rng{SeedHelpers::genRandomDeviceSeed()} {}
 
   /**
    * Function greedily chooses an action weighted on the particles.

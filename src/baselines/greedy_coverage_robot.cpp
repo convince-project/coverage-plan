@@ -47,6 +47,11 @@ GreedyCoverageRobot::_planFn(const GridCell &currentLoc,
     }
   }
 
+  // If there are no non-visited actions, choose an enabled action at random
+  if (bestAct.size() == 0) {
+    bestAct = enabledActions;
+  }
+
   // Sample one of the best actions at random
   std::mt19937_64 gen{SeedHelpers::genRandomDeviceSeed()};
   std::uniform_int_distribution<> sampler{0, (int)bestAct.size() - 1};
