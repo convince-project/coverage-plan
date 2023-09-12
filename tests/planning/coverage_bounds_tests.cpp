@@ -96,6 +96,15 @@ TEST_CASE("Tests for GreedyCoverageDefaultPolicy",
   despot::ACT_TYPE action{policy.Action(particles, streams, history)};
   REQUIRE(action >= 0);
   REQUIRE(action <= 4);
+
+  // Checking we actually get some randomness here
+  std::set<despot::ACT_TYPE> actSet{};
+  for (int i{0}; i < 100; ++i) {
+    actSet.insert(policy.Action(particles, streams, history));
+  }
+  REQUIRE(actSet.size() > 1);
+  REQUIRE(actSet.size() <= 5);
+
   for (despot::State *state : particles) {
     pomdp->Free(state);
   }
