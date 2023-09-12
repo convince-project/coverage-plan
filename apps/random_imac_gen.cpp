@@ -40,8 +40,8 @@ std::shared_ptr<IMac> createIMac(const int &xDim, const int &yDim,
       (int)ceil(semiStaticLimit + (propDynamic * (xDim * yDim)))};
 
   std::cout << "(Free, Semi-Static, Dynamic): ("
-            << ((xDim * yDim) - dynamicLimit) << ", " << (semiStaticLimit - 1)
-            << ", " << (dynamicLimit - semiStaticLimit) << ")\n";
+            << ((xDim * yDim) - dynamicLimit) << ", " << semiStaticLimit << ", "
+            << (dynamicLimit - semiStaticLimit) << ")\n";
 
   // Random order of cells on grid map
   std::vector<GridCell> cells{};
