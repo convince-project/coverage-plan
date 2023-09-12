@@ -37,6 +37,7 @@ private:
   CoverageWorld *_world{};
   despot::Solver *_solver{};
   const std::string _boundType{};
+  const double _pruningConstant{};
 
   /**
    * Executes an action using a CoverageWorld object.
@@ -108,11 +109,12 @@ public:
                      int yDim, const std::vector<GridCell> &fov,
                      std::shared_ptr<IMacExecutor> exec,
                      std::shared_ptr<IMac> groundTruthIMac = nullptr,
-                     std::string boundType = "DEFAULT")
+                     std::string boundType = "DEFAULT",
+                     const double &pruningConstant = 0.01)
       : CoverageRobot{currentLoc, timeBound, xDim, yDim, groundTruthIMac},
         _exec{exec}, _fov{fov}, _latestObs{}, _planner{nullptr},
         _pomdp{nullptr}, _world{nullptr}, _belief{nullptr}, _solver{nullptr},
-        _boundType{boundType} {}
+        _boundType{boundType}, _pruningConstant{pruningConstant} {}
 
   /**
    * Ensures everything is cleaned up on object deletion.

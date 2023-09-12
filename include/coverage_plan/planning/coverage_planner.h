@@ -38,6 +38,7 @@ private:
   std::shared_ptr<IMacExecutor> _exec{};
   std::shared_ptr<IMac> _planIMac{};
   std::string _boundType{};
+  const double _pruningConstant{};
 
 public:
   /**
@@ -55,10 +56,12 @@ public:
                   const int &timeBound, const std::vector<GridCell> &fov,
                   std::shared_ptr<IMacExecutor> exec,
                   std::shared_ptr<IMac> planIMac,
-                  std::string boundType = "DEFAULT")
+                  std::string boundType = "DEFAULT",
+                  const double &pruningConstant = 0.01)
       : Planner("THESE", "ARGS", "DO NOT DO", "ANYTHING"), _initPos{initPos},
         _initTime{initTime}, _timeBound{timeBound}, _fov{fov}, _exec{exec},
-        _planIMac{planIMac}, _boundType{boundType} {}
+        _planIMac{planIMac}, _boundType{boundType}, _pruningConstant{
+                                                        pruningConstant} {}
 
   /**
    * Empty destructor.

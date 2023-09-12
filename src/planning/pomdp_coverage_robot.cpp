@@ -106,7 +106,7 @@ void POMDPCoverageRobot::episodeSetup(const GridCell &startLoc, const int &ts,
   // Make planner
   this->_planner = std::make_unique<CoveragePlanner>(
       startLoc, ts, timeBound, this->_fov, this->_exec, imacForEpisode,
-      this->_boundType);
+      this->_boundType, this->_pruningConstant);
 
   // Now, use planner to set everything up
   // Largely copied from despot/planner.cpp but broken up a bit

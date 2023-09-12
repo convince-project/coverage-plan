@@ -173,8 +173,8 @@ TEST_CASE("Tests for POMDPCoverageRobot planning",
   REQUIRE_NOTHROW(robot.planNextAction(0, imac, robot.makeObservations()));
 }
 
-TEST_CASE("Tests for POMDPCoverageRobot bound setting",
-          "[POMDPCoverageRobot::boundSetting]") {
+TEST_CASE("Tests for POMDPCoverageRobot bound setting and pruning constant",
+          "[POMDPCoverageRobot::boundSetting/pruningConstant]") {
   std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
                             GridCell{0, 1}};
 
@@ -186,7 +186,8 @@ TEST_CASE("Tests for POMDPCoverageRobot bound setting",
 
   std::shared_ptr<IMacExecutor> exec{std::make_shared<IMacExecutor>(imac)};
 
-  POMDPCoverageRobot robot{GridCell{1, 0}, 5, 5, 5, fov, exec, imac, "TRIVIAL"};
+  POMDPCoverageRobot robot{GridCell{1, 0}, 5,    5,         5,  fov,
+                           exec,           imac, "TRIVIAL", 1.0};
   std::cout << "Bound Setting Test: Bounds Should be Trivial:\n";
   robot.episodeSetup(GridCell{1, 0}, 0, 5, imac);
 }

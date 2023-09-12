@@ -53,7 +53,7 @@ void CoveragePlanner::InitializeDefaultParameters() {
     // If trivial bounds, can't set discount factor to 1 since divide by 0
     despot::Globals::config.discount = 0.99999;
   }
-  despot::Globals::config.pruning_constant = 0.01; // TODO: Figure this out
+  despot::Globals::config.pruning_constant = this->_pruningConstant;
   // xi left at the default for now TODO: Figure this out
   // root_seed calculation copied from Ricardo's PR and plannerbase.cpp
   long millis = (long)(despot::get_time_second() * 1000);

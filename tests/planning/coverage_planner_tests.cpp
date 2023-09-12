@@ -102,6 +102,26 @@ TEST_CASE("Test for CoveragePlanner::InitializeDefaultParameters",
   REQUIRE(despot::Globals::config.default_action == "");
   REQUIRE(despot::Globals::config.noise == 0.1);
   REQUIRE(!despot::Globals::config.silence);
+
+  CoveragePlanner plannerTwo{initPos, initTime, timeBound, fov,
+                             exec,    imac,     "DEFAULT", 1.0};
+
+  despot::Globals::config = despot::Config();
+
+  plannerTwo.InitializeDefaultParameters();
+
+  REQUIRE(despot::Globals::config.time_per_move == 1);
+  REQUIRE(despot::Globals::config.sim_len == 6);
+  REQUIRE(despot::Globals::config.num_scenarios == 500);
+  REQUIRE(despot::Globals::config.search_depth == 6);
+  REQUIRE(despot::Globals::config.max_policy_sim_len == 6);
+  REQUIRE(despot::Globals::config.discount == 1.0);
+  REQUIRE(despot::Globals::config.pruning_constant == 1.0);
+  REQUIRE(despot::Globals::config.xi == 0.95);
+  REQUIRE(despot::Globals::config.root_seed != 42);
+  REQUIRE(despot::Globals::config.default_action == "");
+  REQUIRE(despot::Globals::config.noise == 0.1);
+  REQUIRE(!despot::Globals::config.silence);
 }
 
 TEST_CASE("Test for CoveragePlanner::InitializeParameters",
