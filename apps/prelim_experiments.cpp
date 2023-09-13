@@ -92,23 +92,27 @@ getRobot(const double &pruningConstant, const std::string &boundType,
          std::shared_ptr<FixedIMacExecutor> &exec,
          const std::pair<int, int> &dim,
          std::shared_ptr<IMac> groundTruthIMac) {
+  std::shared_ptr<CoverageRobot> robot{nullptr};
+
   if (pruningConstant < 0.0) {
     if (boundType == "RANDOM") {
       std::shared_ptr<CoverageWorld> world{std::make_shared<CoverageWorld>(
           GridCell{0, 0}, 0, timeBound, fov, exec)};
-      return std::make_shared<RandomCoverageRobot>(GridCell{0, 0}, timeBound,
-                                                   dim.first, dim.second, world,
-                                                   fov, groundTruthIMac);
+      robot = std::make_shared<RandomCoverageRobot>(
+          GridCell{0, 0}, timeBound, dim.first, dim.second, world, fov,
+          groundTruthIMac);
     } else if (boundType == "GREEDY") {
-      return std::make_shared<GreedyCoverageRobot>(GridCell{0, 0}, timeBound,
-                                                   dim.first, dim.second, fov,
-                                                   exec, groundTruthIMac);
+      robot = std::make_shared<GreedyCoverageRobot>(GridCell{0, 0}, timeBound,
+                                                    dim.first, dim.second, fov,
+                                                    exec, groundTruthIMac);
     }
   } else { // POMDP Coverage Robot
-    return std::make_shared<POMDPCoverageRobot>(
+    robot = std::make_shared<POMDPCoverageRobot>(
         GridCell{0, 0}, timeBound, dim.first, dim.second, fov, exec,
         groundTruthIMac, boundType, pruningConstant);
   }
+
+  return robot;
 }
 
 /**

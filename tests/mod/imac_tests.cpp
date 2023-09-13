@@ -74,3 +74,38 @@ TEST_CASE("Tests for basic IMac functionality", "[imac]") {
   REQUIRE_THAT(initGot(1, 0), Catch::Matchers::WithinRel(0.7, 0.001));
   REQUIRE_THAT(initGot(1, 1), Catch::Matchers::WithinRel(0.8, 0.001));
 }
+
+TEST_CASE("Tests for reading and writing IMac objects", "[IMac::readWrite]") {
+
+  Eigen::MatrixXd entry{Eigen::MatrixXd::Random(3, 2)};
+  Eigen::MatrixXd exit{Eigen::MatrixXd::Random(3, 2)};
+  Eigen::MatrixXd initBelief{Eigen::MatrixXd::Random(3, 2)};
+
+  std::unique_ptr<IMac> imac{std::make_unique<IMac>(entry, exit, initBelief)};
+
+  std::filesystem::path matDir{"/tmp"};
+
+  imac->writeIMac(matDir);
+  std::unique_ptr<IMac> imacTwo{std::make_unique<IMac>(matDir)};
+  Eigen::MatrixXd entryRead{imacTwo->getEntryMatrix()};
+  Eigen::MatrixXd exitRead{imacTwo->getExitMatrix()};
+  Eigen::MatrixXd initRead{imacTwo->getInitialBelief()};
+
+  REQUIRE(entryRead.rows() == 3);
+  REQUIRE(entryRead.cols() == 2);
+  REQUIRE(exitRead.rows() == 3);
+  REQUIRE(exitRead.cols() == 2);
+  REQUIRE(initRead.rows() == 3);
+  REQUIRE(initRead.cols() == 2);
+
+  for (int i{0}; i < 3; ++i) {
+    for (int j{0}; j < 2; ++j) {
+      REQUIRE_THAT(entry(i, j),
+                   Catch::Matchers::WithinRel(entryRead(i, j), 0.001));
+      REQUIRE_THAT(exit(i, j),
+                   Catch::Matchers::WithinRel(exitRead(i, j), 0.001));
+      REQUIRE_THAT(initBelief(i, j),
+                   Catch::Matchers::WithinRel(initRead(i, j), 0.001));
+    }
+  }
+}

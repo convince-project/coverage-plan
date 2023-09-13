@@ -13,7 +13,7 @@
 /**
  * Reads IMac matrix in from file.
  */
-Eigen::MatrixXd _readIMacMatrix(const std::filesystem::path &inFile) {
+Eigen::MatrixXd IMac::_readIMacMatrix(const std::filesystem::path &inFile) {
   std::vector<double> matrixElems;
 
   std::ifstream f(inFile);
@@ -23,7 +23,6 @@ Eigen::MatrixXd _readIMacMatrix(const std::filesystem::path &inFile) {
   std::string entryString;
 
   int numRows{0};
-
   while (getline(f, rowString)) {
     // iterate through each row using string streams
     std::stringstream rowStream(rowString);
@@ -42,7 +41,6 @@ Eigen::MatrixXd _readIMacMatrix(const std::filesystem::path &inFile) {
 
   for (int i{0}; i < numRows; ++i) {
     for (int j{0}; j < numCols; ++j) {
-
       // numCols is the size of each row
       matrix(i, j) = matrixElems.at(i * numCols + j);
     }
@@ -54,8 +52,8 @@ Eigen::MatrixXd _readIMacMatrix(const std::filesystem::path &inFile) {
 /**
  * Write a single IMac matrix to file.
  */
-void _writeIMacMatrix(const Eigen::MatrixXd &matrix,
-                      const std::filesystem::path &outFile) {
+void IMac::_writeIMacMatrix(const Eigen::MatrixXd &matrix,
+                            const std::filesystem::path &outFile) {
   // output matrix format
   const static Eigen::IOFormat csvFormat(Eigen::FullPrecision,
                                          Eigen::DontAlignCols, ", ", "\n");

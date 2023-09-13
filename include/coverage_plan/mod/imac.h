@@ -77,7 +77,7 @@ public:
   IMac(const std::filesystem::path &inDir)
       : _entryMatrix{this->_readIMacMatrix(inDir / "entry.csv")},
         _exitMatrix{this->_readIMacMatrix(inDir / "exit.csv")},
-        _initialBelief{this->_readIMacMatrix(inDir / "inital_belief.csv")},
+        _initialBelief{this->_readIMacMatrix(inDir / "initial_belief.csv")},
         _staticOccupancy{} {}
 
   /**
