@@ -175,7 +175,8 @@ void runExperiments(const std::vector<std::pair<double, std::string>> &methods,
       std::pair<int, int> dim{getDimensions(envs.at(envNum))};
       std::shared_ptr<FixedIMacExecutor> exec{
           getExecutor(inDir, envs.at(envNum), dim, numRuns)};
-      std::shared_ptr<IMac> groundTruthIMac{std::make_shared<IMac>(inDir)};
+      std::shared_ptr<IMac> groundTruthIMac{
+          std::make_shared<IMac>(inDir / envs.at(envNum))};
 
       // Get the robot object
       std::shared_ptr<CoverageRobot> robot{
