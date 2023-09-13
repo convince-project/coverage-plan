@@ -108,20 +108,28 @@ int main() {
   // Four by four w/ light dynamics
   std::cout << "Four by four w/ light dynamics\n";
   std::shared_ptr<IMac> fourLight{createIMac(4, 4, 0.1, 0.1)};
-  sampleRuns(fourLight, "../../data/prelim_exps/four_light", 25, 10);
+  std::string fourLightDir{"../../data/prelim_exps/four_light"};
+  fourLight->writeIMac(fourLightDir);
+  sampleRuns(fourLight, fourLightDir, 25, 10);
 
   // Four by four w/ heavy dynamics
   std::cout << "Four by four w/ heavy dynamics\n";
   std::shared_ptr<IMac> fourHeavy{createIMac(4, 4, 0.2, 0.2)};
-  sampleRuns(fourHeavy, "../../data/prelim_exps/four_heavy", 25, 10);
+  std::string fourHeavyDir{"../../data/prelim_exps/four_heavy"};
+  fourHeavy->writeIMac(fourHeavyDir);
+  sampleRuns(fourHeavy, fourHeavyDir, 25, 10);
 
   // Five by five w/ light dynamics
   std::cout << "Five by five w/ light dynamics\n";
   std::shared_ptr<IMac> fiveLight{createIMac(5, 5, 0.1, 0.1)};
-  sampleRuns(fiveLight, "../../data/prelim_exps/five_light", 40, 10);
+  std::string fiveLightDir{"../../data/prelim_exps/five_light"};
+  fiveLight->writeIMac(fiveLightDir);
+  sampleRuns(fiveLight, fiveLightDir, 40, 10);
 
   // Five by five w/ heavy dynamics
   std::cout << "Five by five w/ heavy dynamics\n";
   std::shared_ptr<IMac> fiveHeavy{createIMac(5, 5, 0.2, 0.2)};
-  sampleRuns(fiveHeavy, "../../data/prelim_exps/five_heavy", 40, 10);
+  std::string fiveHeavyDir{"../../data/prelim_exps/five_heavy"};
+  fiveHeavy->writeIMac(fiveHeavyDir);
+  sampleRuns(fiveHeavy, fiveHeavyDir, 40, 10);
 }

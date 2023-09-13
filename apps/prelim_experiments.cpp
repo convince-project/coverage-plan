@@ -7,6 +7,7 @@
 #include "coverage_plan/baselines/random_coverage_robot.h"
 #include "coverage_plan/mod/fixed_imac_executor.h"
 #include "coverage_plan/mod/grid_cell.h"
+#include "coverage_plan/mod/imac.h"
 #include "coverage_plan/planning/coverage_robot.h"
 #include "coverage_plan/planning/coverage_world.h"
 #include "coverage_plan/planning/pomdp_coverage_robot.h"
@@ -111,6 +112,29 @@ getRobot(const double &pruningConstant, const std::string &boundType,
 }
 
 /**
+ * Write out the results for a method.
+ *
+ * @param results The results for each environment for a given method
+ * @param envs The list of environments. Order matches results
+ * @param outFile The file to write out to
+ */
+void writeResults(const std::vector<std::vector<double>> &results,
+                  const std::vector<std::string> &envs,
+                  const std::filesystem::path &outFile) {
+  std::ofstream f{outFile};
+  if (f.is_open()) {
+    for (int i{0}; i < results.size(); ++i) {
+      f << envs.at(i) << ',';
+      for (const double &propCovered : results.at(i)) {
+        f << propCovered << ',';
+      }
+      f << '\n';
+    }
+  }
+  f.close();
+}
+
+/**
  * Runs the experiments for different methods and different environments.
  *
  * @param methods A list of methods as (pruningConstant, boundType) pairs
@@ -143,10 +167,11 @@ void runExperiments(const std::vector<std::pair<double, std::string>> &methods,
         getOutputFile(outDir, pruningConstant, boundType)};
 
     for (int envNum{0}; envNum < envs.size(); ++envNum) {
-      // Get run files and fixedIMacExecutor
+      // Get run files, fixedIMacExecutor, and ground truth IMac model
       std::pair<int, int> dim{getDimensions(envs.at(envNum))};
       std::shared_ptr<FixedIMacExecutor> exec{
           getExecutor(inDir, envs.at(envNum), dim, numRuns)};
+      std::shared_ptr<IMac> groundTruthIMac{std::make_shared<IMac>(inDir)};
 
       // Get the robot object
       std::shared_ptr<CoverageRobot> robot{

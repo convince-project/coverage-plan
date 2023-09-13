@@ -14,6 +14,7 @@
 #define IMAC_H
 
 #include <Eigen/Dense>
+#include <filesystem>
 #include <memory>
 
 /**
@@ -37,6 +38,24 @@ private:
   const Eigen::MatrixXd _initialBelief{};
   Eigen::MatrixXd _staticOccupancy{};
 
+  /**
+   * Reads IMac matrix in from file.
+   *
+   * @param inFile The file to read the matrix in from
+   *
+   * @return matrix The IMac matrix
+   */
+  Eigen::MatrixXd _readIMacMatrix(const std::filesystem::path &inFile);
+
+  /**
+   * Write a single IMac matrix to file.
+   *
+   * @param matrix The matrix to write out
+   * @param  outFile The file to write the IMac matrix to
+   */
+  void _writeIMacMatrix(const Eigen::MatrixXd &matrix,
+                        const std::filesystem::path &outFile);
+
 public:
   /**
    * Constructor initialises the member variables.
@@ -49,6 +68,17 @@ public:
        const Eigen::MatrixXd &initialBelief)
       : _entryMatrix{entryMatrix}, _exitMatrix{exitMatrix},
         _initialBelief{initialBelief}, _staticOccupancy{} {}
+
+  /**
+   * This constructor reads an IMac config in from file.
+   *
+   * @param inDir The directory where the IMac files are stored
+   */
+  IMac(const std::filesystem::path &inDir)
+      : _entryMatrix{this->_readIMacMatrix(inDir / "entry.csv")},
+        _exitMatrix{this->_readIMacMatrix(inDir / "exit.csv")},
+        _initialBelief{this->_readIMacMatrix(inDir / "inital_belief.csv")},
+        _staticOccupancy{} {}
 
   /**
    *  Estimates the static occupancy of the map.
@@ -97,6 +127,13 @@ public:
    * @return initialBelief The initial belief over the map
    */
   Eigen::MatrixXd getInitialBelief() const { return this->_initialBelief; }
+
+  /**
+   * Write IMac matrices out to file.
+   *
+   * @param outDir The directory to write the BIMac matrices to
+   */
+  void writeIMac(const std::filesystem::path &outDir);
 };
 
 #endif

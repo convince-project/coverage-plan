@@ -169,7 +169,7 @@ public:
   /**
    * This constructor reads a BIMac config in from file.
    *
-   * @param inDir The directory where the IMac files are stored
+   * @param inDir The directory where the BIMac files are stored
    */
   BIMac(const std::filesystem::path &inDir)
       : _alphaEntry{_readBIMacMatrix(inDir / "alpha_entry.csv")},
