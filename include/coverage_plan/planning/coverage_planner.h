@@ -57,7 +57,7 @@ public:
                   std::shared_ptr<IMacExecutor> exec,
                   std::shared_ptr<IMac> planIMac,
                   std::string boundType = "DEFAULT",
-                  const double &pruningConstant = 0.01)
+                  const double &pruningConstant = 0.1)
       : Planner("THESE", "ARGS", "DO NOT DO", "ANYTHING"), _initPos{initPos},
         _initTime{initTime}, _timeBound{timeBound}, _fov{fov}, _exec{exec},
         _planIMac{planIMac}, _boundType{boundType}, _pruningConstant{
