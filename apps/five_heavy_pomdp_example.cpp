@@ -20,8 +20,10 @@ int main() {
       std::make_shared<IMac>("../../data/prelim_exps/five_heavy")};
   std::vector<std::filesystem::path> runFileVec{
       "../../data/prelim_exps/five_heavy/run_1.csv"};
+  int xDim{5};
+  int yDim{5};
   std::shared_ptr<FixedIMacExecutor> exec{
-      std::make_shared<FixedIMacExecutor>(runFileVec)};
+      std::make_shared<FixedIMacExecutor>(runFileVec, xDim, yDim)};
 
   // Robot FOV
   std::vector<GridCell> fov{GridCell{-1, -1}, GridCell{0, -1}, GridCell{1, -1},
@@ -31,8 +33,6 @@ int main() {
   // Other params
   GridCell initPos{0, 0};
   int timeBound{40};
-  int xDim{5};
-  int yDim{5};
 
   std::unique_ptr<POMDPCoverageRobot> robot{
       std::make_unique<POMDPCoverageRobot>(initPos, timeBound, xDim, yDim, fov,

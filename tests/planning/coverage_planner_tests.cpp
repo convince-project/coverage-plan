@@ -96,7 +96,7 @@ TEST_CASE("Test for CoveragePlanner::InitializeDefaultParameters",
   REQUIRE(despot::Globals::config.search_depth == 6);
   REQUIRE(despot::Globals::config.max_policy_sim_len == 6);
   REQUIRE(despot::Globals::config.discount == 1.0);
-  REQUIRE(despot::Globals::config.pruning_constant == 0.01);
+  REQUIRE(despot::Globals::config.pruning_constant == 0.1);
   REQUIRE(despot::Globals::config.xi == 0.95);
   REQUIRE(despot::Globals::config.root_seed != 42);
   REQUIRE(despot::Globals::config.default_action == "");
@@ -154,7 +154,7 @@ TEST_CASE("Test for CoveragePlanner::InitializeParameters",
   REQUIRE(despot::Globals::config.search_depth == 6);
   REQUIRE(despot::Globals::config.max_policy_sim_len == 6);
   REQUIRE(despot::Globals::config.discount == 1.0);
-  REQUIRE(despot::Globals::config.pruning_constant == 0.01);
+  REQUIRE(despot::Globals::config.pruning_constant == 0.1);
   REQUIRE(despot::Globals::config.xi == 0.95);
   REQUIRE(despot::Globals::config.root_seed != 42);
   REQUIRE(despot::Globals::config.default_action == "");
@@ -179,7 +179,7 @@ TEST_CASE("Test for CoveragePlanner::InitializeParameters",
   REQUIRE(despot::Globals::config.search_depth == 6);
   REQUIRE(despot::Globals::config.max_policy_sim_len == 6);
   REQUIRE(despot::Globals::config.discount == 0.99999);
-  REQUIRE(despot::Globals::config.pruning_constant == 0.01);
+  REQUIRE(despot::Globals::config.pruning_constant == 0.1);
   REQUIRE(despot::Globals::config.xi == 0.95);
   REQUIRE(despot::Globals::config.root_seed != 42);
   REQUIRE(despot::Globals::config.default_action == "");
