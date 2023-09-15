@@ -92,7 +92,7 @@ def plot_results(results, env):
         bottom=True,  # ticks along the bottom edge are off
         top=False,  # ticks along the top edge are off
         labelbottom=True,  # labels along the bottom edge are offcd
-        labelsize=12,
+        labelsize=28,
     )
     plt.ylabel("Proportion Covered")
 
@@ -132,10 +132,10 @@ def plot_combined_results(results):
         bottom=True,  # ticks along the bottom edge are off
         top=False,  # ticks along the top edge are off
         labelbottom=True,  # labels along the bottom edge are offcd
-        labelsize=12,
+        labelsize=28,
     )
     plt.ylabel("Proportion Covered")
-    plt.xticks([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], methods)
+    plt.xticks([1, 2, 3], methods)
     plt.xlabel("Parameters", fontsize=40)
     plt.show()
 
