@@ -30,3 +30,7 @@ target_link_libraries(randomIMacGen PUBLIC mod planning util)
 # Add executable for preliminary experiments
 add_executable(prelimExperiments prelim_experiments.cpp)
 target_link_libraries(prelimExperiments PUBLIC mod planning util baselines)
+
+# Add executable for five heavy pomdp example 
+add_executable(fiveHeavyPOMDPExample five_heavy_pomdp_example.cpp)
+target_link_libraries(fiveHeavyPOMDPExample PUBLIC mod planning util)
