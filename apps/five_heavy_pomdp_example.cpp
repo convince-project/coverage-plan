@@ -43,8 +43,8 @@ int main() {
                             "prelim_exps/fiveHeavyExampleVisited.csv");
 
   // Log the map dynamics
-  exec->logMapDynamics(
-      "/home/charlie/work/coverage-plan/data/results/fiveHeavyExampleMap.csv");
+  exec->logMapDynamics("/home/charlie/work/coverage-plan/data/results/"
+                       "prelim_exps/fiveHeavyExampleMap.csv");
 
   return 0;
 }
