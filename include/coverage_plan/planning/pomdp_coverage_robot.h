@@ -99,11 +99,12 @@ public:
    * @param timeBound The planning time bound
    * @param xDim The x dimension of the map
    * @param yDim The y dimension of the map
-   * @param world The IMacExecutor representing the environment
+   * @param exec The IMacExecutor representing the environment
    * @param fov The robot's FOV as a vector of relative grid cells
    * @param groundTruthIMac The ground truth IMac instance (if we don't want to
    * use BiMac)
    * @param boundType The type of upper and lower bounds to use
+   * @param pruningConstant The DESPOT pruning constant
    */
   POMDPCoverageRobot(const GridCell &currentLoc, int timeBound, int xDim,
                      int yDim, const std::vector<GridCell> &fov,

@@ -33,7 +33,8 @@ target_include_directories(util PUBLIC ../include)
 
 # Create library for baselines
 add_library(baselines STATIC baselines/random_coverage_robot.cpp
-                             baselines/greedy_coverage_robot.cpp)
+                             baselines/greedy_coverage_robot.cpp
+                             baselines/boustrophedon_coverage_robot.cpp)
 target_include_directories(baselines PUBLIC ../include)
 target_link_libraries(baselines PUBLIC mod)
 target_link_libraries(baselines PUBLIC planning)
