@@ -43,8 +43,6 @@ private:
   GridCell _currentLoc{};
   std::vector<GridCell> _visited{};
   int _timeBound{};
-  const int _xDim{};
-  const int _yDim{};
   std::shared_ptr<BIMac> _bimac{};
   std::shared_ptr<IMac> _groundTruthIMac{};
 
@@ -96,6 +94,8 @@ private:
   std::vector<Action> _getEnabledActions();
 
 protected:
+  const int _xDim{};
+  const int _yDim{};
   /**
    * Function for printing current transition to stdout.
    *
