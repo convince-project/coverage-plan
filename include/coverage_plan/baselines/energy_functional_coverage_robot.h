@@ -42,13 +42,10 @@ private:
    * Neighbours may be less than 4 if at the boundary of the map.
    *
    * @param cell The cell to get the neighbours for
-   * @param enabledActions The actions enabled in this state
    *
    * @param neighbours The vector of neighbours
    */
-  std::vector<GridCell>
-  _getNeighbours(const GridCell &cell,
-                 const std::vector<Action> &enabledActions);
+  std::vector<GridCell> _getNeighbours(const GridCell &cell);
 
   /**
    * Get the uncovered cells.
@@ -76,13 +73,11 @@ private:
    * @param currentCell The current GridCell
    * @param nextCell The possible next GridCell
    * @param visited The vector of visited locations
-   * @param enabledActions The currently enabled actions
    *
    * @return energy The energy value for this current cell/next cell pair
    */
   double _E(const GridCell &currentCell, const GridCell &nextCell,
-            const std::vector<GridCell> &visited,
-            const std::vector<Action> &enabledActions);
+            const std::vector<GridCell> &visited);
 
   /**
    * Chooses the action which minimises the energy functional.

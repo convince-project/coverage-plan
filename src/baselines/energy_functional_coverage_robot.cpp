@@ -14,15 +14,20 @@
 /**
  * Get the neighbours of cell.
  */
-std::vector<GridCell> EnergyFunctionalCoverageRobot::_getNeighbours(
-    const GridCell &cell, const std::vector<Action> &enabledActions) {
-  std::vector<GridCell> neighbours{};
-  for (const Action &action : enabledActions) {
-    if (action != Action::wait) {
-      neighbours.push_back(ActionHelpers::applySuccessfulAction(cell, action));
+std::vector<GridCell>
+EnergyFunctionalCoverageRobot::_getNeighbours(const GridCell &cell) {
+  std::vector<GridCell> neighbours{
+      GridCell{0, -1} + cell, GridCell{0, 1} + cell, GridCell{-1, 0} + cell,
+      GridCell{1, 0} + cell};
+
+  std::vector<GridCell> inBound{};
+  for (const GridCell &neighbour : neighbours) {
+    if (!neighbour.outOfBounds(0, this->_xDim, 0, this->_yDim)) {
+      inBound.push_back(neighbour);
     }
   }
-  return neighbours;
+
+  return inBound;
 }
 
 /**
@@ -53,11 +58,9 @@ int EnergyFunctionalCoverageRobot::_manhattanDistance(const GridCell &a,
  * Computes the energy function for the current grid cell and possible
  * successor.
  */
-double
-EnergyFunctionalCoverageRobot::_E(const GridCell &currentCell,
-                                  const GridCell &nextCell,
-                                  const std::vector<GridCell> &visited,
-                                  const std::vector<Action> &enabledActions) {
+double EnergyFunctionalCoverageRobot::_E(const GridCell &currentCell,
+                                         const GridCell &nextCell,
+                                         const std::vector<GridCell> &visited) {
   // Part 1: Translational distance
   double translateDist{(double)this->_manhattanDistance(currentCell, nextCell)};
 
@@ -67,8 +70,7 @@ EnergyFunctionalCoverageRobot::_E(const GridCell &currentCell,
 
   // Part 3: N function
   // 1/2(4-num neighbours of nextCell in visited)
-  std::vector<GridCell> nextNeighbours{
-      this->_getNeighbours(nextCell, enabledActions)};
+  std::vector<GridCell> nextNeighbours{this->_getNeighbours(nextCell)};
   double nTerm{4.0};
   for (const GridCell &neighbour : nextNeighbours) {
     if (std::count(visited.begin(), visited.end(), neighbour) > 0) {
@@ -95,7 +97,6 @@ Action EnergyFunctionalCoverageRobot::_planFn(
     int ts, int timeBound, std::shared_ptr<IMac> imac,
     const std::vector<GridCell> &visited,
     const std::vector<IMacObservation> &currentObs) {
-
   // Get hash map of neighbouring observations
   std::map<GridCell, int> obsMap{};
   for (const IMacObservation &imacObs : currentObs) {
@@ -132,7 +133,7 @@ Action EnergyFunctionalCoverageRobot::_planFn(
   GridCell bestCell{};
   double minE{this->_xDim + this->_yDim + 5.36}; // greater than max energy
   for (const GridCell &candidate : candidates) {
-    double energy{this->_E(currentLoc, candidate, visited, enabledActions)};
+    double energy{this->_E(currentLoc, candidate, visited)};
     if (energy < minE) {
       minE = energy;
       bestCell = candidate;
@@ -145,7 +146,7 @@ Action EnergyFunctionalCoverageRobot::_planFn(
   for (const Action &action : enabledActions) {
     GridCell nextLoc{ActionHelpers::applySuccessfulAction(currentLoc, action)};
     if (obsMap[nextLoc] == 0) {
-      double dist{this->_manhattanDistance(nextLoc, bestCell)};
+      double dist{(double)this->_manhattanDistance(nextLoc, bestCell)};
       if (dist < minDist) {
         minDist = dist;
         bestAction = action;
