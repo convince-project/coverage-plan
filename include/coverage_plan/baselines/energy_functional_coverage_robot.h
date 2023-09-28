@@ -11,6 +11,18 @@
  *
  * Some modifications have been necessary from the above implementation to
  * handle dynamic environments, partial observability, and 4-connected grids
+ * We also ignore the robot's neighbourhood when generating the uncovered cells.
+ * Mods:
+ * 1. The N term and wall points term are adjusted to 4-connected grids. I.e. N
+ * is 1/2(4-num visited), and the wall point term is 0.36 - 0.09 * wall points.
+ * 2. To handle partial observability, we ignore the occupied status when we
+ * evaluate E, as we can only see the immediate neighbours
+ * 3. When we compute the uncovered nodes, we check no neighbours are included.
+ * This is because a node may be unvisited, but currently occluded. However,
+ * this node may change in the future so it may still be visited eventually.
+ * 4. In dynamic environments, we forbid actions which lead to cells *currently*
+ * occupied.
+ * 5. A robot may only wait if it has finished covering all nodes.
  *
  * @author Charlie Street
  */
@@ -48,13 +60,20 @@ private:
   std::vector<GridCell> _getNeighbours(const GridCell &cell);
 
   /**
-   * Get the uncovered cells.
+   * Get the uncovered cells, that aren't in the robot's neighbourhood.
+   *
+   * We've already established that the robot's immediate neighbourhood can't
+   * be moved to if we are calling this function. So this should get unvisited
+   * nodes outside of that.
+   *
+   * NOTE: This differs slightly from the original paper.
    *
    * @param visited The currently visited nodes
    *
    * @return uncovered A vector of uncovered cells.
    */
-  std::vector<GridCell> _getUncovered(const std::vector<GridCell> &visited);
+  std::vector<GridCell> _getUncovered(const GridCell &currentCell,
+                                      const std::vector<GridCell> &visited);
 
   /**
    * Computes the manhattan distance between two grid cells.

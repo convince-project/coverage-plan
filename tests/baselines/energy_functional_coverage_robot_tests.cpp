@@ -6,6 +6,7 @@
  */
 
 #include "coverage_plan/baselines/energy_functional_coverage_robot.h"
+#include "coverage_plan/mod/fixed_imac_executor.h"
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
 #include "coverage_plan/planning/action.h"
@@ -80,4 +81,36 @@ TEST_CASE("Test for Energy Functional when robot should go left/right",
   }
   visitedFile.close();
   REQUIRE(lineNum == 9);
+}
+
+TEST_CASE("Test for Energy Functional when robot has to backtrack",
+          "[EnergyFunctionalCoverageRobot::backTrack]") {
+
+  std::shared_ptr<FixedIMacExecutor> exec{std::make_shared<FixedIMacExecutor>(
+      std::vector<std::filesystem::path>{
+          "../../data/tests/energyFunctionalIMacRun.csv"},
+      3, 3)};
+
+  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
+                            GridCell{0, 1}};
+
+  std::unique_ptr<EnergyFunctionalCoverageRobot> robot{
+      std::make_unique<EnergyFunctionalCoverageRobot>(GridCell{0, 0}, 10, 3, 3,
+                                                      fov, exec)};
+
+  double propCovered{robot->runCoverageEpisode("/tmp/backtrack.csv")};
+  REQUIRE_THAT(propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+
+  // Check the path
+  std::ifstream visitedFile{"/tmp/backtrack.csv"};
+  std::vector<std::string> expected{"0,0", "0,1", "0,2", "1,2", "1,1", "1,0",
+                                    "1,1", "2,1", "2,2", "2,1", "2,0"};
+  std::string currentLine{};
+  int lineNum{0};
+  while (getline(visitedFile, currentLine)) {
+    REQUIRE(currentLine == expected.at(lineNum));
+    ++lineNum;
+  }
+  visitedFile.close();
+  REQUIRE(lineNum == 11);
 }

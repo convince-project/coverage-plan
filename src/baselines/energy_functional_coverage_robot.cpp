@@ -34,12 +34,17 @@ EnergyFunctionalCoverageRobot::_getNeighbours(const GridCell &cell) {
  * Get the uncovered cells.
  */
 std::vector<GridCell> EnergyFunctionalCoverageRobot::_getUncovered(
-    const std::vector<GridCell> &visited) {
+    const GridCell &currentLoc, const std::vector<GridCell> &visited) {
+  std::vector<GridCell> neighbours{this->_getNeighbours(currentLoc)};
   std::vector<GridCell> uncovered{};
   for (int x{0}; x < this->_xDim; ++x) {
     for (int y{0}; y < this->_yDim; ++y) {
-      if (std::count(visited.begin(), visited.end(), GridCell{x, y}) == 0) {
-        uncovered.push_back(GridCell{x, y});
+      GridCell cell{x, y};
+      // Cell should also not be in immediate neighbours
+      // As we've already ruled them out
+      if (std::count(visited.begin(), visited.end(), cell) == 0 &&
+          std::count(neighbours.begin(), neighbours.end(), cell) == 0) {
+        uncovered.push_back(cell);
       }
     }
   }
@@ -123,7 +128,7 @@ Action EnergyFunctionalCoverageRobot::_planFn(
 
   // Step 2: If no valid neighbours, get every not visited node
   if (candidates.size() == 0) {
-    candidates = this->_getUncovered(visited);
+    candidates = this->_getUncovered(currentLoc, visited);
   }
   if (candidates.size() == 0) { // If we've covered everything, just wait
     return Action::wait;
@@ -144,6 +149,9 @@ Action EnergyFunctionalCoverageRobot::_planFn(
   Action bestAction{};
   double minDist{this->_xDim + this->_yDim + 1.0}; // Greater than max distance
   for (const Action &action : enabledActions) {
+    if (action == Action::wait) {
+      continue;
+    }
     GridCell nextLoc{ActionHelpers::applySuccessfulAction(currentLoc, action)};
     if (obsMap[nextLoc] == 0) {
       double dist{(double)this->_manhattanDistance(nextLoc, bestCell)};

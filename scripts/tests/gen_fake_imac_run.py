@@ -16,11 +16,11 @@ def gen_run(out_file):
     """
 
     with open(out_file, "w") as csvfile:
-        writer = csv.writer(csvfile, delimiter=", ")
+        writer = csv.writer(csvfile, delimiter=",")
         for t in range(11):
             row = [t]
             for y in range(3):
-                for x in range(2):
+                for x in range(3):
                     row.append(x)
                     row.append(y)
                     if (x == 1 and y == 0 and t == 0) or (x == 2 and y == 0 and t < 8):
