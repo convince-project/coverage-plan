@@ -23,6 +23,8 @@
  * 4. In dynamic environments, we forbid actions which lead to cells *currently*
  * occupied.
  * 5. A robot may only wait if it has finished covering all nodes.
+ * 6. The rotational term in the energy function is always 0, as the robot is
+ * holonomic with a 360 degree FoV.
  *
  * @author Charlie Street
  */
