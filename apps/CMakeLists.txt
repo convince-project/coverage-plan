@@ -34,3 +34,7 @@ target_link_libraries(prelimExperiments PUBLIC mod planning util baselines)
 # Add executable for five heavy pomdp example 
 add_executable(fiveHeavyPOMDPExample five_heavy_pomdp_example.cpp)
 target_link_libraries(fiveHeavyPOMDPExample PUBLIC mod planning util)
+
+# Add executable for profiling test 
+add_executable(profilingTest profiling_test.cpp)
+target_link_libraries(profilingTest PUBLIC mod planning util)
