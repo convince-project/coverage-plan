@@ -11,7 +11,7 @@ endif()
                    
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -msse2 -mfpmath=sse -march=native")
 
 # 3rd party packages
 find_package(Boost 1.82 REQUIRED)
