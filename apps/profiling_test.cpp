@@ -127,6 +127,11 @@ void profileRNG() {
   duration =
       std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
   std::cout << "SWC - Time elapsed: " << duration.count() << " microseconds\n";
+
+  // NOTE: Beware, the compiler is doing some silly stuff here which makes the
+  //  last two run in 0 microseconds. Its clearly removing the unused code
+  //  The map update test where the generator in imac_executor.h is tested
+  //  is a more accurate test
 }
 
 int main() { profileMapUpdate(); }
