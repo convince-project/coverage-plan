@@ -187,7 +187,8 @@ void runExperiments(const std::vector<std::pair<double, std::string>> &methods,
       for (int r{0}; r < numRuns; ++r) {
         std::cout << "ENVIRONMENT: " << envs.at(envNum) << ", RUN: " << r + 1
                   << "/" << numRuns << "\n";
-        resultsForEnv.push_back(robot->runCoverageEpisode("/tmp/dummy.csv"));
+        resultsForEnv.push_back(
+            robot->runCoverageEpisode("/tmp/dummy.csv").propCovered);
       }
       resultsForMethod.push_back(resultsForEnv);
     }

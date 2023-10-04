@@ -24,6 +24,18 @@
 #include <vector>
 
 /**
+ * Struct for storing the results of coverage planning.
+ *
+ * Members:
+ * endTime: At what time step did the robot finish coverage planning?
+ * propCovered: What proportion of the environment was covered? [0,1]
+ */
+struct CoverageResult {
+  int endTime{};
+  double propCovered{};
+};
+
+/**
  * A class for the coverage planning execution framework.
  *
  * Handles the plan/execute/observe cycle.
@@ -211,9 +223,9 @@ public:
    *
    * @param outFile The csv file to output visited locations to
    *
-   * @return propCovered The proportion of the environment covered
+   * @return result The result (end time and prop covered) of coverage planning
    */
-  double runCoverageEpisode(const std::filesystem::path &outFile);
+  CoverageResult runCoverageEpisode(const std::filesystem::path &outFile);
 
   /**
    * Runs necessary setup for an episode, such as creating a planner.

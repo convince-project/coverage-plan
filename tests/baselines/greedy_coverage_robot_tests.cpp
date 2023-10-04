@@ -63,9 +63,10 @@ TEST_CASE(
       std::make_unique<GreedyCoverageRobot>(GridCell{0, 0}, 2, 1, 3,
                                             std::vector<GridCell>{}, exec)};
 
-  double propCovered{robot->runCoverageEpisode("/tmp/dummy.csv")};
+  CoverageResult result{robot->runCoverageEpisode("/tmp/dummy.csv")};
 
-  REQUIRE_THAT(propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  REQUIRE_THAT(result.propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  REQUIRE(result.endTime == 2);
 }
 
 TEST_CASE(
@@ -84,7 +85,8 @@ TEST_CASE(
       std::make_unique<GreedyCoverageRobot>(GridCell{0, 0}, 5, 1, 3,
                                             std::vector<GridCell>{}, exec)};
 
-  double propCovered{robot->runCoverageEpisode("/tmp/dummy.csv")};
+  CoverageResult result{robot->runCoverageEpisode("/tmp/dummy.csv")};
 
-  REQUIRE_THAT(propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  REQUIRE_THAT(result.propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  REQUIRE(result.endTime == 2);
 }

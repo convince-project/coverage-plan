@@ -30,8 +30,9 @@ TEST_CASE("Test for Boustrophedon when environment empty",
       std::make_unique<BoustrophedonCoverageRobot>(GridCell{0, 0}, 10, 3, 3,
                                                    fov, exec)};
 
-  double propCovered{robot->runCoverageEpisode("/tmp/allEmpty.csv")};
-  REQUIRE_THAT(propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  CoverageResult result{robot->runCoverageEpisode("/tmp/allEmpty.csv")};
+  REQUIRE_THAT(result.propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  REQUIRE(result.endTime == 8);
 
   // Check the path
   std::ifstream visitedFile{"/tmp/allEmpty.csv"};
@@ -66,8 +67,10 @@ TEST_CASE("Test for Boustrophedon when obstacle present",
       std::make_unique<BoustrophedonCoverageRobot>(GridCell{0, 0}, 10, 3, 3,
                                                    fov, exec)};
 
-  double propCovered{robot->runCoverageEpisode("/tmp/withObstacle.csv")};
-  REQUIRE_THAT(propCovered, Catch::Matchers::WithinRel(7.0 / 9.0, 0.001));
+  CoverageResult result{robot->runCoverageEpisode("/tmp/withObstacle.csv")};
+  REQUIRE_THAT(result.propCovered,
+               Catch::Matchers::WithinRel(7.0 / 9.0, 0.001));
+  REQUIRE(result.endTime == 10);
 
   // Check the path
   std::ifstream visitedFile{"/tmp/withObstacle.csv"};
@@ -100,8 +103,9 @@ TEST_CASE("Test for Boustrophedon with dynamic obstacle",
       std::make_unique<BoustrophedonCoverageRobot>(GridCell{0, 0}, 2, 1, 2, fov,
                                                    exec)};
 
-  double propCovered{robot->runCoverageEpisode("/tmp/dynamicObstacle.csv")};
-  REQUIRE_THAT(propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  CoverageResult result{robot->runCoverageEpisode("/tmp/dynamicObstacle.csv")};
+  REQUIRE_THAT(result.propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  REQUIRE(result.endTime == 2);
 
   // Check the path
   std::ifstream visitedFile{"/tmp/dynamicObstacle.csv"};

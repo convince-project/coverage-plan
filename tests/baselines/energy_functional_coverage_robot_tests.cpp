@@ -32,8 +32,9 @@ TEST_CASE("Test for Energy Functional when robot should go down/up",
       std::make_unique<EnergyFunctionalCoverageRobot>(GridCell{0, 0}, 10, 3, 3,
                                                       fov, exec)};
 
-  double propCovered{robot->runCoverageEpisode("/tmp/downUp.csv")};
-  REQUIRE_THAT(propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  CoverageResult result{robot->runCoverageEpisode("/tmp/downUp.csv")};
+  REQUIRE_THAT(result.propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  REQUIRE(result.endTime == 8);
 
   // Check the path
   std::ifstream visitedFile{"/tmp/downUp.csv"};
@@ -66,8 +67,9 @@ TEST_CASE("Test for Energy Functional when robot should go left/right",
       std::make_unique<EnergyFunctionalCoverageRobot>(GridCell{0, 0}, 10, 3, 3,
                                                       fov, exec)};
 
-  double propCovered{robot->runCoverageEpisode("/tmp/leftRight.csv")};
-  REQUIRE_THAT(propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  CoverageResult result{robot->runCoverageEpisode("/tmp/leftRight.csv")};
+  REQUIRE_THAT(result.propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  REQUIRE(result.endTime == 8);
 
   // Check the path
   std::ifstream visitedFile{"/tmp/leftRight.csv"};
@@ -98,8 +100,9 @@ TEST_CASE("Test for Energy Functional when robot has to backtrack",
       std::make_unique<EnergyFunctionalCoverageRobot>(GridCell{0, 0}, 10, 3, 3,
                                                       fov, exec)};
 
-  double propCovered{robot->runCoverageEpisode("/tmp/backtrack.csv")};
-  REQUIRE_THAT(propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  CoverageResult result{robot->runCoverageEpisode("/tmp/backtrack.csv")};
+  REQUIRE_THAT(result.propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  REQUIRE(result.endTime == 10);
 
   // Check the path
   std::ifstream visitedFile{"/tmp/backtrack.csv"};

@@ -117,7 +117,7 @@ int main() {
 
       // Write output logs to dummy file
       currentRes.push_back(
-          robot->runCoverageEpisode("/tmp/episodeVisited.csv"));
+          robot->runCoverageEpisode("/tmp/episodeVisited.csv").propCovered);
     }
 
     results.push_back(currentRes);
