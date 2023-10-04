@@ -25,6 +25,16 @@
  *
  * Members:
  * As in superclass, plus:
+ * _exec: The IMac executor capturing the evolution of the environment
+ * _fov: The robot's field of view
+ * _latestObs: The robot's latest observation
+ * _planner: The coverage planner
+ * _pomdp: The coverage planning model
+ * _world: The world object which wraps around exec
+ * _solver: The DESPOT solver
+ * _boundType: The type of bounds to use in DESPOT
+ * _pruningConstant: The DESPOT pruning constant
+ * _numScenarios: The number of scenarios to simulate in DESPOT
  */
 class POMDPCoverageRobot : public CoverageRobot {
 
@@ -38,6 +48,7 @@ private:
   despot::Solver *_solver{};
   const std::string _boundType{};
   const double _pruningConstant{};
+  const int _numScenarios{};
 
   /**
    * Executes an action using a CoverageWorld object.
@@ -105,17 +116,20 @@ public:
    * use BiMac)
    * @param boundType The type of upper and lower bounds to use
    * @param pruningConstant The DESPOT pruning constant
+   * @param numScenarios The number of simulated scenarios in DESPOT
    */
   POMDPCoverageRobot(const GridCell &currentLoc, int timeBound, int xDim,
                      int yDim, const std::vector<GridCell> &fov,
                      std::shared_ptr<IMacExecutor> exec,
                      std::shared_ptr<IMac> groundTruthIMac = nullptr,
                      std::string boundType = "DEFAULT",
-                     const double &pruningConstant = 0.01)
+                     const double &pruningConstant = 0.01,
+                     const int &numScenarios = 500)
       : CoverageRobot{currentLoc, timeBound, xDim, yDim, groundTruthIMac},
         _exec{exec}, _fov{fov}, _latestObs{}, _planner{nullptr},
         _pomdp{nullptr}, _world{nullptr}, _belief{nullptr}, _solver{nullptr},
-        _boundType{boundType}, _pruningConstant{pruningConstant} {}
+        _boundType{boundType}, _pruningConstant{pruningConstant},
+        _numScenarios{numScenarios} {}
 
   /**
    * Ensures everything is cleaned up on object deletion.

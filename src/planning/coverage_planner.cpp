@@ -44,9 +44,9 @@ CoveragePlanner::InitializeWorld(std::string &world_type,
  */
 void CoveragePlanner::InitializeDefaultParameters() {
   despot::Globals::config.time_per_move = 1; // 1 second of planning each step
-  despot::Globals::config.sim_len = this->_timeBound + 1; // Max out
-  // num_scenarios left at default TODO: Figure this out
-  despot::Globals::config.search_depth = this->_timeBound + 1;       // Max out
+  despot::Globals::config.sim_len = this->_timeBound + 1;      // Max out
+  despot::Globals::config.num_scenarios = this->_numScenarios; // Passed in
+  despot::Globals::config.search_depth = this->_timeBound + 1; // Max out
   despot::Globals::config.max_policy_sim_len = this->_timeBound + 1; // Max out
   despot::Globals::config.discount = 1.0; // We have a finite horizon problem
   if (this->_boundType == "TRIVIAL") {

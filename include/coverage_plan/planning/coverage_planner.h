@@ -27,6 +27,9 @@
  * _fov: The robot's FOV as a vector of relative grid cells
  * _exec: The IMac executor describing how the *real world* operates
  * _planIMac: The IMac model used for planning, which may not match with _exec
+ * _boundType: The type of upper and lower bounds to use during planning
+ * _pruningConstant: The DESPOT regularisation constant
+ * _numScenarios: The number of scenarios to sample in DESPOT
  */
 class CoveragePlanner : public despot::Planner {
 
@@ -39,6 +42,7 @@ private:
   std::shared_ptr<IMac> _planIMac{};
   std::string _boundType{};
   const double _pruningConstant{};
+  const int _numScenarios{};
 
 public:
   /**
@@ -51,17 +55,20 @@ public:
    * @param exec The IMac executor which defines the world
    * @param planIMac The IMac model used for planning
    * @param boundType The type of upper and lower bounds to use during planning
+   * @param pruningConstant The DESPOT regularisation constant
+   * @param numScenarios The number of scenarios to sample in DESPOT
    */
   CoveragePlanner(const GridCell &initPos, const int &initTime,
                   const int &timeBound, const std::vector<GridCell> &fov,
                   std::shared_ptr<IMacExecutor> exec,
                   std::shared_ptr<IMac> planIMac,
                   std::string boundType = "DEFAULT",
-                  const double &pruningConstant = 0.1)
+                  const double &pruningConstant = 0.1,
+                  const int &numScenarios = 500)
       : Planner("THESE", "ARGS", "DO NOT DO", "ANYTHING"), _initPos{initPos},
         _initTime{initTime}, _timeBound{timeBound}, _fov{fov}, _exec{exec},
-        _planIMac{planIMac}, _boundType{boundType}, _pruningConstant{
-                                                        pruningConstant} {}
+        _planIMac{planIMac}, _boundType{boundType},
+        _pruningConstant{pruningConstant}, _numScenarios{numScenarios} {}
 
   /**
    * Empty destructor.
