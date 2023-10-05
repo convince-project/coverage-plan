@@ -38,3 +38,7 @@ target_link_libraries(fiveHeavyPOMDPExample PUBLIC mod planning util)
 # Add executable for profiling test 
 add_executable(profilingTest profiling_test.cpp)
 target_link_libraries(profilingTest PUBLIC mod planning util)
+
+# Add executable for numScenarios tuning
+add_executable(numScenariosTuning num_scenarios_tuning.cpp)
+target_link_libraries(numScenariosTuning PUBLIC mod planning util)
