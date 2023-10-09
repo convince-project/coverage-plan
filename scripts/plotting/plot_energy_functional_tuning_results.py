@@ -67,6 +67,13 @@ def set_box_colors(bp):
     plt.setp(bp["whiskers"][5], color="tab:green", linewidth=8.0)
     plt.setp(bp["medians"][2], color="tab:green", linewidth=8.0)
 
+    plt.setp(bp["boxes"][3], color="tab:purple", linewidth=8.0)
+    plt.setp(bp["caps"][6], color="tab:purple", linewidth=8.0)
+    plt.setp(bp["caps"][7], color="tab:purple", linewidth=8.0)
+    plt.setp(bp["whiskers"][6], color="tab:purple", linewidth=8.0)
+    plt.setp(bp["whiskers"][7], color="tab:purple", linewidth=8.0)
+    plt.setp(bp["medians"][3], color="tab:purple", linewidth=8.0)
+
 
 def plot_results(results, env):
     """Plot the results for a given environment.
@@ -78,14 +85,19 @@ def plot_results(results, env):
     print("Plotting results")
 
     results_list = []
-    methods = ["no_wall_points", "with_wall_points", "neighbours_get_uncovered"]
+    methods = [
+        "no_wall_points",
+        "with_wall_points",
+        "neighbours_get_uncovered",
+        "valid_neighbours_in_N",
+    ]
     for method in methods:
         results_list.append(results[method][env])
 
     box = plt.boxplot(
         results_list,
         whis=[0, 100],
-        positions=[1, 2, 3],
+        positions=[1, 2, 3, 4],
         widths=0.6,
     )
     set_box_colors(box)
@@ -101,8 +113,13 @@ def plot_results(results, env):
     plt.ylabel("Proportion Covered")
 
     plt.xticks(
-        [1, 2, 3],
-        ["No Wall Points Term", "With Wall Points Term", "Neighbours in getUncovered"],
+        [1, 2, 3, 4],
+        [
+            "No Wall Points Term",
+            "With Wall Points Term",
+            "Neighbours in getUncovered",
+            "Valid Neighbours in N",
+        ],
     )
 
     plt.xlabel("Parameters", fontsize=40)
@@ -118,7 +135,12 @@ def plot_combined_results(results):
     print("Plotting results")
 
     results_list = []
-    methods = ["no_wall_points", "with_wall_points", "neighbours_get_uncovered"]
+    methods = [
+        "no_wall_points",
+        "with_wall_points",
+        "neighbours_get_uncovered",
+        "valid_neighbours_in_N",
+    ]
     for method in methods:
         combined_results = []
         for env in results[method]:
@@ -128,7 +150,7 @@ def plot_combined_results(results):
     box = plt.boxplot(
         results_list,
         whis=[0, 100],
-        positions=[1, 2, 3],
+        positions=[1, 2, 3, 4],
         widths=0.6,
     )
     set_box_colors(box)
@@ -143,8 +165,13 @@ def plot_combined_results(results):
     )
     plt.ylabel("Proportion Covered")
     plt.xticks(
-        [1, 2, 3],
-        ["No Wall Points Term", "With Wall Points Term", "Neighbours in getUncovered"],
+        [1, 2, 3, 4],
+        [
+            "No Wall Points Term",
+            "With Wall Points Term",
+            "Neighbours in getUncovered",
+            "Valid Neighbours in N",
+        ],
     )
     plt.xlabel("Parameters", fontsize=40)
     plt.show()
@@ -160,6 +187,7 @@ def plot_statistics(results):
         "no_wall_points",
         "with_wall_points",
         "neighbours_get_uncovered",
+        "valid_neighbours_in_N",
     ]:
         results_for_params = []
         for env in results[method]:
@@ -184,7 +212,12 @@ def plot_stat_sig(results):
         results: method to env to results list
     """
     combined = {}
-    methods = ["no_wall_points", "with_wall_points", "neighbours_get_uncovered"]
+    methods = [
+        "no_wall_points",
+        "with_wall_points",
+        "neighbours_get_uncovered",
+        "valid_neighbours_in_N",
+    ]
     for method in methods:
         results_for_params = []
         for env in results[method]:
@@ -218,6 +251,9 @@ if __name__ == "__main__":
     )
     results_files["neighbours_get_uncovered"] = os.path.join(
         results_dir, "energy_functional_neighbours_in_get_uncovered_results.csv"
+    )
+    results_files["valid_neighbours_in_N"] = os.path.join(
+        results_dir, "energy_functional_num_neighbours_not_4_no_wall_points_term.csv"
     )
 
     results = collect_results(results_files)
