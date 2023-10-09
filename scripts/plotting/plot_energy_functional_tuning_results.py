@@ -74,6 +74,13 @@ def set_box_colors(bp):
     plt.setp(bp["whiskers"][7], color="tab:purple", linewidth=8.0)
     plt.setp(bp["medians"][3], color="tab:purple", linewidth=8.0)
 
+    plt.setp(bp["boxes"][4], color="tab:orange", linewidth=8.0)
+    plt.setp(bp["caps"][8], color="tab:orange", linewidth=8.0)
+    plt.setp(bp["caps"][9], color="tab:orange", linewidth=8.0)
+    plt.setp(bp["whiskers"][8], color="tab:orange", linewidth=8.0)
+    plt.setp(bp["whiskers"][9], color="tab:orange", linewidth=8.0)
+    plt.setp(bp["medians"][4], color="tab:orange", linewidth=8.0)
+
 
 def plot_results(results, env):
     """Plot the results for a given environment.
@@ -90,6 +97,7 @@ def plot_results(results, env):
         "with_wall_points",
         "neighbours_get_uncovered",
         "valid_neighbours_in_N",
+        "8_neighbours",
     ]
     for method in methods:
         results_list.append(results[method][env])
@@ -97,7 +105,7 @@ def plot_results(results, env):
     box = plt.boxplot(
         results_list,
         whis=[0, 100],
-        positions=[1, 2, 3, 4],
+        positions=[1, 2, 3, 4, 5],
         widths=0.6,
     )
     set_box_colors(box)
@@ -108,17 +116,18 @@ def plot_results(results, env):
         bottom=True,  # ticks along the bottom edge are off
         top=False,  # ticks along the top edge are off
         labelbottom=True,  # labels along the bottom edge are offcd
-        labelsize=28,
+        labelsize=20,
     )
     plt.ylabel("Proportion Covered")
 
     plt.xticks(
-        [1, 2, 3, 4],
+        [1, 2, 3, 4, 5],
         [
             "No Wall Points Term",
             "With Wall Points Term",
             "Neighbours in getUncovered",
             "Valid Neighbours in N",
+            "8 Neighbours",
         ],
     )
 
@@ -140,6 +149,7 @@ def plot_combined_results(results):
         "with_wall_points",
         "neighbours_get_uncovered",
         "valid_neighbours_in_N",
+        "8_neighbours",
     ]
     for method in methods:
         combined_results = []
@@ -150,7 +160,7 @@ def plot_combined_results(results):
     box = plt.boxplot(
         results_list,
         whis=[0, 100],
-        positions=[1, 2, 3, 4],
+        positions=[1, 2, 3, 4, 5],
         widths=0.6,
     )
     set_box_colors(box)
@@ -161,16 +171,17 @@ def plot_combined_results(results):
         bottom=True,  # ticks along the bottom edge are off
         top=False,  # ticks along the top edge are off
         labelbottom=True,  # labels along the bottom edge are offcd
-        labelsize=28,
+        labelsize=20,
     )
     plt.ylabel("Proportion Covered")
     plt.xticks(
-        [1, 2, 3, 4],
+        [1, 2, 3, 4, 5],
         [
             "No Wall Points Term",
             "With Wall Points Term",
             "Neighbours in getUncovered",
             "Valid Neighbours in N",
+            "8 Neighbours",
         ],
     )
     plt.xlabel("Parameters", fontsize=40)
@@ -188,6 +199,7 @@ def plot_statistics(results):
         "with_wall_points",
         "neighbours_get_uncovered",
         "valid_neighbours_in_N",
+        "8_neighbours",
     ]:
         results_for_params = []
         for env in results[method]:
@@ -217,6 +229,7 @@ def plot_stat_sig(results):
         "with_wall_points",
         "neighbours_get_uncovered",
         "valid_neighbours_in_N",
+        "8_neighbours",
     ]
     for method in methods:
         results_for_params = []
@@ -254,6 +267,9 @@ if __name__ == "__main__":
     )
     results_files["valid_neighbours_in_N"] = os.path.join(
         results_dir, "energy_functional_num_neighbours_not_4_no_wall_points_term.csv"
+    )
+    results_files["8_neighbours"] = os.path.join(
+        results_dir, "energy_functional_8_neighbours_with_wall_points_results.csv"
     )
 
     results = collect_results(results_files)
