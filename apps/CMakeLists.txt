@@ -42,3 +42,7 @@ target_link_libraries(profilingTest PUBLIC mod planning util)
 # Add executable for numScenarios tuning
 add_executable(numScenariosTuning num_scenarios_tuning.cpp)
 target_link_libraries(numScenariosTuning PUBLIC mod planning util)
+
+# Add executable for energy functional tuning
+add_executable(energyFunctionalTuning energy_functional_tuning.cpp)
+target_link_libraries(energyFunctionalTuning PUBLIC mod planning util baselines)

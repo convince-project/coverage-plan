@@ -56,8 +56,10 @@ public:
   BoustrophedonCoverageRobot(const GridCell &currentLoc, int timeBound,
                              int xDim, int yDim,
                              const std::vector<GridCell> &fov,
-                             std::shared_ptr<IMacExecutor> exec)
-      : POMDPCoverageRobot(currentLoc, timeBound, xDim, yDim, fov, exec) {}
+                             std::shared_ptr<IMacExecutor> exec,
+                             std::shared_ptr<IMac> groundTruthIMac = nullptr)
+      : POMDPCoverageRobot(currentLoc, timeBound, xDim, yDim, fov, exec,
+                           groundTruthIMac) {}
 };
 
 #endif

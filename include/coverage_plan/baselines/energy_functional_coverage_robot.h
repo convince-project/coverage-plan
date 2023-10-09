@@ -138,8 +138,10 @@ public:
                                 int xDim, int yDim,
                                 const std::vector<GridCell> &fov,
                                 std::shared_ptr<IMacExecutor> exec,
+                                std::shared_ptr<IMac> groundTruthIMac = nullptr,
                                 bool useWallPointTerm = true)
-      : POMDPCoverageRobot(currentLoc, timeBound, xDim, yDim, fov, exec),
+      : POMDPCoverageRobot(currentLoc, timeBound, xDim, yDim, fov, exec,
+                           groundTruthIMac),
         _useWallPointTerm{useWallPointTerm} {}
 };
 
