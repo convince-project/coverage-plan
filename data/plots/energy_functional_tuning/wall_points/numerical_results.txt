@@ -1,0 +1,6 @@
+WALL POINTS TERM: False, MEAN: 0.8783125, MEDIAN: 0.92
+WALL POINTS TERM: True, MEAN: 0.8816875, MEDIAN: 0.9375
+BEST = True
+True > False: p = 0.33766929221582376, stat sig better = False
+True > True: p = 0.5019507511043637, stat sig better = False
+
