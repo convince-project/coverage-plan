@@ -222,7 +222,7 @@ if __name__ == "__main__":
 
     results = collect_results(results_files)
 
-    # plot_results(results, "four_light")
+    plot_results(results, "four_light")
     # plot_combined_results(results)
-    plot_statistics(results)
-    plot_stat_sig(results)
+    # plot_statistics(results)
+    # plot_stat_sig(results)

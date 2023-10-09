@@ -1,0 +1,9 @@
+METHOD: no_wall_points, MEAN: 0.8783125, MEDIAN: 0.92 
+METHOD: with_wall_points, MEAN: 0.8816875, MEDIAN: 0.9375 
+METHOD: neighbours_get_uncovered, MEAN: 0.858, MEDIAN: 0.92 
+BEST = with_wall_points 
+with_wall_points > no_wall_points: p = 0.33766929221582376, stat sig better = False 
+with_wall_points > with_wall_points: p = 0.5019507511043637, stat sig better = False 
+with_wall_points > neighbours_get_uncovered: p = 0.1942910254459877, stat sig better = False 
+
+(Note: neighbours_get_uncovered uses the wall points term)
