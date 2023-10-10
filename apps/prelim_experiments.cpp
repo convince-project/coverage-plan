@@ -213,24 +213,22 @@ int main() {
 
   // Create methods to test
   std::vector<std::pair<double, std::string>> methods{
+      std::make_pair(-1, "RANDOM"), std::make_pair(-1, "GREEDY"),
       std::make_pair(-1, "ENERGY_FUNCTIONAL"),
-      std::make_pair(-1, "BOUSTROPHEDON")};
-  // std::vector<std::pair<double, std::string>> methods{
-  //    std::make_pair(-1, "RANDOM"), std::make_pair(-1, "GREEDY"),
-  //    std::make_pair(-1, "ENERGY_FUNCTIONAL"),
-  //    std::make_pair(-1, "BOUSTROPHEDON")};
+      std::make_pair(-1, "BOUSTROPHEDON"), std::make_pair(0.1, "DEFAULT")};
   // std::vector<double> prunes{0.0, 0.01, 0.1, 1, 10};
   // std::vector<std::string> boundTypes{"TRIVIAL", "DEFAULT"};
   // for (const double &prune : prunes) {
-  //  for (const std::string &type : boundTypes) {
-  //    methods.push_back(std::make_pair(prune, type));
-  //  }
-  //}
+  //   for (const std::string &type : boundTypes) {
+  //     methods.push_back(std::make_pair(prune, type));
+  //   }
+  // }
 
   // Environment setup
   std::vector<std::string> envs{"four_light", "four_heavy", "five_light",
                                 "five_heavy"};
-  std::vector<int> timeBounds{25, 25, 40, 40};
+  std::vector<int> timeBounds{21, 21, 33, 33};
+  // std::vector<int> timeBounds{25, 25, 40, 40};
 
   // Robot FOV
   std::vector<GridCell> fov{GridCell{-1, -1}, GridCell{0, -1}, GridCell{1, -1},
@@ -241,7 +239,8 @@ int main() {
   std::filesystem::path inDir{"../../data/prelim_exps"};
 
   // Output directory
-  std::filesystem::path outDir{"../../data/results/prelim_exps"};
+  std::filesystem::path outDir{
+      "../../data/results/prelim_exps/lower_time_bounds"};
 
   // Number of runs
   int numRuns{10};
