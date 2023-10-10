@@ -63,6 +63,20 @@ def set_box_colors(bp):
     plt.setp(bp["whiskers"][5], color="tab:green", linewidth=8.0)
     plt.setp(bp["medians"][2], color="tab:green", linewidth=8.0)
 
+    plt.setp(bp["boxes"][3], color="tab:purple", linewidth=8.0)
+    plt.setp(bp["caps"][6], color="tab:purple", linewidth=8.0)
+    plt.setp(bp["caps"][7], color="tab:purple", linewidth=8.0)
+    plt.setp(bp["whiskers"][6], color="tab:purple", linewidth=8.0)
+    plt.setp(bp["whiskers"][7], color="tab:purple", linewidth=8.0)
+    plt.setp(bp["medians"][3], color="tab:purple", linewidth=8.0)
+
+    plt.setp(bp["boxes"][4], color="tab:orange", linewidth=8.0)
+    plt.setp(bp["caps"][8], color="tab:orange", linewidth=8.0)
+    plt.setp(bp["caps"][9], color="tab:orange", linewidth=8.0)
+    plt.setp(bp["whiskers"][8], color="tab:orange", linewidth=8.0)
+    plt.setp(bp["whiskers"][9], color="tab:orange", linewidth=8.0)
+    plt.setp(bp["medians"][4], color="tab:orange", linewidth=8.0)
+
 
 def plot_results(results, env):
     """Plot the results for a given environment.
@@ -74,14 +88,14 @@ def plot_results(results, env):
     print("Plotting results")
 
     results_list = []
-    methods = ["POMDP", "GREEDY", "RANDOM"]
+    methods = ["POMDP", "GREEDY", "RANDOM", "ENERGY", "BOUSTROPHEDON"]
     for method in methods:
         results_list.append(results[method][env])
 
     box = plt.boxplot(
         results_list,
         whis=[0, 100],
-        positions=[1, 2, 3],
+        positions=[1, 2, 3, 4, 5],
         widths=0.6,
     )
     set_box_colors(box)
@@ -96,9 +110,9 @@ def plot_results(results, env):
     )
     plt.ylabel("Proportion Covered")
 
-    plt.xticks([1, 2, 3], methods)
+    plt.xticks([1, 2, 3, 4, 5], methods)
 
-    plt.xlabel("Parameters", fontsize=40)
+    plt.xlabel("Method", fontsize=40)
     plt.show()
 
 
@@ -111,7 +125,7 @@ def plot_combined_results(results):
     print("Plotting results")
 
     results_list = []
-    methods = ["POMDP", "GREEDY", "RANDOM"]
+    methods = ["POMDP", "GREEDY", "RANDOM", "ENERGY", "BOUSTROPHEDON"]
     for method in methods:
         combined_results = []
         for env in results[method]:
@@ -121,7 +135,7 @@ def plot_combined_results(results):
     box = plt.boxplot(
         results_list,
         whis=[0, 100],
-        positions=[1, 2, 3],
+        positions=[1, 2, 3, 4, 5],
         widths=0.6,
     )
     set_box_colors(box)
@@ -135,8 +149,8 @@ def plot_combined_results(results):
         labelsize=28,
     )
     plt.ylabel("Proportion Covered")
-    plt.xticks([1, 2, 3], methods)
-    plt.xlabel("Parameters", fontsize=40)
+    plt.xticks([1, 2, 3, 4, 5], methods)
+    plt.xlabel("Method", fontsize=40)
     plt.show()
 
 
@@ -146,7 +160,7 @@ def plot_statistics(results):
     Args:
         results: method to env to results list
     """
-    for method in ["POMDP", "GREEDY", "RANDOM"]:
+    for method in ["POMDP", "GREEDY", "RANDOM", "ENERGY", "BOUSTROPHEDON"]:
         results_for_params = []
         for env in results[method]:
             results_for_params += results[method][env]
@@ -170,7 +184,7 @@ def plot_stat_sig(results):
         results: method to env to results list
     """
     combined = {}
-    methods = ["POMDP", "GREEDY", "RANDOM"]
+    methods = ["POMDP", "GREEDY", "RANDOM", "ENERGY", "BOUSTROPHEDON"]
     for method in methods:
         results_for_params = []
         for env in results[method]:
@@ -197,6 +211,10 @@ if __name__ == "__main__":
     )
     results_files["GREEDY"] = os.path.join(results_dir, "GREEDY_results.csv")
     results_files["RANDOM"] = os.path.join(results_dir, "RANDOM_results.csv")
+    results_files["ENERGY"] = os.path.join(results_dir, "ENERGY_FUNCTIONAL_results.csv")
+    results_files["BOUSTROPHEDON"] = os.path.join(
+        results_dir, "BOUSTROPHEDON_results.csv"
+    )
 
     results = collect_results(results_files)
 
