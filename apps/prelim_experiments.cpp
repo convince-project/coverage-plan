@@ -3,6 +3,8 @@
  * @author Charlie Street
  */
 
+#include "coverage_plan/baselines/boustrophedon_coverage_robot.h"
+#include "coverage_plan/baselines/energy_functional_coverage_robot.h"
 #include "coverage_plan/baselines/greedy_coverage_robot.h"
 #include "coverage_plan/baselines/random_coverage_robot.h"
 #include "coverage_plan/mod/fixed_imac_executor.h"
@@ -105,6 +107,14 @@ getRobot(const double &pruningConstant, const std::string &boundType,
       robot = std::make_shared<GreedyCoverageRobot>(GridCell{0, 0}, timeBound,
                                                     dim.first, dim.second, fov,
                                                     exec, groundTruthIMac);
+    } else if (boundType == "ENERGY_FUNCTIONAL") {
+      robot = std::make_shared<EnergyFunctionalCoverageRobot>(
+          GridCell{0, 0}, timeBound, dim.first, dim.second, fov, exec,
+          groundTruthIMac);
+    } else if (boundType == "BOUSTROPHEDON") {
+      robot = std::make_shared<BoustrophedonCoverageRobot>(
+          GridCell{0, 0}, timeBound, dim.first, dim.second, fov, exec,
+          groundTruthIMac);
     }
   } else { // POMDP Coverage Robot
     robot = std::make_shared<POMDPCoverageRobot>(
@@ -203,14 +213,19 @@ int main() {
 
   // Create methods to test
   std::vector<std::pair<double, std::string>> methods{
-      std::make_pair(-1, "RANDOM"), std::make_pair(-1, "GREEDY")};
-  std::vector<double> prunes{0.0, 0.01, 0.1, 1, 10};
-  std::vector<std::string> boundTypes{"TRIVIAL", "DEFAULT"};
-  for (const double &prune : prunes) {
-    for (const std::string &type : boundTypes) {
-      methods.push_back(std::make_pair(prune, type));
-    }
-  }
+      std::make_pair(-1, "ENERGY_FUNCTIONAL"),
+      std::make_pair(-1, "BOUSTROPHEDON")};
+  // std::vector<std::pair<double, std::string>> methods{
+  //    std::make_pair(-1, "RANDOM"), std::make_pair(-1, "GREEDY"),
+  //    std::make_pair(-1, "ENERGY_FUNCTIONAL"),
+  //    std::make_pair(-1, "BOUSTROPHEDON")};
+  // std::vector<double> prunes{0.0, 0.01, 0.1, 1, 10};
+  // std::vector<std::string> boundTypes{"TRIVIAL", "DEFAULT"};
+  // for (const double &prune : prunes) {
+  //  for (const std::string &type : boundTypes) {
+  //    methods.push_back(std::make_pair(prune, type));
+  //  }
+  //}
 
   // Environment setup
   std::vector<std::string> envs{"four_light", "four_heavy", "five_light",
