@@ -78,7 +78,6 @@ void writeResults(const std::vector<double> &results,
 
 int main() {
   std::filesystem::path imacDir{"../../data/prelim_exps/lifelong_test"};
-  std::shared_ptr<IMac> imac{std::make_shared<IMac>(imacDir)};
 
   // The robot's field of view
   std::vector<GridCell> fov{GridCell{-1, -1}, GridCell{0, -1}, GridCell{1, -1},
