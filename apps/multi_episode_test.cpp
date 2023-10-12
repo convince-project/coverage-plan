@@ -40,63 +40,95 @@ void sampleIMacRuns() {
 }
 
 /**
+ * Creates the FixedIMacExecutor.
+ *
+ * @param inDir The IMac directory
+ * @param dim The x,y dimensions of the map
+ * @param numRuns The number of runs to read in
+ *
+ * @return exec The FixedIMacExecutor
+ */
+std::shared_ptr<FixedIMacExecutor>
+getExecutor(const std::filesystem::path &inDir, const std::pair<int, int> &dim,
+            const int &numRuns) {
+  std::vector<std::filesystem::path> runFiles{};
+  for (int r{1}; r <= numRuns; ++r) {
+    runFiles.push_back(inDir / ("run_" + std::to_string(r) + ".csv"));
+  }
+  return std::make_shared<FixedIMacExecutor>(runFiles, dim.first, dim.second);
+}
+
+/**
  * Write out the multi-episode results.
  *
- * @param results The results for each multi-episode repeat
+ * @param results The results for a given method
  * @param outFile The file to write out to
  */
-void writeResults(const std::vector<std::vector<double>> &results,
+void writeResults(const std::vector<double> &results,
                   const std::filesystem::path &outFile) {
   std::ofstream f{outFile};
   if (f.is_open()) {
-    for (const std::vector<double> &currentRes : results) {
-      for (const double &propCovered : currentRes) {
-        f << propCovered << ',';
-      }
-      f << '\n';
+    for (const double &propCovered : results) {
+      f << propCovered << ',';
     }
+    f << '\n';
   }
   f.close();
 }
 
 int main() {
-  sampleIMacRuns();
-  exit(1);
-  std::shared_ptr<IMac> imac{};
+  std::filesystem::path imacDir{"../../data/prelim_exps/lifelong_test"};
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(imacDir)};
 
   // The robot's field of view
-  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
-                            GridCell{0, 1}};
+  std::vector<GridCell> fov{GridCell{-1, -1}, GridCell{0, -1}, GridCell{1, -1},
+                            GridCell{-1, 0},  GridCell{1, 0},  GridCell{-1, 1},
+                            GridCell{0, 1},   GridCell{1, 1}};
 
   GridCell initPos{0, 0};
-  int timeBound{25};
-  int numRepeats{10};
-  int numEpisodes{100};
+  int timeBound{33};
+  int numEpisodes{300};
 
-  std::vector<std::vector<double>> results{};
+  std::vector<ParameterEstimate> methods{ParameterEstimate::posteriorSample,
+                                         ParameterEstimate::maximumLikelihood};
 
-  for (int i{0}; i < numRepeats; ++i) {
-    std::vector<double> currentRes{};
+  for (const ParameterEstimate &method : methods) {
+    std::vector<double> results{};
 
-    // Start from scratch for each repeat
-    std::shared_ptr<IMacExecutor> exec{std::make_shared<IMacExecutor>(imac)};
+    // Start from scratch for each method
+    // Episodes will be played in same order
+    std::shared_ptr<FixedIMacExecutor> exec{
+        getExecutor(imacDir, std::make_pair(5, 5), numEpisodes)};
 
     std::unique_ptr<POMDPCoverageRobot> robot{
-        std::make_unique<POMDPCoverageRobot>(initPos, timeBound, 4, 4, fov,
-                                             exec)};
+        std::make_unique<POMDPCoverageRobot>(initPos, timeBound, 5, 5, fov,
+                                             exec, nullptr, method)};
 
-    for (int episode{0}; episode < numEpisodes; ++episode) {
-      std::cout << "Repeat: " << i << "; Episode: " << episode << '\n';
+    for (int episode{1}; episode <= numEpisodes; ++episode) {
+      if (method == ParameterEstimate::posteriorSample) {
+        std::cout << "Method: Posterior Sampling; Episode: " << episode << '\n';
+      } else if (method == ParameterEstimate::posteriorMean) {
+        std::cout << "Method: Posterior Mean; Episode: " << episode << '\n';
+      } else if (method == ParameterEstimate::maximumLikelihood) {
+        std::cout << "Method: Maximum Likelihood; Episode: " << episode << '\n';
+      }
 
       // Write output logs to dummy file
-      currentRes.push_back(
+      results.push_back(
           robot->runCoverageEpisode("/tmp/episodeVisited.csv").propCovered);
     }
 
-    results.push_back(currentRes);
+    if (method == ParameterEstimate::posteriorSample) {
+      writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
+                            "posterior_sample_results.csv");
+    } else if (method == ParameterEstimate::posteriorMean) {
+      writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
+                            "posterior_mean_results.csv");
+    } else if (method == ParameterEstimate::maximumLikelihood) {
+      writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
+                            "maximum_likelihood_results.csv");
+    }
   }
-
-  writeResults(results, "../../data/results/multiEpisodeTestResults.csv");
 
   return 0;
 }
