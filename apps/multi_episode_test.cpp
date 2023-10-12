@@ -53,7 +53,7 @@ getExecutor(const std::filesystem::path &inDir, const std::pair<int, int> &dim,
             const int &numRuns) {
   std::vector<std::filesystem::path> runFiles{};
   for (int r{1}; r <= numRuns; ++r) {
-    runFiles.push_back(inDir / ("run_" + std::to_string(r) + ".csv"));
+    runFiles.push_back(inDir / ("episode_" + std::to_string(r) + ".csv"));
   }
   return std::make_shared<FixedIMacExecutor>(runFiles, dim.first, dim.second);
 }
