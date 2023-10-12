@@ -131,6 +131,10 @@ public:
    * @param yDim The y dimension of the map
    * @param exec The IMacExecutor representing the environment
    * @param fov The robot's FOV as a vector of relative grid cells
+   * @param groundTruthIMac The ground truth IMac instance (if we don't want to
+   * use BiMac)
+   * @param estimationType The type of parameter estimation to use for IMac
+   * instance for episode
    * @param useWallPointTerm If true, we use the wall point term that
    * appears in the reference implementation, but not the relevant papers.
    */
@@ -139,9 +143,11 @@ public:
                                 const std::vector<GridCell> &fov,
                                 std::shared_ptr<IMacExecutor> exec,
                                 std::shared_ptr<IMac> groundTruthIMac = nullptr,
+                                const ParameterEstimate &estimationType =
+                                    ParameterEstimate::posteriorSample,
                                 bool useWallPointTerm = true)
       : POMDPCoverageRobot(currentLoc, timeBound, xDim, yDim, fov, exec,
-                           groundTruthIMac),
+                           groundTruthIMac, estimationType),
         _useWallPointTerm{useWallPointTerm} {}
 };
 

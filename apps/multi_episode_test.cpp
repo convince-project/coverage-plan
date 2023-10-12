@@ -3,6 +3,7 @@
  *
  * @author Charlie Street
  */
+#include "coverage_plan/mod/fixed_imac_executor.h"
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
@@ -18,53 +19,24 @@
 #include <vector>
 
 /**
- * Create a random IMac instance for this example.
- *
- * @return imac A shared pointer to an IMac instance
+ * Write 300 IMacExecutor episodes for episode
  */
-std::shared_ptr<IMac> createIMac() {
-  Eigen::MatrixXd entryMatrix{4, 4};
-  Eigen::MatrixXd exitMatrix{4, 4};
-  Eigen::MatrixXd initialBelief{4, 4};
+void sampleIMacRuns() {
+  std::filesystem::path imacDir{"../../data/prelim_exps/lifelong_test"};
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(imacDir)};
+  std::unique_ptr<IMacExecutor> exec{std::make_unique<IMacExecutor>(imac)};
 
-  int numSet{0};
-  const int staticObsLimit{2};
-  const int staticFreeLimit{10};
-  const int semiStaticLimit{12};
+  int numEpisodes{300};
+  int timeBound{33};
 
-  // Random order of cells on grid map
-  std::vector<GridCell> cells{};
-  for (int x{0}; x < 4; ++x) {
-    for (int y{0}; y < 4; ++y) {
-      cells.push_back(GridCell{x, y});
+  for (int run{1}; run <= numEpisodes; ++run) {
+    std::cout << "Generating run " << run << "/" << numEpisodes << "\n";
+    exec->restart(std::vector<IMacObservation>{});
+    for (int t{1}; t <= timeBound; ++t) {
+      exec->updateState(std::vector<IMacObservation>{});
     }
+    exec->logMapDynamics(imacDir / ("episode_" + std::to_string(run) + ".csv"));
   }
-  std::mt19937_64 rng{SeedHelpers::genRandomDeviceSeed()};
-  std::shuffle(std::begin(cells), std::end(cells), rng);
-
-  // Have to use y,x to match coordinate systems up
-  for (const GridCell &cell : cells) {
-    if (numSet < staticObsLimit) {
-      entryMatrix(cell.y, cell.x) = 1.0;
-      exitMatrix(cell.y, cell.x) = 0.0;
-      initialBelief(cell.y, cell.x) = 1.0;
-    } else if (numSet < staticFreeLimit) {
-      entryMatrix(cell.y, cell.x) = 0.0;
-      exitMatrix(cell.y, cell.x) = 1.0;
-      initialBelief(cell.y, cell.x) = 0.0;
-    } else if (numSet < semiStaticLimit) {
-      entryMatrix(cell.y, cell.x) = 0.05;
-      exitMatrix(cell.y, cell.x) = 0.05;
-      initialBelief(cell.y, cell.x) = 0.3;
-    } else {
-      entryMatrix(cell.y, cell.x) = 0.5;
-      exitMatrix(cell.y, cell.x) = 0.5;
-      initialBelief(cell.y, cell.x) = 0.5;
-    }
-    ++numSet;
-  }
-
-  return std::make_shared<IMac>(entryMatrix, exitMatrix, initialBelief);
 }
 
 /**
@@ -88,8 +60,9 @@ void writeResults(const std::vector<std::vector<double>> &results,
 }
 
 int main() {
-
-  std::shared_ptr<IMac> imac{createIMac()};
+  sampleIMacRuns();
+  exit(1);
+  std::shared_ptr<IMac> imac{};
 
   // The robot's field of view
   std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},

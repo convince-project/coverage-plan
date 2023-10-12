@@ -89,7 +89,7 @@ std::shared_ptr<CoverageRobot> getRobot(
 
   return std::make_shared<EnergyFunctionalCoverageRobot>(
       GridCell{0, 0}, timeBound, dim.first, dim.second, fov, exec, nullptr,
-      wallPointsTerm);
+      ParameterEstimate::posteriorSample, wallPointsTerm);
 }
 
 /**

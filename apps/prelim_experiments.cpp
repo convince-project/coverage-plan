@@ -119,7 +119,8 @@ getRobot(const double &pruningConstant, const std::string &boundType,
   } else { // POMDP Coverage Robot
     robot = std::make_shared<POMDPCoverageRobot>(
         GridCell{0, 0}, timeBound, dim.first, dim.second, fov, exec,
-        groundTruthIMac, boundType, pruningConstant);
+        groundTruthIMac, ParameterEstimate::posteriorSample, boundType,
+        pruningConstant);
   }
 
   return robot;

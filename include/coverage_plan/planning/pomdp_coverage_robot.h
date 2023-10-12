@@ -114,6 +114,8 @@ public:
    * @param fov The robot's FOV as a vector of relative grid cells
    * @param groundTruthIMac The ground truth IMac instance (if we don't want to
    * use BiMac)
+   * @param estimationType The type of parameter estimation to use for IMac
+   * instance for episode
    * @param boundType The type of upper and lower bounds to use
    * @param pruningConstant The DESPOT pruning constant
    * @param numScenarios The number of simulated scenarios in DESPOT
@@ -122,10 +124,13 @@ public:
                      int yDim, const std::vector<GridCell> &fov,
                      std::shared_ptr<IMacExecutor> exec,
                      std::shared_ptr<IMac> groundTruthIMac = nullptr,
+                     const ParameterEstimate &estimationType =
+                         ParameterEstimate::posteriorSample,
                      std::string boundType = "DEFAULT",
-                     const double &pruningConstant = 0.01,
+                     const double &pruningConstant = 0.1,
                      const int &numScenarios = 500)
-      : CoverageRobot{currentLoc, timeBound, xDim, yDim, groundTruthIMac},
+      : CoverageRobot{currentLoc, timeBound,       xDim,
+                      yDim,       groundTruthIMac, estimationType},
         _exec{exec}, _fov{fov}, _latestObs{}, _planner{nullptr},
         _pomdp{nullptr}, _world{nullptr}, _belief{nullptr}, _solver{nullptr},
         _boundType{boundType}, _pruningConstant{pruningConstant},

@@ -79,12 +79,17 @@ public:
    * @param fov The robot's FOV as a vector of relative grid cells
    * @param groundTruthIMac The ground truth IMac instance (if we don't want to
    * use BiMac)
+   * @param estimationType The type of parameter estimation to use for IMac
+   * instance for episode
    */
   RandomCoverageRobot(const GridCell &currentLoc, int timeBound, int xDim,
                       int yDim, std::shared_ptr<CoverageWorld> world,
                       const std::vector<GridCell> &fov,
-                      std::shared_ptr<IMac> groundTruthIMac = nullptr)
-      : CoverageRobot{currentLoc, timeBound, xDim, yDim, groundTruthIMac},
+                      std::shared_ptr<IMac> groundTruthIMac = nullptr,
+                      const ParameterEstimate &estimationType =
+                          ParameterEstimate::posteriorSample)
+      : CoverageRobot{currentLoc, timeBound,       xDim,
+                      yDim,       groundTruthIMac, estimationType},
         _world{world}, _fov{fov} {}
 
   /**

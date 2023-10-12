@@ -24,6 +24,16 @@
 #include <vector>
 
 /**
+ * Enum for different types of parameter estimation the robot can choose for
+ * BiMac.
+ */
+enum class ParameterEstimate {
+  posteriorSample,
+  maximumLikelihood,
+  posteriorMean
+};
+
+/**
  * Struct for storing the results of coverage planning.
  *
  * Members:
@@ -48,6 +58,9 @@ struct CoverageResult {
  * _xDim: The x dimension of the map
  * _yDim: The y dimension of the map
  * _bimac: The BIMac model the robot is learning
+ * _groundTruthIMac: The ground truth IMac model, if specified
+ * _estimationType: The type of parameter estimation for each episode's IMac
+ * instance
  */
 class CoverageRobot {
 private:
@@ -57,6 +70,7 @@ private:
   int _timeBound{};
   std::shared_ptr<BIMac> _bimac{};
   std::shared_ptr<IMac> _groundTruthIMac{};
+  const ParameterEstimate _estimationType{};
 
   /**
    * Function gets the IMac instance to be used for an episode.
@@ -175,13 +189,17 @@ public:
    * @param yDim The length of the y dimension of the environment
    * @param groundTruthIMac The ground truth IMac (if we want to test planning
    * without BiMac)
+   * @param estimationType The type of parameter estimation for each episode's
+   * IMac instance
    */
   CoverageRobot(const GridCell &initLoc, int timeBound, int xDim, int yDim,
-                std::shared_ptr<IMac> groundTruthIMac = nullptr)
+                std::shared_ptr<IMac> groundTruthIMac = nullptr,
+                const ParameterEstimate &estimationType =
+                    ParameterEstimate::posteriorSample)
       : _initLoc{initLoc}, _currentLoc{initLoc}, _visited{},
         _timeBound{timeBound}, _xDim{xDim}, _yDim{yDim},
-        _bimac{std::make_shared<BIMac>(xDim, yDim)}, _groundTruthIMac{
-                                                         groundTruthIMac} {}
+        _bimac{std::make_shared<BIMac>(xDim, yDim)},
+        _groundTruthIMac{groundTruthIMac}, _estimationType{estimationType} {}
 
   /**
    * Wrapper around _planFn which fills in the gaps from class members.

@@ -186,8 +186,17 @@ TEST_CASE("Tests for POMDPCoverageRobot default parameters",
 
   std::shared_ptr<IMacExecutor> exec{std::make_shared<IMacExecutor>(imac)};
 
-  POMDPCoverageRobot robot{GridCell{1, 0}, 5,    5,         5,   fov,
-                           exec,           imac, "TRIVIAL", 1.0, 100};
+  POMDPCoverageRobot robot{GridCell{1, 0},
+                           5,
+                           5,
+                           5,
+                           fov,
+                           exec,
+                           imac,
+                           ParameterEstimate::posteriorSample,
+                           "TRIVIAL",
+                           1.0,
+                           100};
   std::cout << "Bound Setting Test: Bounds should be trivial.\n";
   std::cout << "Bound Setting Test: Reg constant Should be 1.0.\n";
   std::cout << "Bound Setting Test: Num scenarios should be 100.\n";

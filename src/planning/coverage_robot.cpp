@@ -21,7 +21,17 @@
  */
 std::shared_ptr<IMac> CoverageRobot::_getIMacInstanceForEpisode() {
   if (this->_groundTruthIMac == nullptr) {
-    return this->_bimac->posteriorSample();
+    switch (this->_estimationType) {
+    case ParameterEstimate::posteriorSample:
+      return this->_bimac->posteriorSample();
+    case ParameterEstimate::maximumLikelihood:
+      return this->_bimac->mle();
+    case ParameterEstimate::posteriorMean:
+      return this->_bimac->posteriorMean();
+    default:
+      return nullptr;
+    }
+
   } else {
     return this->_groundTruthIMac;
   }

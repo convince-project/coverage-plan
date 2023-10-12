@@ -88,7 +88,8 @@ std::shared_ptr<CoverageRobot> getRobot(
 
   return std::make_shared<POMDPCoverageRobot>(
       GridCell{0, 0}, timeBound, dim.first, dim.second, fov, exec,
-      groundTruthIMac, "DEFAULT", 0.01, numScenarios);
+      groundTruthIMac, ParameterEstimate::posteriorSample, "DEFAULT", 0.1,
+      numScenarios);
 }
 
 /**
