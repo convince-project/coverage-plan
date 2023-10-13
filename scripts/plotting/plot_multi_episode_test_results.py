@@ -57,7 +57,32 @@ def plot_results(results_file):
     plt.show()
 
 
+def plot_imac_errors(results_file):
+    """Plot the imac errors, i.e. the gap between our estimate and the ground truth.
+
+    Args:
+        results: The csv file with all the results
+    """
+    with open(results_file, "r") as csv_in:
+        csv_reader = csv.reader(csv_in, delimiter=",")
+
+        for row in csv_reader:
+            results = [float(x) for x in row[:-1]]
+
+    # x axis of our plot
+    episodes = list(range(0, 301))
+
+    # main line of our plot
+    plt.plot(episodes, results, linewidth=3.0)
+
+    plt.xlabel("Episode")
+    plt.ylabel("Absolute Error")
+    plt.xlim((0, 300))
+    plt.show()
+
+
 if __name__ == "__main__":
-    plot_results(
-        "/home/charlie/work/coverage-plan/data/results/prelim_exps/lifelong_test/maximum_likelihood_results.csv"
+    plot_imac_errors(
+        "/home/charlie/work/coverage-plan/data/results/prelim_exps/"
+        + "lifelong_test/posterior_sample_imac_errors.csv"
     )
