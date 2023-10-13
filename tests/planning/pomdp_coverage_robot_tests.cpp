@@ -56,6 +56,50 @@ TEST_CASE("Tests for POMDPCoverageRobot setup cleanup, and makeObservations",
   REQUIRE(robot.makeObservations().size() == 0);
 }
 
+TEST_CASE("Tests for POMDPCoverageRobot checking correct observations",
+          "[POMDPCoverageRobot::absoluteObservations]") {
+  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
+                            GridCell{0, 1}};
+
+  Eigen::MatrixXd entry{Eigen::MatrixXd::Zero(5, 5)};
+  Eigen::MatrixXd exit{Eigen::MatrixXd::Ones(5, 5)};
+  Eigen::MatrixXd init{Eigen::MatrixXd::Zero(5, 5)};
+
+  std::shared_ptr<IMac> imac{std::make_shared<IMac>(entry, exit, init)};
+
+  std::shared_ptr<IMacExecutor> exec{std::make_shared<IMacExecutor>(imac)};
+
+  POMDPCoverageRobot robot{GridCell{2, 2}, 5, 5, 5, fov, exec};
+
+  // A lot of allocating goes on here
+  robot.episodeSetup(GridCell{2, 2}, 0, 5, imac);
+
+  ActionOutcome outcome{robot.executeAction(Action::right)};
+  REQUIRE(outcome.success);
+  REQUIRE(outcome.action == Action::right);
+  REQUIRE(outcome.location.x == 3);
+  REQUIRE(outcome.location.y == 2);
+
+  std::vector<IMacObservation> obs{robot.makeObservations()};
+
+  REQUIRE(obs.size() == 4);
+  REQUIRE(obs.at(0).cell == GridCell{2, 2});
+  REQUIRE(obs.at(0).occupied == 0);
+  REQUIRE(obs.at(1).cell == GridCell{4, 2});
+  REQUIRE(obs.at(1).occupied == 0);
+  REQUIRE(obs.at(2).cell == GridCell{3, 1});
+  REQUIRE(obs.at(2).occupied == 0);
+  REQUIRE(obs.at(3).cell == GridCell{3, 3});
+  REQUIRE(obs.at(3).occupied == 0);
+
+  // Basically just need to ensure nothing breaks here
+  // And that valgrind is vaguely happy
+  robot.episodeCleanup();
+
+  // Observation vector should have been reset after cleanup
+  REQUIRE(robot.makeObservations().size() == 0);
+}
+
 TEST_CASE("Tests for POMDPCoverageRobot executeAction with failure",
           "[POMDPCoverageRobot-executeAction-fail]") {
 
