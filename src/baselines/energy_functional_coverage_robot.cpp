@@ -105,7 +105,7 @@ Action EnergyFunctionalCoverageRobot::_planFn(
   // Get hash map of neighbouring observations
   std::map<GridCell, int> obsMap{};
   for (const IMacObservation &imacObs : currentObs) {
-    obsMap[currentLoc + imacObs.cell] = imacObs.occupied;
+    obsMap[imacObs.cell] = imacObs.occupied;
   }
 
   // Step 1: Get all neighours not currently occluded or visited

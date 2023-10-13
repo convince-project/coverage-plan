@@ -25,7 +25,7 @@ Action BoustrophedonCoverageRobot::_planFn(
   // Get hash map of neighbouring observations
   std::map<GridCell, int> obsMap{};
   for (const IMacObservation &imacObs : currentObs) {
-    obsMap[currentLoc + imacObs.cell] = imacObs.occupied;
+    obsMap[imacObs.cell] = imacObs.occupied;
   }
 
   // Priority of actions: up,down,right,left,wait

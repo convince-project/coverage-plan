@@ -60,6 +60,8 @@ ActionOutcome POMDPCoverageRobot::_executeFn(const GridCell &currentLoc,
   // Log current transition
   this->_printCurrentTransition(currentLoc, outcome);
 
+  // BiMac requires absolute observations, not relative!
+  obsInfo = Observation::fromObsType(obs, this->_fov, nextLoc);
   // Add observation to be picked up by makeObservations
   this->_latestObs = std::get<0>(obsInfo);
 
