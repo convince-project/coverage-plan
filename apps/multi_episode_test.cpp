@@ -59,6 +59,47 @@ getExecutor(const std::filesystem::path &inDir, const std::pair<int, int> &dim,
 }
 
 /**
+ * Compute the error between an estimated IMac and a ground truth IMac.
+ *
+ * The error is computed as the sum of absolute errors in parameters.
+ * This function has been copied from bimac_learning_experiment.cpp
+ *
+ * @param estimate The estimated IMac instance
+ * @param groundTruth The ground truth IMac instance
+ *
+ * @return error The sum of absolute errors
+ */
+double computeError(std::shared_ptr<IMac> estimate,
+                    std::shared_ptr<IMac> groundTruth) {
+
+  double error{0};
+
+  Eigen::MatrixXd estimateEntry{estimate->getEntryMatrix()};
+  Eigen::MatrixXd groundTruthEntry{groundTruth->getEntryMatrix()};
+  Eigen::MatrixXd estimateExit{estimate->getExitMatrix()};
+  Eigen::MatrixXd groundTruthExit{groundTruth->getExitMatrix()};
+  Eigen::MatrixXd estimateInit{estimate->getInitialBelief()};
+  Eigen::MatrixXd groundTruthInit{groundTruth->getInitialBelief()};
+
+  for (int i{0}; i < estimateEntry.rows(); ++i) {
+    for (int j{0}; j < estimateEntry.cols(); ++j) {
+      error += abs(estimateInit(i, j) - groundTruthInit(i, j));
+
+      // If a part of the Markov chain isn't reachable, ignore it
+      if (!(groundTruthExit(i, j) == 0.0 && groundTruthInit(i, j) == 1.0)) {
+        error += abs(estimateEntry(i, j) - groundTruthEntry(i, j));
+      }
+
+      if (!(groundTruthEntry(i, j) == 0.0 && groundTruthInit(i, j) == 0.0)) {
+        error += abs(estimateExit(i, j) - groundTruthExit(i, j));
+      }
+    }
+  }
+
+  return error;
+}
+
+/**
  * Write out the multi-episode results.
  *
  * @param results The results for a given method
@@ -78,6 +119,7 @@ void writeResults(const std::vector<double> &results,
 
 int main() {
   std::filesystem::path imacDir{"../../data/prelim_exps/lifelong_test"};
+  std::shared_ptr<IMac> groundTruthImac{std::make_shared<IMac>(imacDir)};
 
   // The robot's field of view
   std::vector<GridCell> fov{GridCell{-1, -1}, GridCell{0, -1}, GridCell{1, -1},
@@ -93,6 +135,7 @@ int main() {
 
   for (const ParameterEstimate &method : methods) {
     std::vector<double> results{};
+    std::vector<double> imacErrors{};
 
     // Start from scratch for each method
     // Episodes will be played in same order
@@ -102,6 +145,10 @@ int main() {
     std::unique_ptr<POMDPCoverageRobot> robot{
         std::make_unique<POMDPCoverageRobot>(initPos, timeBound, 5, 5, fov,
                                              exec, nullptr, method)};
+
+    // Get initial error
+    std::shared_ptr<IMac> estimate{robot->getBIMac()->mle()};
+    imacErrors.push_back(computeError(estimate, groundTruthImac));
 
     for (int episode{1}; episode <= numEpisodes; ++episode) {
       if (method == ParameterEstimate::posteriorSample) {
@@ -115,17 +162,27 @@ int main() {
       // Write output logs to dummy file
       results.push_back(
           robot->runCoverageEpisode("/tmp/episodeVisited.csv").propCovered);
+
+      // Get current iMac error using BiMac MLE estimate
+      std::shared_ptr<IMac> estimate{robot->getBIMac()->mle()};
+      imacErrors.push_back(computeError(estimate, groundTruthImac));
     }
 
     if (method == ParameterEstimate::posteriorSample) {
       writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
                             "posterior_sample_results.csv");
+      writeResults(imacErrors, "../../data/results/prelim_exps/lifelong_test/"
+                               "posterior_sample_imac_errors.csv");
     } else if (method == ParameterEstimate::posteriorMean) {
       writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
                             "posterior_mean_results.csv");
+      writeResults(imacErrors, "../../data/results/prelim_exps/lifelong_test/"
+                               "posterior_mean_imac_errors.csv");
     } else if (method == ParameterEstimate::maximumLikelihood) {
       writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
                             "maximum_likelihood_results.csv");
+      writeResults(imacErrors, "../../data/results/prelim_exps/lifelong_test/"
+                               "maximum_likelihood_imac_errors.csv");
     }
   }
 
