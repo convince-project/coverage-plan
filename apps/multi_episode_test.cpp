@@ -117,7 +117,50 @@ void writeResults(const std::vector<double> &results,
   f.close();
 }
 
-int main() {
+void runGroundTruth() {
+  std::filesystem::path imacDir{"../../data/prelim_exps/lifelong_test"};
+  std::shared_ptr<IMac> groundTruthImac{std::make_shared<IMac>(imacDir)};
+
+  // The robot's field of view
+  std::vector<GridCell> fov{GridCell{-1, -1}, GridCell{0, -1}, GridCell{1, -1},
+                            GridCell{-1, 0},  GridCell{1, 0},  GridCell{-1, 1},
+                            GridCell{0, 1},   GridCell{1, 1}};
+
+  GridCell initPos{0, 0};
+  int timeBound{33};
+  int numEpisodes{300};
+
+  std::vector<ParameterEstimate> methods{ParameterEstimate::posteriorSample,
+                                         ParameterEstimate::maximumLikelihood};
+
+  for (const ParameterEstimate &method : methods) {
+    std::vector<double> results{};
+    std::vector<double> imacErrors{};
+
+    // Start from scratch for each method
+    // Episodes will be played in same order
+    std::shared_ptr<FixedIMacExecutor> exec{
+        getExecutor(imacDir, std::make_pair(5, 5), numEpisodes)};
+
+    std::unique_ptr<POMDPCoverageRobot> robot{
+        std::make_unique<POMDPCoverageRobot>(initPos, timeBound, 5, 5, fov,
+                                             exec, groundTruthImac)};
+
+    // Get initial error
+
+    for (int episode{1}; episode <= numEpisodes; ++episode) {
+      std::cout << "Method: Ground Truth; Episode: " << episode << '\n';
+
+      // Write output logs to dummy file
+      results.push_back(
+          robot->runCoverageEpisode("/tmp/episodeVisited.csv").propCovered);
+    }
+    writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
+                          "ground_truth_results.csv");
+  }
+}
+
+void runDifferentEstimates() {
   std::filesystem::path imacDir{"../../data/prelim_exps/lifelong_test"};
   std::shared_ptr<IMac> groundTruthImac{std::make_shared<IMac>(imacDir)};
 
@@ -185,6 +228,9 @@ int main() {
                                "maximum_likelihood_imac_errors.csv");
     }
   }
+}
 
+int main() {
+  runGroundTruth();
   return 0;
 }

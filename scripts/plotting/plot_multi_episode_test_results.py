@@ -82,7 +82,12 @@ def plot_imac_errors(results_file):
 
 
 if __name__ == "__main__":
-    plot_imac_errors(
+    # plot_imac_errors(
+    #    "/home/charlie/work/coverage-plan/data/results/prelim_exps/"
+    #    + "lifelong_test/posterior_sample_imac_errors.csv"
+    # )
+
+    plot_results(
         "/home/charlie/work/coverage-plan/data/results/prelim_exps/"
-        + "lifelong_test/posterior_sample_imac_errors.csv"
+        + "lifelong_test/posterior_sample_results.csv"
     )
