@@ -8,6 +8,7 @@ Author: Charlie Street
 Owner: Charlie Street
 """
 
+from scipy.stats import mannwhitneyu
 import matplotlib.pyplot as plt
 import numpy as np
 import csv
@@ -16,6 +17,24 @@ import matplotlib
 
 plt.rcParams["pdf.fonttype"] = 42
 matplotlib.rcParams.update({"font.size": 36})
+
+
+def read_results(results_file):
+    """Read in results file.
+
+    Args:
+        results_file: The csv file with all the results
+
+    Return:
+        results: The results
+    """
+    with open(results_file, "r") as csv_in:
+        csv_reader = csv.reader(csv_in, delimiter=",")
+
+        for row in csv_reader:
+            results = [float(x) for x in row[:-1]]
+
+    return results
 
 
 def plot_results(results_file):
@@ -87,7 +106,71 @@ if __name__ == "__main__":
     #    + "lifelong_test/posterior_sample_imac_errors.csv"
     # )
 
-    plot_results(
+    # plot_results(
+    #    "/home/charlie/work/coverage-plan/data/results/prelim_exps/"
+    #    + "lifelong_test/posterior_sample_results.csv"
+    # )
+
+    # Get a rough idea of the means and medians
+    results_ps = read_results(
         "/home/charlie/work/coverage-plan/data/results/prelim_exps/"
         + "lifelong_test/posterior_sample_results.csv"
+    )
+
+    results_mle = read_results(
+        "/home/charlie/work/coverage-plan/data/results/prelim_exps/"
+        + "lifelong_test/maximum_likelihood_results.csv"
+    )
+
+    results_gt = read_results(
+        "/home/charlie/work/coverage-plan/data/results/prelim_exps/"
+        + "lifelong_test/ground_truth_results.csv"
+    )
+
+    print(
+        "POSTERIOR SAMPLE - MEAN: {}; MEDIAN: {}".format(
+            np.mean(results_ps), np.median(results_ps)
+        )
+    )
+
+    print(
+        "MAXIMUM LIKELIHOOD - MEAN: {}; MEDIAN: {}".format(
+            np.mean(results_mle), np.median(results_mle)
+        )
+    )
+
+    print(
+        "GROUND TRUTH - MEAN: {}; MEDIAN: {}".format(
+            np.mean(results_gt), np.median(results_gt)
+        )
+    )
+
+    print("BEST MEAN - GROUND TRUTH")
+    print(
+        "GROUND TRUTH > POSTERIOR SAMPLE: p={}".format(
+            mannwhitneyu(
+                results_gt,
+                results_ps,
+                alternative="greater",
+            )[1]
+        )
+    )
+    print(
+        "GROUND TRUTH > MAXIMUM LIKELIHOOD: p={}".format(
+            mannwhitneyu(
+                results_gt,
+                results_mle,
+                alternative="greater",
+            )[1]
+        )
+    )
+
+    print(
+        "MAXIMUM LIKELIHOOD > POSTERIOR SAMPLE: p={}".format(
+            mannwhitneyu(
+                results_mle,
+                results_ps,
+                alternative="greater",
+            )[1]
+        )
     )
