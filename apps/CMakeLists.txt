@@ -46,3 +46,7 @@ target_link_libraries(numScenariosTuning PUBLIC mod planning util)
 # Add executable for energy functional tuning
 add_executable(energyFunctionalTuning energy_functional_tuning.cpp)
 target_link_libraries(energyFunctionalTuning PUBLIC mod planning util baselines)
+
+# Add executable for checkpoint generator
+add_executable(lifelongTestCheckpointGenerator lifelong_test_checkpoint_generation.cpp)
+target_link_libraries(lifelongTestCheckpointGenerator PUBLIC mod planning util)
