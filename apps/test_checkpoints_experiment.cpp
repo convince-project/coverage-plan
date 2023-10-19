@@ -87,7 +87,7 @@ void runExperiments(const std::vector<std::shared_ptr<IMac>> &imacs,
 
     // Get run files, fixedIMacExecutor, and ground truth IMac model
     std::shared_ptr<FixedIMacExecutor> exec{
-        getExecutor(inDir, "five_heavy", std::make_pair(5, 5), numRuns)};
+        getExecutor(inDir, "five_semi_static", std::make_pair(5, 5), numRuns)};
 
     // Get the robot object
     std::shared_ptr<CoverageRobot> robot{std::make_shared<POMDPCoverageRobot>(

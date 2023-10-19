@@ -105,6 +105,15 @@ void sampleRuns(std::shared_ptr<IMac> imac, const std::filesystem::path &dir,
 }
 
 int main() {
+
+  // Five by five w/ lots of semi-static obstacles
+  std::cout << "Five by five w/ lots of semi-static s\n";
+  std::shared_ptr<IMac> fiveSemi{createIMac(5, 5, 0.4, 0.0)};
+  std::string fiveSemiDir{"../../data/prelim_exps/five_semi_static"};
+  fiveSemi->writeIMac(fiveSemiDir);
+  sampleRuns(fiveSemi, fiveSemiDir, 40, 10);
+  exit(1);
+
   // Four by four w/ light dynamics
   std::cout << "Four by four w/ light dynamics\n";
   std::shared_ptr<IMac> fourLight{createIMac(4, 4, 0.1, 0.1)};

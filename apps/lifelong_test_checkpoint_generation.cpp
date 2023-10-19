@@ -70,7 +70,8 @@ void checkpointIMac(const ParameterEstimate &type, const int &episode,
 }
 
 void runiMacCheckpointer() {
-  std::filesystem::path imacDir{"../../data/prelim_exps/lifelong_test"};
+  std::filesystem::path imacDir{
+      "../../data/prelim_exps/lifelong_test/more_semi_static"};
   std::filesystem::path baseDir{"../../data/prelim_exps/checkpoints"};
 
   // The robot's field of view
