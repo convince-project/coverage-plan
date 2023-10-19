@@ -53,7 +53,7 @@ void checkpointIMac(const ParameterEstimate &type, const int &episode,
   std::filesystem::path imacDir{baseDir};
 
   if (type == ParameterEstimate::posteriorSample) {
-    imacDir /= "posterior_sample";
+    imacDir /= "posterior_sampling";
   } else if (type == ParameterEstimate::maximumLikelihood) {
     imacDir /= "maximum_likelihood";
   }
