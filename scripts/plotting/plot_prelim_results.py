@@ -77,6 +77,13 @@ def set_box_colors(bp):
     plt.setp(bp["whiskers"][9], color="tab:orange", linewidth=8.0)
     plt.setp(bp["medians"][4], color="tab:orange", linewidth=8.0)
 
+    plt.setp(bp["boxes"][5], color="tab:olive", linewidth=8.0)
+    plt.setp(bp["caps"][10], color="tab:olive", linewidth=8.0)
+    plt.setp(bp["caps"][11], color="tab:olive", linewidth=8.0)
+    plt.setp(bp["whiskers"][10], color="tab:olive", linewidth=8.0)
+    plt.setp(bp["whiskers"][11], color="tab:olive", linewidth=8.0)
+    plt.setp(bp["medians"][5], color="tab:olive", linewidth=8.0)
+
 
 def plot_results(results, env):
     """Plot the results for a given environment.
@@ -88,14 +95,21 @@ def plot_results(results, env):
     print("Plotting results")
 
     results_list = []
-    methods = ["POMDP", "GREEDY", "RANDOM", "ENERGY", "BOUSTROPHEDON"]
+    methods = [
+        "POMDP",
+        "GREEDY",
+        "RANDOM",
+        "ENERGY",
+        "BOUSTROPHEDON",
+        "BOUSTROPHEDON_OFFLINE",
+    ]
     for method in methods:
         results_list.append(results[method][env])
 
     box = plt.boxplot(
         results_list,
         whis=[0, 100],
-        positions=[1, 2, 3, 4, 5],
+        positions=[1, 2, 3, 4, 5, 6],
         widths=0.6,
     )
     set_box_colors(box)
@@ -110,7 +124,7 @@ def plot_results(results, env):
     )
     plt.ylabel("Proportion Covered")
 
-    plt.xticks([1, 2, 3, 4, 5], methods)
+    plt.xticks([1, 2, 3, 4, 5, 6], methods)
 
     plt.xlabel("Method", fontsize=40)
     plt.show()
@@ -125,7 +139,14 @@ def plot_combined_results(results):
     print("Plotting results")
 
     results_list = []
-    methods = ["POMDP", "GREEDY", "RANDOM", "ENERGY", "BOUSTROPHEDON"]
+    methods = [
+        "POMDP",
+        "GREEDY",
+        "RANDOM",
+        "ENERGY",
+        "BOUSTROPHEDON",
+        "BOUSTROPHEDON_OFFLINE",
+    ]
     for method in methods:
         combined_results = []
         for env in results[method]:
@@ -135,7 +156,7 @@ def plot_combined_results(results):
     box = plt.boxplot(
         results_list,
         whis=[0, 100],
-        positions=[1, 2, 3, 4, 5],
+        positions=[1, 2, 3, 4, 5, 6],
         widths=0.6,
     )
     set_box_colors(box)
@@ -149,7 +170,7 @@ def plot_combined_results(results):
         labelsize=28,
     )
     plt.ylabel("Proportion Covered")
-    plt.xticks([1, 2, 3, 4, 5], methods)
+    plt.xticks([1, 2, 3, 4, 5, 6], methods)
     plt.xlabel("Method", fontsize=40)
     plt.show()
 
@@ -160,7 +181,14 @@ def plot_statistics(results):
     Args:
         results: method to env to results list
     """
-    for method in ["POMDP", "GREEDY", "RANDOM", "ENERGY", "BOUSTROPHEDON"]:
+    for method in [
+        "POMDP",
+        "GREEDY",
+        "RANDOM",
+        "ENERGY",
+        "BOUSTROPHEDON",
+        "BOUSTROPHEDON_OFFLINE",
+    ]:
         results_for_params = []
         for env in results[method]:
             results_for_params += results[method][env]
@@ -184,7 +212,14 @@ def plot_stat_sig(results):
         results: method to env to results list
     """
     combined = {}
-    methods = ["POMDP", "GREEDY", "RANDOM", "ENERGY", "BOUSTROPHEDON"]
+    methods = [
+        "POMDP",
+        "GREEDY",
+        "RANDOM",
+        "ENERGY",
+        "BOUSTROPHEDON",
+        "BOUSTROPHEDON_OFFLINE",
+    ]
     for method in methods:
         results_for_params = []
         for env in results[method]:
@@ -203,7 +238,7 @@ def plot_stat_sig(results):
 
 
 if __name__ == "__main__":
-    results_dir = os.path.abspath("../../data/results/prelim_exps")
+    results_dir = os.path.abspath("../../data/results/prelim_exps/lower_time_bounds")
 
     results_files = {}
     results_files["POMDP"] = os.path.join(
@@ -214,6 +249,9 @@ if __name__ == "__main__":
     results_files["ENERGY"] = os.path.join(results_dir, "ENERGY_FUNCTIONAL_results.csv")
     results_files["BOUSTROPHEDON"] = os.path.join(
         results_dir, "BOUSTROPHEDON_results.csv"
+    )
+    results_files["BOUSTROPHEDON_OFFLINE"] = os.path.join(
+        results_dir, "BOUSTROPHEDON_OFFLINE_results.csv"
     )
 
     results = collect_results(results_files)
