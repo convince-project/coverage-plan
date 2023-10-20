@@ -48,7 +48,7 @@ Action BoustrophedonCoverageRobot::_planFn(
             "observed\n";
     }
     // Is the successor location *currently* free
-    bool freeSpace{obsMap[nextLoc] == 0};
+    bool freeSpace{obsMap[nextLoc] == 0 || this->_waitForObstacles};
 
     // Have we covered the successor location?
     bool notCovered{std::count(visited.begin(), visited.end(), nextLoc) == 0};

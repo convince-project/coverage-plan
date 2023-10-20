@@ -6,6 +6,7 @@
  */
 
 #include "coverage_plan/baselines/boustrophedon_coverage_robot.h"
+#include "coverage_plan/mod/fixed_imac_executor.h"
 #include "coverage_plan/mod/imac.h"
 #include "coverage_plan/mod/imac_executor.h"
 #include "coverage_plan/planning/action.h"
@@ -88,9 +89,9 @@ TEST_CASE("Test for Boustrophedon when obstacle present",
 
 TEST_CASE("Test for Boustrophedon with dynamic obstacle",
           "[BoustrophedonCoverageRobot::dynamicObstacle]") {
-  Eigen::MatrixXd entry{Eigen::MatrixXd::Zero(2, 1)};
-  Eigen::MatrixXd exit{Eigen::MatrixXd::Ones(2, 1)};
-  Eigen::MatrixXd init{Eigen::MatrixXd::Zero(2, 1)};
+  Eigen::MatrixXd entry{Eigen::MatrixXd::Zero(3, 3)};
+  Eigen::MatrixXd exit{Eigen::MatrixXd::Ones(3, 3)};
+  Eigen::MatrixXd init{Eigen::MatrixXd::Zero(3, 3)};
   init(1, 0) = 1;
 
   std::shared_ptr<IMac> imac{std::make_shared<IMac>(entry, exit, init)};
@@ -100,16 +101,18 @@ TEST_CASE("Test for Boustrophedon with dynamic obstacle",
                             GridCell{0, 1}};
 
   std::unique_ptr<BoustrophedonCoverageRobot> robot{
-      std::make_unique<BoustrophedonCoverageRobot>(GridCell{0, 0}, 2, 1, 2, fov,
+      std::make_unique<BoustrophedonCoverageRobot>(GridCell{0, 0}, 9, 3, 3, fov,
                                                    exec)};
 
   CoverageResult result{robot->runCoverageEpisode("/tmp/dynamicObstacle.csv")};
-  REQUIRE_THAT(result.propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
-  REQUIRE(result.endTime == 2);
+  REQUIRE_THAT(result.propCovered,
+               Catch::Matchers::WithinRel(6.0 / 9.0, 0.001));
+  REQUIRE(result.endTime == 9);
 
   // Check the path
   std::ifstream visitedFile{"/tmp/dynamicObstacle.csv"};
-  std::vector<std::string> expected{"0,0", "0,0", "0,1"};
+  std::vector<std::string> expected{"0,0", "1,0", "1,1", "1,2", "0,2",
+                                    "0,1", "0,1", "0,1", "0,1", "0,1"};
   std::string currentLine{};
   int lineNum{0};
   while (getline(visitedFile, currentLine)) {
@@ -117,5 +120,38 @@ TEST_CASE("Test for Boustrophedon with dynamic obstacle",
     ++lineNum;
   }
   visitedFile.close();
-  REQUIRE(lineNum == 3);
+  REQUIRE(lineNum == 10);
+}
+
+TEST_CASE("Test for Boustrophedon with waitForObstacles",
+          "[BoustrophedonCoverageRobot::waitForObstacle]") {
+  std::shared_ptr<FixedIMacExecutor> exec{std::make_shared<FixedIMacExecutor>(
+      std::vector<std::filesystem::path>{
+          "../../data/tests/boustrophedonIMacRun.csv"},
+      3, 3)};
+
+  std::vector<GridCell> fov{GridCell{-1, 0}, GridCell{1, 0}, GridCell{0, -1},
+                            GridCell{0, 1}};
+
+  std::unique_ptr<BoustrophedonCoverageRobot> robot{
+      std::make_unique<BoustrophedonCoverageRobot>(
+          GridCell{0, 0}, 9, 3, 3, fov, exec, nullptr,
+          ParameterEstimate::posteriorSample, true)};
+
+  CoverageResult result{robot->runCoverageEpisode("/tmp/dynamicObstacle.csv")};
+  REQUIRE_THAT(result.propCovered, Catch::Matchers::WithinRel(1.0, 0.001));
+  REQUIRE(result.endTime == 9);
+
+  // Check the path
+  std::ifstream visitedFile{"/tmp/dynamicObstacle.csv"};
+  std::vector<std::string> expected{"0,0", "0,0", "0,1", "0,2", "1,2",
+                                    "1,1", "1,0", "2,0", "2,1", "2,2"};
+  std::string currentLine{};
+  int lineNum{0};
+  while (getline(visitedFile, currentLine)) {
+    REQUIRE(currentLine == expected.at(lineNum));
+    ++lineNum;
+  }
+  visitedFile.close();
+  REQUIRE(lineNum == 10);
 }

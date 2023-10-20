@@ -16,11 +16,16 @@
  * The boustrophedon motion chooses directions in order up,down,right,left.
  * If no neighbours are free or uncovered, the robot waits.
  *
- * Members: As in superclass
+ * Members: As in superclass, plus:
+ * _waitForObstacles A flag to state if the robot should wait for
+ * obstacles to clear (this means the robot follows a fixed path).
+ * This is basically offline Boustrophedon
  */
 class BoustrophedonCoverageRobot : public POMDPCoverageRobot {
 
 private:
+  bool _waitForObstacles{};
+
   /**
    * Follows a boustrophedon motion online.
    *
@@ -56,6 +61,8 @@ public:
    * use BiMac)
    * @param estimationType The type of parameter estimation to use for IMac
    * instance for episode
+   * @param waitForObstacles A flag to state if the robot should wait for
+   * obstacles to clear (this means the robot follows a fixed path)
    */
   BoustrophedonCoverageRobot(const GridCell &currentLoc, int timeBound,
                              int xDim, int yDim,
@@ -63,9 +70,11 @@ public:
                              std::shared_ptr<IMacExecutor> exec,
                              std::shared_ptr<IMac> groundTruthIMac = nullptr,
                              const ParameterEstimate &estimationType =
-                                 ParameterEstimate::posteriorSample)
+                                 ParameterEstimate::posteriorSample,
+                             bool waitForObstacles = false)
       : POMDPCoverageRobot(currentLoc, timeBound, xDim, yDim, fov, exec,
-                           groundTruthIMac, estimationType) {}
+                           groundTruthIMac, estimationType),
+        _waitForObstacles{waitForObstacles} {}
 };
 
 #endif
