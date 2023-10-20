@@ -115,6 +115,10 @@ getRobot(const double &pruningConstant, const std::string &boundType,
       robot = std::make_shared<BoustrophedonCoverageRobot>(
           GridCell{0, 0}, timeBound, dim.first, dim.second, fov, exec,
           groundTruthIMac);
+    } else if (boundType == "BOUSTROPHEDON_OFFLINE") {
+      robot = std::make_shared<BoustrophedonCoverageRobot>(
+          GridCell{0, 0}, timeBound, dim.first, dim.second, fov, exec,
+          groundTruthIMac, ParameterEstimate::posteriorSample, true);
     }
   } else { // POMDP Coverage Robot
     robot = std::make_shared<POMDPCoverageRobot>(
@@ -214,16 +218,18 @@ int main() {
 
   // Create methods to test
   std::vector<std::pair<double, std::string>> methods{
-      std::make_pair(-1, "RANDOM"), std::make_pair(-1, "GREEDY"),
-      std::make_pair(-1, "ENERGY_FUNCTIONAL"),
-      std::make_pair(-1, "BOUSTROPHEDON"), std::make_pair(0.1, "DEFAULT")};
-  // std::vector<double> prunes{0.0, 0.01, 0.1, 1, 10};
-  // std::vector<std::string> boundTypes{"TRIVIAL", "DEFAULT"};
-  // for (const double &prune : prunes) {
-  //   for (const std::string &type : boundTypes) {
-  //     methods.push_back(std::make_pair(prune, type));
-  //   }
-  // }
+      std::make_pair(-1, "BOUSTROPHEDON_OFFLINE")};
+  // std::vector<std::pair<double, std::string>> methods{
+  //     std::make_pair(-1, "RANDOM"), std::make_pair(-1, "GREEDY"),
+  //     std::make_pair(-1, "ENERGY_FUNCTIONAL"),
+  //     std::make_pair(-1, "BOUSTROPHEDON"), std::make_pair(0.1, "DEFAULT")};
+  //  std::vector<double> prunes{0.0, 0.01, 0.1, 1, 10};
+  //  std::vector<std::string> boundTypes{"TRIVIAL", "DEFAULT"};
+  //  for (const double &prune : prunes) {
+  //    for (const std::string &type : boundTypes) {
+  //      methods.push_back(std::make_pair(prune, type));
+  //    }
+  //  }
 
   // Environment setup
   std::vector<std::string> envs{"four_light", "four_heavy", "five_light",
