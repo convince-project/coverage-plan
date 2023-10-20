@@ -126,7 +126,7 @@ int main() {
 
   std::vector<std::string> learningTypes{"posterior_sampling",
                                          "maximum_likelihood"};
-  std::vector<int> checkpoints{0, 1, 5, 10, 50, 100, 150};
+  std::vector<int> checkpoints{0, 1, 5, 10, 50, 150};
 
   for (const std::string &type : learningTypes) {
     for (const int &checkpoint : checkpoints) {
@@ -138,6 +138,10 @@ int main() {
       imacNames.push_back(type + "_episode_" + std::to_string(checkpoint));
     }
   }
+  // Add ground truth
+  imacs.push_back(
+      std::make_shared<IMac>("../../data/prelim_exps/five_semi_static"));
+  imacNames.push_back("ground_truth");
 
   // RUn the experiments
   runExperiments(imacs, imacNames, fov, inDir, numRuns);
