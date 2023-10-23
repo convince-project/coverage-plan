@@ -119,6 +119,38 @@ public:
       : CoverageRobot{currentLoc, timeBound, xDim, yDim} {}
 };
 
+class TestCoverageRobotFive : public CoverageRobot {
+
+private:
+  std::vector<IMacObservation> _obs{
+      IMacObservation{GridCell{1, 1}, 0}, IMacObservation{GridCell{1, 1}, 1},
+      IMacObservation{GridCell{1, 1}, 1}, IMacObservation{GridCell{1, 1}, 0},
+      IMacObservation{GridCell{1, 1}, 0}, IMacObservation{GridCell{1, 1}, 1}};
+  int _count{0};
+  Action _planFn(const GridCell &currentLoc,
+                 const std::vector<Action> &enabledActions, int ts,
+                 int timeBound, std::shared_ptr<IMac> imac,
+                 const std::vector<GridCell> &visited,
+                 const std::vector<IMacObservation> &currentObs) {
+    return Action::up;
+  }
+
+  ActionOutcome _executeFn(const GridCell &currentLoc, const Action &action) {
+    return ActionOutcome{action, true,
+                         GridCell{currentLoc.x, currentLoc.y + 1}};
+  }
+
+  std::vector<IMacObservation> _observeFn(const GridCell &currentLoc) {
+    ++this->_count;
+    return std::vector<IMacObservation>{this->_obs.at(this->_count - 1)};
+  }
+
+public:
+  TestCoverageRobotFive(const GridCell &currentLoc, int timeBound, int xDim,
+                        int yDim)
+      : CoverageRobot{currentLoc, timeBound, xDim, yDim} {}
+};
+
 TEST_CASE("Tests for plan-execute-observe wrapper functions",
           "[CoverageRobot::plan-execute-observe]") {
 
@@ -265,4 +297,52 @@ TEST_CASE("Tests for _getEnabledActions function",
   REQUIRE(robotTwo->planNextAction(0, robotTwo->getBIMac()->posteriorMean(),
                                    std::vector<IMacObservation>{}) ==
           Action::right);
+}
+
+TEST_CASE("Extended test for BiMacPosterior",
+          "[CoverageRobot::BiMacPosterior]") {
+
+  std::unique_ptr<TestCoverageRobotFive> robot{
+      std::make_unique<TestCoverageRobotFive>(GridCell{2, 1}, 5, 5, 5)};
+
+  CoverageResult result{robot->runCoverageEpisode("/tmp/runEpisodeTest.csv")};
+
+  REQUIRE_THAT(result.propCovered,
+               Catch::Matchers::WithinRel(6.0 / 25.0, 0.001));
+  REQUIRE(result.endTime == 5);
+
+  // Test log has got everything in the right order
+  std::ifstream logOne{"/tmp/runEpisodeTest.csv"};
+  std::string line{};
+  std::vector<std::string> logVec{};
+  if (logOne.is_open()) {
+    while (getline(logOne, line)) {
+      logVec.push_back(line);
+    }
+  }
+  REQUIRE(logVec.size() == 6);
+  for (int i{0}; i < 6; ++i) {
+    REQUIRE(logVec.at(i) == "2," + std::to_string(i + 1));
+  }
+
+  std::shared_ptr<IMac> imac{robot->getBIMac()->posteriorMean()};
+
+  Eigen::MatrixXd init{imac->getInitialBelief()};
+  Eigen::MatrixXd entry{imac->getEntryMatrix()};
+  Eigen::MatrixXd exit{imac->getExitMatrix()};
+
+  // Check the posterior has been computed correctly
+  for (int i{0}; i < 5; ++i) {
+    for (int j{0}; j < 5; ++j) {
+      if (i == 1 and j == 1) {
+        REQUIRE_THAT(init(i, j), Catch::Matchers::WithinRel(1.0 / 3.0, 0.001));
+        REQUIRE_THAT(exit(i, j), Catch::Matchers::WithinRel(0.5, 0.001));
+        REQUIRE_THAT(entry(i, j), Catch::Matchers::WithinRel(0.6, 0.001));
+      } else {
+        REQUIRE_THAT(init(i, j), Catch::Matchers::WithinRel(0.5, 0.001));
+        REQUIRE_THAT(exit(i, j), Catch::Matchers::WithinRel(0.5, 0.001));
+        REQUIRE_THAT(entry(i, j), Catch::Matchers::WithinRel(0.5, 0.001));
+      }
+    }
+  }
 }
