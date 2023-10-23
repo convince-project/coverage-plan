@@ -49,8 +49,11 @@ std::filesystem::path getOutputFile(const std::filesystem::path &outDir,
 std::pair<int, int> getDimensions(const std::string &env) {
   if (env == "four_light" || env == "four_heavy") {
     return std::make_pair(4, 4);
-  } else if (env == "five_light" || env == "five_heavy") {
+  } else if (env == "five_light" || env == "five_heavy" ||
+             env == "five_very_heavy") {
     return std::make_pair(5, 5);
+  } else if (env == "seven_very_heavy") {
+    return std::make_pair(7, 7);
   }
   return std::make_pair(0, 0);
 }
@@ -218,11 +221,12 @@ int main() {
 
   // Create methods to test
   std::vector<std::pair<double, std::string>> methods{
-      std::make_pair(-1, "BOUSTROPHEDON_OFFLINE")};
-  // std::vector<std::pair<double, std::string>> methods{
-  //     std::make_pair(-1, "RANDOM"), std::make_pair(-1, "GREEDY"),
-  //     std::make_pair(-1, "ENERGY_FUNCTIONAL"),
-  //     std::make_pair(-1, "BOUSTROPHEDON"), std::make_pair(0.1, "DEFAULT")};
+      std::make_pair(-1, "RANDOM"),
+      std::make_pair(-1, "GREEDY"),
+      std::make_pair(-1, "ENERGY_FUNCTIONAL"),
+      std::make_pair(-1, "BOUSTROPHEDON"),
+      std::make_pair(-1, "BOUSTROPHEDON_OFFLINE"),
+      std::make_pair(0.1, "DEFAULT")};
   //  std::vector<double> prunes{0.0, 0.01, 0.1, 1, 10};
   //  std::vector<std::string> boundTypes{"TRIVIAL", "DEFAULT"};
   //  for (const double &prune : prunes) {
@@ -232,10 +236,12 @@ int main() {
   //  }
 
   // Environment setup
-  std::vector<std::string> envs{"four_light", "four_heavy", "five_light",
-                                "five_heavy"};
-  std::vector<int> timeBounds{21, 21, 33, 33};
+  // std::vector<std::string> envs{"four_light", "four_heavy", "five_light",
+  //                              "five_heavy"};
+  // std::vector<int> timeBounds{21, 21, 33, 33};
   // std::vector<int> timeBounds{25, 25, 40, 40};
+  std::vector<std::string> envs{"five_very_heavy", "seven_very_heavy"};
+  std::vector<int> timeBounds{33, 64};
 
   // Robot FOV
   std::vector<GridCell> fov{GridCell{-1, -1}, GridCell{0, -1}, GridCell{1, -1},
@@ -247,7 +253,7 @@ int main() {
 
   // Output directory
   std::filesystem::path outDir{
-      "../../data/results/prelim_exps/lower_time_bounds"};
+      "../../data/results/prelim_exps/more_complex_dynamics"};
 
   // Number of runs
   int numRuns{10};
