@@ -19,19 +19,18 @@
 /**
  * Creates the FixedIMacExecutor.
  *
- * @param inDir The IMac directory
- * @param env The name of the environment
+ * @param imacDir The IMac directory
  * @param dim The x,y dimensions of the map
  * @param numRuns The number of runs to read in
  *
  * @return exec The FixedIMacExecutor
  */
 std::shared_ptr<FixedIMacExecutor>
-getExecutor(const std::filesystem::path &inDir, const std::string &env,
+getExecutor(const std::filesystem::path &imacDir,
             const std::pair<int, int> &dim, const int &numRuns) {
   std::vector<std::filesystem::path> runFiles{};
   for (int r{1}; r <= numRuns; ++r) {
-    runFiles.push_back(inDir / env / ("run_" + std::to_string(r) + ".csv"));
+    runFiles.push_back(imacDir / ("run_" + std::to_string(r) + ".csv"));
   }
   return std::make_shared<FixedIMacExecutor>(runFiles, dim.first, dim.second);
 }
@@ -65,21 +64,22 @@ void writeResults(const std::vector<std::vector<double>> &results,
  * @param imacs A list of imac models to test
  * @param imacNames The names of the imac models
  * @param fov The robot's field of view
- * @param inDir The directory to find all of the environment runs/IMac
+ * @param imacDir The directory to find all of the environment runs/IMac
  * models
+ * @param timeBound The planning time bound
+ * @param dim The map dimensions
+ * @param outFile Where to store the results
  * @param numRuns How many repeats are we running
  */
 void runExperiments(const std::vector<std::shared_ptr<IMac>> &imacs,
                     const std::vector<std::string> &imacNames,
                     const std::vector<GridCell> &fov,
-                    const std::filesystem::path &inDir,
+                    const std::filesystem::path &imacDir, const int &timeBound,
+                    const int &dim, const std::filesystem::path &outFile,
                     const int &numRuns = 10) {
 
   // Prepare output
   std::vector<std::vector<double>> results{};
-  std::filesystem::path outFile{
-      "../../data/results/prelim_exps/checkpoint_test/results.csv"};
-  int timeBound{33};
 
   // Iterate through models
   for (int i{0}; i < imacs.size(); ++i) {
@@ -87,11 +87,11 @@ void runExperiments(const std::vector<std::shared_ptr<IMac>> &imacs,
 
     // Get run files, fixedIMacExecutor, and ground truth IMac model
     std::shared_ptr<FixedIMacExecutor> exec{
-        getExecutor(inDir, "five_semi_static", std::make_pair(5, 5), numRuns)};
+        getExecutor(imacDir, std::make_pair(dim, dim), numRuns)};
 
     // Get the robot object
     std::shared_ptr<CoverageRobot> robot{std::make_shared<POMDPCoverageRobot>(
-        GridCell{0, 0}, timeBound, 5, 5, fov, exec, imacs.at(i))};
+        GridCell{0, 0}, timeBound, dim, dim, fov, exec, imacs.at(i))};
 
     std::vector<double> resultsForModel{};
     for (int r{0}; r < numRuns; ++r) {
@@ -107,30 +107,20 @@ void runExperiments(const std::vector<std::shared_ptr<IMac>> &imacs,
   }
 }
 
-int main() {
-
-  // Robot FOV
-  std::vector<GridCell> fov{GridCell{-1, -1}, GridCell{0, -1}, GridCell{1, -1},
-                            GridCell{-1, 0},  GridCell{1, 0},  GridCell{-1, 1},
-                            GridCell{0, 1},   GridCell{1, 1}};
-
-  // IMac directory
-  std::filesystem::path inDir{"../../data/prelim_exps"};
-
-  // Number of runs
-  int numRuns{10};
-
+std::pair<std::vector<std::shared_ptr<IMac>>, std::vector<std::string>>
+getIMacModels(const std::filesystem::path &checkpointDir,
+              const std::filesystem::path &groundTruthDir) {
   // Read in the iMac models
   std::vector<std::shared_ptr<IMac>> imacs{};
   std::vector<std::string> imacNames{};
 
   std::vector<std::string> learningTypes{"posterior_sampling",
                                          "maximum_likelihood"};
-  std::vector<int> checkpoints{0, 1, 5, 10, 50, 150};
+  std::vector<int> checkpoints{0, 1, 5, 10, 50, 100, 150};
 
   for (const std::string &type : learningTypes) {
     for (const int &checkpoint : checkpoints) {
-      std::filesystem::path imacDir{"../../data/prelim_exps/checkpoints"};
+      std::filesystem::path imacDir{checkpointDir};
       imacDir /= type;
       imacDir /= ("episode_" + std::to_string(checkpoint));
 
@@ -139,10 +129,40 @@ int main() {
     }
   }
   // Add ground truth
-  imacs.push_back(
-      std::make_shared<IMac>("../../data/prelim_exps/five_semi_static"));
+  imacs.push_back(std::make_shared<IMac>(groundTruthDir));
   imacNames.push_back("ground_truth");
 
-  // RUn the experiments
-  runExperiments(imacs, imacNames, fov, inDir, numRuns);
+  return std::make_pair(imacs, imacNames);
+}
+
+int main() {
+
+  // Robot FOV
+  std::vector<GridCell> fov{GridCell{-1, -1}, GridCell{0, -1}, GridCell{1, -1},
+                            GridCell{-1, 0},  GridCell{1, 0},  GridCell{-1, 1},
+                            GridCell{0, 1},   GridCell{1, 1}};
+
+  std::cout << "Running for 5x5 very heavy env\n";
+  std::filesystem::path imacDir{"../../data/prelim_exps/five_very_heavy"};
+  int numRuns{20};
+  int timeBound{33};
+  int dim{5};
+  auto models{
+      getIMacModels("../../data/prelim_exps/checkpoints/five_very_heavy",
+                    "../../data/prelim_exps/five_very_heavy")};
+  std::filesystem::path outFile{"../../data/results/prelim_exps/"
+                                "checkpoint_test/five_very_heavy_results.csv"};
+  // Run the experiments
+  runExperiments(std::get<0>(models), std::get<1>(models), fov, imacDir,
+                 timeBound, dim, outFile, numRuns);
+
+  std::cout << "Running for 7x7 very heavy env\n";
+  timeBound = 64;
+  dim = 7;
+  models = getIMacModels("../../data/prelim_exps/checkpoints/seven_very_heavy",
+                         "../../data/prelim_exps/seven_very_heavy");
+  outFile = "../../data/results/prelim_exps/"
+            "checkpoint_test/seven_very_heavy_results.csv";
+  runExperiments(std::get<0>(models), std::get<1>(models), fov, imacDir,
+                 timeBound, dim, outFile, numRuns);
 }

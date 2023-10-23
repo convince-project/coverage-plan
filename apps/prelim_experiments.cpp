@@ -256,7 +256,7 @@ int main() {
       "../../data/results/prelim_exps/more_complex_dynamics"};
 
   // Number of runs
-  int numRuns{10};
+  int numRuns{40};
 
   // RUn the experiments
   runExperiments(methods, envs, timeBounds, fov, inDir, outDir, numRuns);
