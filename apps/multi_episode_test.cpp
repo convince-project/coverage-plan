@@ -130,34 +130,27 @@ void runGroundTruth() {
   int timeBound{33};
   int numEpisodes{300};
 
-  std::vector<ParameterEstimate> methods{ParameterEstimate::posteriorSample,
-                                         ParameterEstimate::maximumLikelihood};
+  std::vector<double> results{};
+  std::vector<double> imacErrors{};
 
-  for (const ParameterEstimate &method : methods) {
-    std::vector<double> results{};
-    std::vector<double> imacErrors{};
+  // Start from scratch for each method
+  // Episodes will be played in same order
+  std::shared_ptr<FixedIMacExecutor> exec{
+      getExecutor(imacDir, std::make_pair(5, 5), numEpisodes)};
 
-    // Start from scratch for each method
-    // Episodes will be played in same order
-    std::shared_ptr<FixedIMacExecutor> exec{
-        getExecutor(imacDir, std::make_pair(5, 5), numEpisodes)};
+  std::unique_ptr<POMDPCoverageRobot> robot{
+      std::make_unique<POMDPCoverageRobot>(initPos, timeBound, 5, 5, fov, exec,
+                                           groundTruthImac)};
 
-    std::unique_ptr<POMDPCoverageRobot> robot{
-        std::make_unique<POMDPCoverageRobot>(initPos, timeBound, 5, 5, fov,
-                                             exec, groundTruthImac)};
+  for (int episode{1}; episode <= numEpisodes; ++episode) {
+    std::cout << "Method: Ground Truth; Episode: " << episode << '\n';
 
-    // Get initial error
-
-    for (int episode{1}; episode <= numEpisodes; ++episode) {
-      std::cout << "Method: Ground Truth; Episode: " << episode << '\n';
-
-      // Write output logs to dummy file
-      results.push_back(
-          robot->runCoverageEpisode("/tmp/episodeVisited.csv").propCovered);
-    }
-    writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
-                          "ground_truth_results.csv");
+    // Write output logs to dummy file
+    results.push_back(
+        robot->runCoverageEpisode("/tmp/episodeVisited.csv").propCovered);
   }
+  writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
+                        "ground_truth_results.csv");
 }
 
 void runDifferentEstimates() {
