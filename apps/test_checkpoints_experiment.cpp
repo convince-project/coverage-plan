@@ -157,6 +157,7 @@ int main() {
                  timeBound, dim, outFile, numRuns);
 
   std::cout << "Running for 7x7 very heavy env\n";
+  imacDir = "../../data/prelim_exps/seven_very_heavy";
   timeBound = 64;
   dim = 7;
   models = getIMacModels("../../data/prelim_exps/checkpoints/seven_very_heavy",
