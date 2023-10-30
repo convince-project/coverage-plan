@@ -1,0 +1,17 @@
+METHOD: posterior_sampling_episode_0, MEAN: 0.534, MEDIAN: 0.5
+METHOD: posterior_sampling_episode_1, MEAN: 0.556, MEDIAN: 0.6
+METHOD: posterior_sampling_episode_5, MEAN: 0.784, MEDIAN: 0.8200000000000001
+METHOD: posterior_sampling_episode_10, MEAN: 0.76, MEDIAN: 0.76
+METHOD: posterior_sampling_episode_50, MEAN: 0.788, MEDIAN: 0.78
+METHOD: posterior_sampling_episode_100, MEAN: 0.78, MEDIAN: 0.78
+METHOD: posterior_sampling_episode_150, MEAN: 0.786, MEDIAN: 0.78
+METHOD: ground_truth, MEAN: 0.7880000000000001, MEDIAN: 0.8
+BEST = ground_truth
+ground_truth > posterior_sampling_episode_0: p = 3.483406921338049e-05, stat sig better = True
+ground_truth > posterior_sampling_episode_1: p = 1.4774578006844025e-06, stat sig better = True
+ground_truth > posterior_sampling_episode_5: p = 0.6645354674630134, stat sig better = False
+ground_truth > posterior_sampling_episode_10: p = 0.0869980568174274, stat sig better = False
+ground_truth > posterior_sampling_episode_50: p = 0.47818926351973134, stat sig better = False
+ground_truth > posterior_sampling_episode_100: p = 0.3204343359566374, stat sig better = False
+ground_truth > posterior_sampling_episode_150: p = 0.40732424810580836, stat sig better = False
+

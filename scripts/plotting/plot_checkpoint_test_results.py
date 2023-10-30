@@ -86,6 +86,13 @@ def set_box_colors(bp):
     plt.setp(bp["whiskers"][13], color="tab:pink", linewidth=8.0)
     plt.setp(bp["medians"][6], color="tab:pink", linewidth=8.0)
 
+    plt.setp(bp["boxes"][7], color="tab:brown", linewidth=8.0)
+    plt.setp(bp["caps"][14], color="tab:brown", linewidth=8.0)
+    plt.setp(bp["caps"][15], color="tab:brown", linewidth=8.0)
+    plt.setp(bp["whiskers"][14], color="tab:brown", linewidth=8.0)
+    plt.setp(bp["whiskers"][15], color="tab:brown", linewidth=8.0)
+    plt.setp(bp["medians"][7], color="tab:brown", linewidth=8.0)
+
 
 def plot_results(results, estimate):
     """Plot the results.
@@ -103,6 +110,7 @@ def plot_results(results, estimate):
         estimate + "_episode_5",
         estimate + "_episode_10",
         estimate + "_episode_50",
+        estimate + "_episode_100",
         estimate + "_episode_150",
         "ground_truth",
     ]
@@ -112,7 +120,7 @@ def plot_results(results, estimate):
     box = plt.boxplot(
         results_list,
         whis=[0, 100],
-        positions=[1, 2, 3, 4, 5, 6, 7],
+        positions=[1, 2, 3, 4, 5, 6, 7, 8],
         widths=0.6,
     )
     set_box_colors(box)
@@ -127,7 +135,7 @@ def plot_results(results, estimate):
     )
     plt.ylabel("Proportion Covered")
 
-    plt.xticks([1, 2, 3, 4, 5, 6, 7], [0, 1, 5, 10, 50, 150, "GT"])
+    plt.xticks([1, 2, 3, 4, 5, 6, 7, 8], [0, 1, 5, 10, 50, 100, 150, "GT"])
 
     plt.xlabel("Model", fontsize=40)
     plt.show()
@@ -146,6 +154,7 @@ def plot_statistics(results, estimate):
         estimate + "_episode_5",
         estimate + "_episode_10",
         estimate + "_episode_50",
+        estimate + "_episode_100",
         estimate + "_episode_150",
         "ground_truth",
     ]:
@@ -173,6 +182,7 @@ def plot_stat_sig(results, estimate):
         estimate + "_episode_5",
         estimate + "_episode_10",
         estimate + "_episode_50",
+        estimate + "_episode_100",
         estimate + "_episode_150",
         "ground_truth",
     ]
@@ -192,11 +202,11 @@ def plot_stat_sig(results, estimate):
 
 if __name__ == "__main__":
     results_file = os.path.abspath(
-        "../../data/results/prelim_exps/checkpoint_test/results.csv"
+        "../../data/results/prelim_exps/checkpoint_test/seven_very_heavy_results.csv"
     )
 
     results = collect_results(results_file)
 
-    # plot_results(results, "posterior_sampling")
-    plot_statistics(results, "posterior_sampling")
-    plot_stat_sig(results, "posterior_sampling")
+    plot_results(results, "maximum_likelihood")
+    plot_statistics(results, "maximum_likelihood")
+    plot_stat_sig(results, "maximum_likelihood")

@@ -1,0 +1,18 @@
+METHOD: maximum_likelihood_episode_0, MEAN: 0.5316326, MEDIAN: 0.520408
+METHOD: maximum_likelihood_episode_1, MEAN: 0.5408163500000001, MEDIAN: 0.510204
+METHOD: maximum_likelihood_episode_5, MEAN: 0.6775509499999999, MEDIAN: 0.704082
+METHOD: maximum_likelihood_episode_10, MEAN: 0.67755115, MEDIAN: 0.693878
+METHOD: maximum_likelihood_episode_50, MEAN: 0.7765307499999998, MEDIAN: 0.785714
+METHOD: maximum_likelihood_episode_100, MEAN: 0.7642857000000001, MEDIAN: 0.755102
+METHOD: maximum_likelihood_episode_150, MEAN: 0.744898, MEDIAN: 0.77551
+METHOD: ground_truth, MEAN: 0.7612246500000001, MEDIAN: 0.755102
+BEST = ground_truth
+ground_truth > maximum_likelihood_episode_0: p = 2.689636467236012e-07, stat sig better = True
+ground_truth > maximum_likelihood_episode_1: p = 3.366431900813669e-05, stat sig better = True
+ground_truth > maximum_likelihood_episode_5: p = 0.005774571167272493, stat sig better = True
+ground_truth > maximum_likelihood_episode_10: p = 0.0009156939417925523, stat sig better = True
+ground_truth > maximum_likelihood_episode_50: p = 0.8409675304765649, stat sig better = False
+ground_truth > maximum_likelihood_episode_100: p = 0.4566891130137599, stat sig better = False
+ground_truth > maximum_likelihood_episode_150: p = 0.47831561470426653, stat sig better = False
+ground_truth > ground_truth: p = 0.5054500097641591, stat sig better = False
+

@@ -175,11 +175,12 @@ def plot_combined_results(results):
     plt.show()
 
 
-def plot_statistics(results):
+def plot_statistics(results, env_to_select=None):
     """Plot the means and medians over the combined results.
 
     Args:
         results: method to env to results list
+        env_to_select: The environment to plot for. When None, combine all envs together
     """
     for method in [
         "POMDP",
@@ -190,8 +191,11 @@ def plot_statistics(results):
         "BOUSTROPHEDON_OFFLINE",
     ]:
         results_for_params = []
-        for env in results[method]:
-            results_for_params += results[method][env]
+        if env_to_select is None:
+            for env in results[method]:
+                results_for_params += results[method][env]
+        else:
+            results_for_params += results[method][env_to_select]
         print(
             "METHOD: {}, MEAN: {}, MEDIAN: {}".format(
                 method,
@@ -201,7 +205,7 @@ def plot_statistics(results):
         )
 
 
-def plot_stat_sig(results):
+def plot_stat_sig(results, env_to_select=None):
     """Plot statistical significance results compared to best mean.
 
     TODO: Get best mean, assuming POMDP for now
@@ -210,6 +214,7 @@ def plot_stat_sig(results):
 
     Args:
         results: method to env to results list
+        env_to_select: The environment to plot for. When None, combine all envs together
     """
     combined = {}
     methods = [
@@ -222,9 +227,12 @@ def plot_stat_sig(results):
     ]
     for method in methods:
         results_for_params = []
-        for env in results[method]:
-            results_for_params += results[method][env]
-            combined[method] = results_for_params
+        if env_to_select is None:
+            for env in results[method]:
+                results_for_params += results[method][env]
+        else:
+            results_for_params = results[method][env_to_select]
+        combined[method] = results_for_params
 
     print("BEST = POMDP")
 
@@ -238,7 +246,9 @@ def plot_stat_sig(results):
 
 
 if __name__ == "__main__":
-    results_dir = os.path.abspath("../../data/results/prelim_exps/lower_time_bounds")
+    results_dir = os.path.abspath(
+        "../../data/results/prelim_exps/more_complex_dynamics"
+    )
 
     results_files = {}
     results_files["POMDP"] = os.path.join(
@@ -256,7 +266,7 @@ if __name__ == "__main__":
 
     results = collect_results(results_files)
 
-    plot_results(results, "four_light")
+    # plot_results(results, "seven_very_heavy")
     # plot_combined_results(results)
-    # plot_statistics(results)
-    # plot_stat_sig(results)
+    # plot_statistics(results, "seven_very_heavy")
+    # plot_stat_sig(results, "seven_very_heavy")
