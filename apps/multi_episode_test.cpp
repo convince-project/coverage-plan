@@ -3,6 +3,7 @@
  *
  * @author Charlie Street
  */
+#include "coverage_plan/baselines/greedy_coverage_robot.h"
 #include "coverage_plan/mod/fixed_imac_executor.h"
 #include "coverage_plan/mod/grid_cell.h"
 #include "coverage_plan/mod/imac.h"
@@ -19,23 +20,30 @@
 #include <vector>
 
 /**
- * Write 300 IMacExecutor episodes for episode
+ * Write 300 IMacExecutor episodes for each repeat
+ *
+ * @param numRepeats How many repeats to generate
  */
-void sampleIMacRuns() {
-  std::filesystem::path imacDir{"../../data/prelim_exps/lifelong_test"};
+void sampleIMacRuns(const int &numRepeats) {
+  std::filesystem::path imacDir{
+      "../../data/prelim_exps/lifelong_test/ten_very_heavy_greedy"};
   std::shared_ptr<IMac> imac{std::make_shared<IMac>(imacDir)};
   std::unique_ptr<IMacExecutor> exec{std::make_unique<IMacExecutor>(imac)};
 
   int numEpisodes{300};
-  int timeBound{33};
+  int timeBound{130};
 
-  for (int run{1}; run <= numEpisodes; ++run) {
-    std::cout << "Generating run " << run << "/" << numEpisodes << "\n";
-    exec->restart(std::vector<IMacObservation>{});
-    for (int t{1}; t <= timeBound; ++t) {
-      exec->updateState(std::vector<IMacObservation>{});
+  for (int repeat{1}; repeat < numRepeats; ++repeat) {
+    std::cout << "Repeat: " << repeat << "/" << numRepeats << "\n";
+    for (int run{1}; run <= numEpisodes; ++run) {
+      std::cout << "Generating run " << run << "/" << numEpisodes << "\n";
+      exec->restart(std::vector<IMacObservation>{});
+      for (int t{1}; t <= timeBound; ++t) {
+        exec->updateState(std::vector<IMacObservation>{});
+      }
+      exec->logMapDynamics(imacDir / ("repeat_" + std::to_string(repeat)) /
+                           ("episode_" + std::to_string(run) + ".csv"));
     }
-    exec->logMapDynamics(imacDir / ("episode_" + std::to_string(run) + ".csv"));
   }
 }
 
@@ -105,20 +113,23 @@ double computeError(std::shared_ptr<IMac> estimate,
  * @param results The results for a given method
  * @param outFile The file to write out to
  */
-void writeResults(const std::vector<double> &results,
+void writeResults(const std::vector<std::vector<double>> &results,
                   const std::filesystem::path &outFile) {
   std::ofstream f{outFile};
   if (f.is_open()) {
-    for (const double &propCovered : results) {
-      f << propCovered << ',';
+    for (const std::vector<double> &resultsForRepeat : results) {
+      for (const double &propCovered : resultsForRepeat) {
+        f << propCovered << ',';
+      }
+      f << '\n';
     }
-    f << '\n';
   }
   f.close();
 }
 
 void runGroundTruth() {
-  std::filesystem::path imacDir{"../../data/prelim_exps/lifelong_test"};
+  std::filesystem::path imacDir{
+      "../../data/prelim_exps/lifelong_test/ten_very_heavy_greedy"};
   std::shared_ptr<IMac> groundTruthImac{std::make_shared<IMac>(imacDir)};
 
   // The robot's field of view
@@ -127,30 +138,36 @@ void runGroundTruth() {
                             GridCell{0, 1},   GridCell{1, 1}};
 
   GridCell initPos{0, 0};
-  int timeBound{33};
+  int timeBound{130};
   int numEpisodes{300};
+  int repeats{40};
 
-  std::vector<double> results{};
-  std::vector<double> imacErrors{};
+  std::vector<std::vector<double>> results{};
 
-  // Start from scratch for each method
-  // Episodes will be played in same order
-  std::shared_ptr<FixedIMacExecutor> exec{
-      getExecutor(imacDir, std::make_pair(5, 5), numEpisodes)};
+  for (int repeat{1}; repeat <= repeats; ++repeat) {
+    std::vector<double> resultsForRepeat{};
 
-  std::unique_ptr<POMDPCoverageRobot> robot{
-      std::make_unique<POMDPCoverageRobot>(initPos, timeBound, 5, 5, fov, exec,
-                                           groundTruthImac)};
+    // Start from scratch for each method
+    // Episodes will be played in same order
+    std::shared_ptr<FixedIMacExecutor> exec{
+        getExecutor(imacDir / ("repeat_" + std::to_string(repeat)),
+                    std::make_pair(10, 10), numEpisodes)};
 
-  for (int episode{1}; episode <= numEpisodes; ++episode) {
-    std::cout << "Method: Ground Truth; Episode: " << episode << '\n';
+    std::unique_ptr<GreedyCoverageRobot> robot{
+        std::make_unique<GreedyCoverageRobot>(initPos, timeBound, 10, 10, fov,
+                                              exec, groundTruthImac)};
 
-    // Write output logs to dummy file
-    results.push_back(
-        robot->runCoverageEpisode("/tmp/episodeVisited.csv").propCovered);
+    for (int episode{1}; episode <= numEpisodes; ++episode) {
+      std::cout << "Method: Ground Truth; Episode: " << episode << '\n';
+
+      // Write output logs to dummy file
+      resultsForRepeat.push_back(
+          robot->runCoverageEpisode("/tmp/episodeVisited.csv").propCovered);
+    }
+    results.push_back(resultsForRepeat);
   }
   writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
-                        "ground_truth_results.csv");
+                        "ten_very_heavy_greedy/ground_truth_results.csv");
 }
 
 void runDifferentEstimates() {
@@ -163,67 +180,86 @@ void runDifferentEstimates() {
                             GridCell{0, 1},   GridCell{1, 1}};
 
   GridCell initPos{0, 0};
-  int timeBound{33};
+  int timeBound{130};
   int numEpisodes{300};
+  int repeats{40};
 
   std::vector<ParameterEstimate> methods{ParameterEstimate::posteriorSample,
                                          ParameterEstimate::maximumLikelihood};
 
   for (const ParameterEstimate &method : methods) {
-    std::vector<double> results{};
-    std::vector<double> imacErrors{};
+    std::vector<std::vector<double>> results{};
+    std::vector<std::vector<double>> imacErrors{};
 
-    // Start from scratch for each method
-    // Episodes will be played in same order
-    std::shared_ptr<FixedIMacExecutor> exec{
-        getExecutor(imacDir, std::make_pair(5, 5), numEpisodes)};
+    for (int repeat{1}; repeat <= repeats; ++repeat) {
+      std::vector<double> resultsForRepeat{};
+      std::vector<double> imacErrorsForRepeat{};
 
-    std::unique_ptr<POMDPCoverageRobot> robot{
-        std::make_unique<POMDPCoverageRobot>(initPos, timeBound, 5, 5, fov,
-                                             exec, nullptr, method)};
+      // Start from scratch for each method
+      // Episodes will be played in same order
+      std::shared_ptr<FixedIMacExecutor> exec{
+          getExecutor(imacDir / ("repeat_" + std::to_string(repeat)),
+                      std::make_pair(10, 10), numEpisodes)};
 
-    // Get initial error
-    std::shared_ptr<IMac> estimate{robot->getBIMac()->mle()};
-    imacErrors.push_back(computeError(estimate, groundTruthImac));
+      std::unique_ptr<GreedyCoverageRobot> robot{
+          std::make_unique<GreedyCoverageRobot>(initPos, timeBound, 10, 10, fov,
+                                                exec, nullptr, method)};
 
-    for (int episode{1}; episode <= numEpisodes; ++episode) {
-      if (method == ParameterEstimate::posteriorSample) {
-        std::cout << "Method: Posterior Sampling; Episode: " << episode << '\n';
-      } else if (method == ParameterEstimate::posteriorMean) {
-        std::cout << "Method: Posterior Mean; Episode: " << episode << '\n';
-      } else if (method == ParameterEstimate::maximumLikelihood) {
-        std::cout << "Method: Maximum Likelihood; Episode: " << episode << '\n';
-      }
-
-      // Write output logs to dummy file
-      results.push_back(
-          robot->runCoverageEpisode("/tmp/episodeVisited.csv").propCovered);
-
-      // Get current iMac error using BiMac MLE estimate
+      // Get initial error
       std::shared_ptr<IMac> estimate{robot->getBIMac()->mle()};
-      imacErrors.push_back(computeError(estimate, groundTruthImac));
+      imacErrorsForRepeat.push_back(computeError(estimate, groundTruthImac));
+
+      for (int episode{1}; episode <= numEpisodes; ++episode) {
+        if (method == ParameterEstimate::posteriorSample) {
+          std::cout << "Method: Posterior Sampling; Episode: " << episode
+                    << '\n';
+        } else if (method == ParameterEstimate::posteriorMean) {
+          std::cout << "Method: Posterior Mean; Episode: " << episode << '\n';
+        } else if (method == ParameterEstimate::maximumLikelihood) {
+          std::cout << "Method: Maximum Likelihood; Episode: " << episode
+                    << '\n';
+        }
+
+        // Write output logs to dummy file
+        resultsForRepeat.push_back(
+            robot->runCoverageEpisode("/tmp/episodeVisited.csv").propCovered);
+
+        // Get current iMac error using BiMac MLE estimate
+        std::shared_ptr<IMac> estimate{robot->getBIMac()->mle()};
+        imacErrorsForRepeat.push_back(computeError(estimate, groundTruthImac));
+      }
+      results.push_back(resultsForRepeat);
+      imacErrors.push_back(imacErrorsForRepeat);
     }
 
     if (method == ParameterEstimate::posteriorSample) {
       writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
+                            "ten_very_heavy_greedy/"
                             "posterior_sample_results.csv");
       writeResults(imacErrors, "../../data/results/prelim_exps/lifelong_test/"
+                               "ten_very_heavy_greedy/"
                                "posterior_sample_imac_errors.csv");
     } else if (method == ParameterEstimate::posteriorMean) {
       writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
+                            "ten_very_heavy_greedy/"
                             "posterior_mean_results.csv");
       writeResults(imacErrors, "../../data/results/prelim_exps/lifelong_test/"
+                               "ten_very_heavy_greedy/"
                                "posterior_mean_imac_errors.csv");
     } else if (method == ParameterEstimate::maximumLikelihood) {
       writeResults(results, "../../data/results/prelim_exps/lifelong_test/"
+                            "ten_very_heavy_greedy/"
                             "maximum_likelihood_results.csv");
       writeResults(imacErrors, "../../data/results/prelim_exps/lifelong_test/"
+                               "ten_very_heavy_greedy/"
                                "maximum_likelihood_imac_errors.csv");
     }
   }
 }
 
 int main() {
-  runGroundTruth();
+  sampleIMacRuns(40);
+  // runGroundTruth();
+  // runDifferentEstimates();
   return 0;
 }
