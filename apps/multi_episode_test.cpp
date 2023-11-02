@@ -17,6 +17,7 @@
 #include <iostream>
 #include <memory>
 #include <random>
+#include <sys/stat.h>
 #include <vector>
 
 /**
@@ -33,15 +34,21 @@ void sampleIMacRuns(const int &numRepeats) {
   int numEpisodes{300};
   int timeBound{130};
 
-  for (int repeat{1}; repeat < numRepeats; ++repeat) {
+  for (int repeat{1}; repeat <= numRepeats; ++repeat) {
     std::cout << "Repeat: " << repeat << "/" << numRepeats << "\n";
+    std::filesystem::path repeatDir{imacDir /
+                                    ("repeat_" + std::to_string(repeat))};
+    if (mkdir(repeatDir.c_str(), S_IRWXU) == -1) {
+      std::cerr << "Error creating directory " << repeatDir << '\n';
+      exit(1);
+    }
     for (int run{1}; run <= numEpisodes; ++run) {
       std::cout << "Generating run " << run << "/" << numEpisodes << "\n";
       exec->restart(std::vector<IMacObservation>{});
       for (int t{1}; t <= timeBound; ++t) {
         exec->updateState(std::vector<IMacObservation>{});
       }
-      exec->logMapDynamics(imacDir / ("repeat_" + std::to_string(repeat)) /
+      exec->logMapDynamics(repeatDir /
                            ("episode_" + std::to_string(run) + ".csv"));
     }
   }

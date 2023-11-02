@@ -1,3 +1,6 @@
+# Avoid very large episode sets
+data/prelim_exps/lifelong_test/ten_very_heavy_greedy/repeat_*
+
 # Avoid build directory
 build/
 
