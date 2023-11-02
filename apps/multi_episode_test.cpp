@@ -178,7 +178,8 @@ void runGroundTruth() {
 }
 
 void runDifferentEstimates() {
-  std::filesystem::path imacDir{"../../data/prelim_exps/lifelong_test"};
+  std::filesystem::path imacDir{
+      "../../data/prelim_exps/lifelong_test/ten_very_heavy_greedy"};
   std::shared_ptr<IMac> groundTruthImac{std::make_shared<IMac>(imacDir)};
 
   // The robot's field of view
@@ -265,8 +266,8 @@ void runDifferentEstimates() {
 }
 
 int main() {
-  sampleIMacRuns(40);
+  // sampleIMacRuns(40);
   // runGroundTruth();
-  // runDifferentEstimates();
+  runDifferentEstimates();
   return 0;
 }
