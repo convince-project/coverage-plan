@@ -8,10 +8,10 @@ Author: Charlie Street
 Owner: Charlie Street
 """
 
-from scipy.stats import mannwhitneyu
 import matplotlib.pyplot as plt
 import numpy as np
 import csv
+import os
 
 import matplotlib
 
@@ -26,49 +26,67 @@ def read_results(results_file):
         results_file: The csv file with all the results
 
     Return:
-        results: The results
+        means: The means
+        std: The standard deviations
     """
+    processed = [[]] * 300
+
     with open(results_file, "r") as csv_in:
         csv_reader = csv.reader(csv_in, delimiter=",")
 
         for row in csv_reader:
             results = [float(x) for x in row[:-1]]
+            for i in range(len(processed)):
+                processed[i].append(results[i])
 
-    return results
+    for i in range(len(processed)):
+        assert len(processed[i]) == 40
+
+    means = [np.mean(r) for r in processed]
+    std = [np.std(r) for r in processed]
+
+    return means, std
 
 
-def plot_results(results_file):
-    """Plot the results file with std around it.
+def plot_coverage_results(gt_file, ps_file, mle_file):
+    """Plot the results with std around it.
 
     Args:
-        results: The csv file with all the results
+        gt_file: Ground truth results
+        ps_file: Posterior sampling results
+        mle_file: Maximum likelihood results
     """
-    with open(results_file, "r") as csv_in:
-        csv_reader = csv.reader(csv_in, delimiter=",")
 
-        for row in csv_reader:
-            results = [float(x) for x in row[:-1]]
-
-    # Format into each episode's results over the multiple repeats
-    # runs_formatted = []
-    # for i in range(200):
-    #    day_res = []
-    #    for run in runs:
-    #        day_res.append(run[i])
-    #    runs_formatted.append(day_res)
+    gt_mean, gt_std = read_results(gt_file)
+    ps_mean, ps_std = read_results(ps_file)
+    mle_mean, mle_std = read_results(mle_file)
 
     # x axis of our plot
     episodes = list(range(1, 301))
 
-    # main line of our plot
-    # means = [np.mean(r) for r in runs_formatted]
-    plt.plot(episodes, results, linewidth=3.0)
+    # plot the means
+    (gt_line,) = plt.plot(episodes, gt_mean, linewidth=3.0, color="red")
+    (ps_line,) = plt.plot(episodes, ps_mean, linewidth=3.0, color="green")
+    (mle_line,) = plt.plot(episodes, mle_mean, linewidth=3.0, color="blue")
 
-    # Show the std as well
-    # std = [np.std(r) for r in runs_formatted]
-    # mean_plus = [means[i] + std[i] for i in range(len(means))]
-    # mean_minus = [means[i] - std[i] for i in range(len(means))]
-    # plt.fill_between(episodes, mean_plus, mean_minus, alpha=0.5)
+    # Show the stds
+    gt_mean_plus = [gt_mean[i] + gt_std[i] for i in range(len(gt_mean))]
+    gt_mean_minus = [gt_mean[i] - gt_std[i] for i in range(len(gt_mean))]
+    plt.fill_between(episodes, gt_mean_plus, gt_mean_minus, alpha=0.5, color="red")
+
+    ps_mean_plus = [ps_mean[i] + ps_std[i] for i in range(len(ps_mean))]
+    ps_mean_minus = [ps_mean[i] - ps_std[i] for i in range(len(ps_mean))]
+    plt.fill_between(episodes, ps_mean_plus, ps_mean_minus, alpha=0.5, color="green")
+
+    mle_mean_plus = [mle_mean[i] + mle_std[i] for i in range(len(mle_mean))]
+    mle_mean_minus = [mle_mean[i] - mle_std[i] for i in range(len(mle_mean))]
+    plt.fill_between(episodes, mle_mean_plus, mle_mean_minus, alpha=0.5, color="blue")
+
+    plt.legend(
+        (gt_line, ps_line, mle_line),
+        ("Ground Truth", "Posterior Sampling", "Maximum Likelihood Estimate"),
+        prop={"size": 32},
+    )
 
     plt.xlabel("Episode")
     plt.ylabel("Proportion Covered")
@@ -76,101 +94,53 @@ def plot_results(results_file):
     plt.show()
 
 
-def plot_imac_errors(results_file):
+def plot_imac_errors(ps_file, mle_file):
     """Plot the imac errors, i.e. the gap between our estimate and the ground truth.
 
     Args:
-        results: The csv file with all the results
+        ps_file: Posterior sampling results
+        mle_file: Maximum likelihood results
     """
-    with open(results_file, "r") as csv_in:
-        csv_reader = csv.reader(csv_in, delimiter=",")
-
-        for row in csv_reader:
-            results = [float(x) for x in row[:-1]]
+    ps_mean, ps_std = read_results(ps_file)
+    mle_mean, mle_std = read_results(mle_file)
 
     # x axis of our plot
     episodes = list(range(0, 301))
 
-    # main line of our plot
-    plt.plot(episodes, results, linewidth=3.0)
+    # Plot the means
+    (ps_line,) = plt.plot(episodes, ps_mean, linewidth=3.0, color="red")
+    (mle_line,) = plt.plot(episodes, mle_mean, linewidth=3.0, color="blue")
+
+    # Show the stds
+    ps_mean_plus = [ps_mean[i] + ps_std[i] for i in range(len(ps_mean))]
+    ps_mean_minus = [ps_mean[i] - ps_std[i] for i in range(len(ps_mean))]
+    plt.fill_between(episodes, ps_mean_plus, ps_mean_minus, alpha=0.5, color="red")
+
+    mle_mean_plus = [mle_mean[i] + mle_std[i] for i in range(len(mle_mean))]
+    mle_mean_minus = [mle_mean[i] - mle_std[i] for i in range(len(mle_mean))]
+    plt.fill_between(episodes, mle_mean_plus, mle_mean_minus, alpha=0.5, color="blue")
+
+    plt.legend(
+        (ps_line, mle_line),
+        ("Posterior Sampling", "Maximum Likelihood Estimate"),
+        prop={"size": 32},
+    )
 
     plt.xlabel("Episode")
-    plt.ylabel("Absolute Error")
+    plt.ylabel("Absolute iMac Error")
     plt.xlim((0, 300))
     plt.show()
 
 
 if __name__ == "__main__":
-    # plot_imac_errors(
-    #    "/home/charlie/work/coverage-plan/data/results/prelim_exps/"
-    #    + "lifelong_test/posterior_sample_imac_errors.csv"
-    # )
-
-    # plot_results(
-    #    "/home/charlie/work/coverage-plan/data/results/prelim_exps/"
-    #    + "lifelong_test/posterior_sample_results.csv"
-    # )
-
-    # Get a rough idea of the means and medians
-    results_ps = read_results(
+    results_dir = (
         "/home/charlie/work/coverage-plan/data/results/prelim_exps/"
-        + "lifelong_test/posterior_sample_results.csv"
+        + "lifelong_test/ten_very_heavy_greedy"
     )
 
-    results_mle = read_results(
-        "/home/charlie/work/coverage-plan/data/results/prelim_exps/"
-        + "lifelong_test/maximum_likelihood_results.csv"
-    )
+    gt_file = os.path.join(results_dir, "ground_truth_results.csv")
+    ps_file = os.path.join(results_dir, "posterior_sample_results.csv")
+    mle_file = os.path.join(results_dir, "maximum_likelihood_results.csv")
 
-    results_gt = read_results(
-        "/home/charlie/work/coverage-plan/data/results/prelim_exps/"
-        + "lifelong_test/ground_truth_results.csv"
-    )
-
-    print(
-        "POSTERIOR SAMPLE - MEAN: {}; MEDIAN: {}".format(
-            np.mean(results_ps), np.median(results_ps)
-        )
-    )
-
-    print(
-        "MAXIMUM LIKELIHOOD - MEAN: {}; MEDIAN: {}".format(
-            np.mean(results_mle), np.median(results_mle)
-        )
-    )
-
-    print(
-        "GROUND TRUTH - MEAN: {}; MEDIAN: {}".format(
-            np.mean(results_gt), np.median(results_gt)
-        )
-    )
-
-    print("BEST MEAN - GROUND TRUTH")
-    print(
-        "GROUND TRUTH > POSTERIOR SAMPLE: p={}".format(
-            mannwhitneyu(
-                results_gt,
-                results_ps,
-                alternative="greater",
-            )[1]
-        )
-    )
-    print(
-        "GROUND TRUTH > MAXIMUM LIKELIHOOD: p={}".format(
-            mannwhitneyu(
-                results_gt,
-                results_mle,
-                alternative="greater",
-            )[1]
-        )
-    )
-
-    print(
-        "MAXIMUM LIKELIHOOD > POSTERIOR SAMPLE: p={}".format(
-            mannwhitneyu(
-                results_mle,
-                results_ps,
-                alternative="greater",
-            )[1]
-        )
-    )
+    plot_coverage_results(gt_file, ps_file, mle_file)
+    plot_imac_errors(ps_file, mle_file)
