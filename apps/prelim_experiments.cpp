@@ -54,6 +54,8 @@ std::pair<int, int> getDimensions(const std::string &env) {
     return std::make_pair(5, 5);
   } else if (env == "seven_very_heavy") {
     return std::make_pair(7, 7);
+  } else if (env == "eight_very_heavy") {
+    return std::make_pair(8, 8);
   }
   return std::make_pair(0, 0);
 }
@@ -240,8 +242,8 @@ int main() {
   //                              "five_heavy"};
   // std::vector<int> timeBounds{21, 21, 33, 33};
   // std::vector<int> timeBounds{25, 25, 40, 40};
-  std::vector<std::string> envs{"five_very_heavy", "seven_very_heavy"};
-  std::vector<int> timeBounds{33, 64};
+  std::vector<std::string> envs{"eight_very_heavy"};
+  std::vector<int> timeBounds{84};
 
   // Robot FOV
   std::vector<GridCell> fov{GridCell{-1, -1}, GridCell{0, -1}, GridCell{1, -1},
@@ -253,7 +255,7 @@ int main() {
 
   // Output directory
   std::filesystem::path outDir{
-      "../../data/results/prelim_exps/more_complex_dynamics"};
+      "../../data/results/prelim_exps/eight_very_heavy"};
 
   // Number of runs
   int numRuns{40};
