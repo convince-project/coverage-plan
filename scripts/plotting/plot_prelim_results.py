@@ -246,9 +246,7 @@ def plot_stat_sig(results, env_to_select=None):
 
 
 if __name__ == "__main__":
-    results_dir = os.path.abspath(
-        "../../data/results/prelim_exps/more_complex_dynamics"
-    )
+    results_dir = os.path.abspath("../../data/results/prelim_exps/eight_very_heavy")
 
     results_files = {}
     results_files["POMDP"] = os.path.join(
@@ -266,7 +264,7 @@ if __name__ == "__main__":
 
     results = collect_results(results_files)
 
-    # plot_results(results, "seven_very_heavy")
+    plot_results(results, "eight_very_heavy")
     # plot_combined_results(results)
-    # plot_statistics(results, "seven_very_heavy")
-    # plot_stat_sig(results, "seven_very_heavy")
+    plot_statistics(results, "eight_very_heavy")
+    plot_stat_sig(results, "eight_very_heavy")
