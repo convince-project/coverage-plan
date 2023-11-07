@@ -178,6 +178,15 @@ void sampleRuns(std::shared_ptr<IMac> imac, const std::filesystem::path &dir,
 
 int main() {
 
+  // Nine by nine with 20,30,10,40 (slow, med, fast, static)
+  std::cout << "9x9 with 20 slow, 30 med, 10 fast, 40 slow\n";
+  std::shared_ptr<IMac> nineVeryHeavy{
+      createMoreComplexIMac(9, 9, 0.2, 0.3, 0.1)};
+  std::string nineVeryHeavyDir{"../../data/prelim_exps/nine_very_heavy"};
+  nineVeryHeavy->writeIMac(nineVeryHeavyDir);
+  sampleRuns(nineVeryHeavy, nineVeryHeavyDir, 106, 40);
+  exit(1);
+
   // Eight by eight with 20,30,10,40 (slow, med, fast, static)
   std::cout << "8x8 with 20 slow, 30 med, 10 fast, 40 slow\n";
   std::shared_ptr<IMac> eightVeryHeavy{
