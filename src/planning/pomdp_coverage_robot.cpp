@@ -15,10 +15,12 @@
 #include "coverage_plan/planning/coverage_pomdp.h"
 #include "coverage_plan/planning/coverage_state.h"
 #include "coverage_plan/planning/coverage_world.h"
+#include <chrono>
 #include <despot/core/globals.h>
 #include <despot/core/solver.h>
 #include <despot/interface/pomdp.h>
 #include <despot/util/optionparser.h>
+#include <iostream>
 #include <memory>
 #include <tuple>
 #include <vector>
@@ -33,7 +35,13 @@ POMDPCoverageRobot::_planFn(const GridCell &currentLoc,
                             int timeBound, std::shared_ptr<IMac> imac,
                             const std::vector<GridCell> &visited,
                             const std::vector<IMacObservation> &currentObs) {
-  return ActionHelpers::fromInt(this->_solver->Search().action);
+  auto start{std::chrono::high_resolution_clock::now()};
+  Action action{ActionHelpers::fromInt(this->_solver->Search().action)};
+  auto end{std::chrono::high_resolution_clock::now()};
+  auto duration{
+      std::chrono::duration_cast<std::chrono::milliseconds>(end - start)};
+  std::cout << "Planning Time: " << duration.count() / 1000.0 << " seconds\n";
+  return action;
 }
 
 /**
