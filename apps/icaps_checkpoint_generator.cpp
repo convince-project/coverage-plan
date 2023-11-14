@@ -120,7 +120,7 @@ void sampleRuns(std::shared_ptr<IMac> imac, const std::filesystem::path &dir,
     for (int t{1}; t <= timeBound; ++t) {
       exec->updateState(std::vector<IMacObservation>{});
     }
-    exec->logMapDynamics(dir / ("run_" + std::to_string(run) + ".csv"));
+    exec->logMapDynamics(dir / ("episode_" + std::to_string(run) + ".csv"));
   }
 }
 
@@ -179,6 +179,7 @@ void runSampleGen() {
 }
 
 int main() {
+  // runSampleGen();
   runAllCheckpointing();
   return 0;
 }
