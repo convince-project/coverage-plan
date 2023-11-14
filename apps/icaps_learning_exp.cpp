@@ -127,7 +127,7 @@ void writeResults(const std::vector<std::vector<double>> &results,
 }
 
 void runGroundTruth() {
-  std::filesystem::path imacDir{"../../data/imac_exps/learning_exp"};
+  std::filesystem::path imacDir{"../../data/icaps_exps/learning_exp"};
   std::shared_ptr<IMac> groundTruthImac{std::make_shared<IMac>(imacDir)};
 
   // The robot's field of view
@@ -170,7 +170,7 @@ void runGroundTruth() {
 }
 
 void runDifferentEstimates() {
-  std::filesystem::path imacDir{"../../data/imac_exps/learning_exp"};
+  std::filesystem::path imacDir{"../../data/icaps_exps/learning_exp"};
   std::shared_ptr<IMac> groundTruthImac{std::make_shared<IMac>(imacDir)};
 
   // The robot's field of view
