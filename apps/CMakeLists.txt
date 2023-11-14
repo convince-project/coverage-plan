@@ -54,3 +54,11 @@ target_link_libraries(lifelongTestCheckpointGenerator PUBLIC mod planning util)
 # Add executable for testing performance at different checkpoints
 add_executable(testCheckpointsExperiment test_checkpoints_experiment.cpp)
 target_link_libraries(testCheckpointsExperiment PUBLIC mod planning util)
+
+# Add executable for ICAPS planning experiment
+add_executable(icapsPlanningExperiment icaps_planning_exp.cpp)
+target_link_libraries(icapsPlanningExperiment PUBLIC mod planning util baselines)
+
+# Add executable for ICAPS learning experiment
+add_executable(icapsLearningExperiment icaps_learning_exp.cpp)
+target_link_libraries(icapsLearningExperiment PUBLIC mod planning util baselines)
