@@ -26,7 +26,7 @@
  * @param numRepeats How many repeats to generate
  */
 void sampleIMacRuns(const int &numRepeats) {
-  std::filesystem::path imacDir{"../../data/icaps_exp/learning_exp"};
+  std::filesystem::path imacDir{"../../data/icaps_exps/learning_exp"};
   std::shared_ptr<IMac> imac{std::make_shared<IMac>(imacDir)};
   std::unique_ptr<IMacExecutor> exec{std::make_unique<IMacExecutor>(imac)};
 
@@ -252,8 +252,8 @@ void runDifferentEstimates() {
 }
 
 int main() {
-  sampleIMacRuns(40);
-  // runGroundTruth();
-  // runDifferentEstimates();
+  // sampleIMacRuns(40);
+  runGroundTruth();
+  runDifferentEstimates();
   return 0;
 }
