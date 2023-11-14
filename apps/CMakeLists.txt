@@ -62,3 +62,7 @@ target_link_libraries(icapsPlanningExperiment PUBLIC mod planning util baselines
 # Add executable for ICAPS learning experiment
 add_executable(icapsLearningExperiment icaps_learning_exp.cpp)
 target_link_libraries(icapsLearningExperiment PUBLIC mod planning util baselines)
+
+# Add executable for ICAPS checkpoint generator
+add_executable(icapsCheckpointGenerator icaps_checkpoint_generator.cpp)
+target_link_libraries(icapsCheckpointGenerator PUBLIC mod planning util)
