@@ -230,7 +230,7 @@ int main() {
   std::filesystem::path inDir{"../../data/icaps_exps"};
 
   // Output directory
-  std::filesystem::path outDir{"../../data/results/icaps_exp/planning"};
+  std::filesystem::path outDir{"../../data/results/icaps_exps/planning"};
 
   // Number of runs
   int numRuns{40};
