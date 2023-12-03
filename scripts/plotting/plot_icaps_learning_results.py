@@ -13,7 +13,7 @@ import os
 import matplotlib
 
 plt.rcParams["pdf.fonttype"] = 42
-matplotlib.rcParams.update({"font.size": 32})
+matplotlib.rcParams.update({"font.size": 34})
 
 
 def read_results(results_file, is_imac_error=False):
@@ -87,11 +87,11 @@ def plot_imac_errors(pm_file, ps_file):
     plt.legend(
         (pm_line, ps_line),
         ("Posterior Mean", "Posterior Sampling"),
-        prop={"size": 32},
+        prop={"size": 34},
     )
 
     plt.xlabel("Episode")
-    plt.ylabel("Absolute iMac Error")
+    plt.ylabel("iMac Learning Error")
     plt.xlim((0, 200))
     plt.show()
 
