@@ -203,7 +203,7 @@ def plot_stat_sig(results):
         p = mannwhitneyu(
             results["ground_truth"],
             results[model],
-            alternative="greater",
+            alternative="two-sided",
         )[1]
         print(
             "ground_truth == {}: p = {}, stat sig different = {}".format(
@@ -219,6 +219,6 @@ if __name__ == "__main__":
 
     results = collect_results(results_file)
 
-    plot_results(results)
+    # plot_results(results)
     plot_statistics(results)
     plot_stat_sig(results)
