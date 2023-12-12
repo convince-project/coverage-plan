@@ -5,6 +5,7 @@ Author: Charlie Street
 Owner: Charlie Street
 """
 
+import matplotlib.ticker as ticker
 from scipy.stats import mannwhitneyu
 import matplotlib.pyplot as plt
 import numpy as np
@@ -121,7 +122,7 @@ def plot_results(results, env):
         bottom=True,  # ticks along the bottom edge are off
         top=False,  # ticks along the top edge are off
         labelbottom=True,  # labels along the bottom edge are offcd
-        labelsize=22,
+        labelsize=40,
     )
     plt.ylabel("Proportion of Cells Covered")
 
@@ -132,11 +133,17 @@ def plot_results(results, env):
             "Greedy",
             "Random",
             "Energy\nFunctional",
-            "Online\nBoustrophedon",
-            "Offline\nBoustrophedon",
+            "Online",
+            "Offline",
         ],
     )
-
+    plt.figtext(
+        0.773,
+        0.027,
+        "Boustrophedon",
+        ha="center",
+        fontsize=40,
+    )
     # plt.xlabel("Method", fontsize=40)
     plt.show()
 
