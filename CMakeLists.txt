@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.22)
 
 project(CoveragePlan VERSION 1.0 
                      DESCRIPTION "Source for the coverage planner in CONVINCE WP3." 
