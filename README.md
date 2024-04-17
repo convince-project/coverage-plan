@@ -34,4 +34,5 @@ Upon building, example files can be found in the `build/apps` directory.
 This repository is maintained by:
 
 | | | |
+|:---:|:---:|:---:|
 | Charlie Street | [@charlie1329](https://github.com/charlie1329) |[c.l.street@bham.ac.uk](mailto:c.l.street@bham.ac.uk?subject=[GitHub]%20Coverage%20Plan)|
