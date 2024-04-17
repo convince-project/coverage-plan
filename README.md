@@ -1,8 +1,6 @@
 # CONVINCE coverage-plan
 This repo contains the source for the coverage planner in CONVINCE WP3.
 
-Author and maintainer: Charlie Street - `cstreet@robots.ox.ac.uk`
-
 ## Dependencies
 
 * [Boost](https://linux.how2shout.com/how-to-install-boost-c-on-ubuntu-20-04-or-22-04/)
@@ -30,3 +28,10 @@ cmake --build build
 ## Examples
 
 Upon building, example files can be found in the `build/apps` directory.
+
+## Maintainer
+
+This repository is maintained by:
+
+| | | |
+| Charlie Street | [@charlie1329](https://github.com/charlie1329) |[c.l.street@bham.ac.uk](mailto:c.l.street@bham.ac.uk?subject=[GitHub]%20Coverage%20Plan)|
