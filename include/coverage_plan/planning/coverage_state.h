@@ -1,5 +1,8 @@
 /**
- * Header file for the CoverageState class.
+ * @file coverage_state.h
+ *
+ * @brief Header file for the CoverageState class.
+ *
  * CoverageState has the robot's location, time, covered nodes, and current map
  * state.
  *
@@ -17,6 +20,12 @@
 /**
  * State of Coverage POMDP.
  * Contains robot position, the time, the map, and the covered cells
+ *
+ * Members:
+ * * robotPosition: The robot's position
+ * * time: The current time
+ * * map: The current map
+ * * covered: The set of covered cells
  */
 class CoverageState : public despot::State {
 
@@ -52,7 +61,7 @@ public:
   /**
    * Produces a string description of a state.
    *
-   * @return stateStr A string descibing the state.
+   * @returns A string descibing the state.
    */
   std::string text() const;
 };

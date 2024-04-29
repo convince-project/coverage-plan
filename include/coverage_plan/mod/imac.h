@@ -1,5 +1,8 @@
 /**
- * Header file defining the IMac class.
+ * @file imac.h
+ *
+ * @brief Header file defining the IMac class.
+ *
  * IMac is a map of dynamics which uses an independent Markov chain at each grid
  * cell.
  *
@@ -23,13 +26,13 @@
  * chains at every cell on a grid.
  *
  * Members:
- * _entryMatrix: A matrix where _entryMatrix(x,y) is the (free->occupied)
+ * * _entryMatrix: A matrix where _entryMatrix(x,y) is the (free->occupied)
  * probability for (x,y)
- * _exitMatrix: A matrix where _exitMatrix(x,y) is the (occupied->free)
+ * * _exitMatrix: A matrix where _exitMatrix(x,y) is the (occupied->free)
  * probability for (x,y)
- * _initialBelief: A 2D matrix representing the initial
+ * * _initialBelief: A 2D matrix representing the initial
  * belief over each cell being occupied
- * _staticOccupancy: A 2D matrix estimating the static occupancy of a cell
+ * * _staticOccupancy: A 2D matrix estimating the static occupancy of a cell
  */
 class IMac {
 private:
@@ -43,7 +46,7 @@ private:
    *
    * @param inFile The file to read the matrix in from
    *
-   * @return matrix The IMac matrix
+   * @returns The IMac matrix
    */
   Eigen::MatrixXd _readIMacMatrix(const std::filesystem::path &inFile);
 
@@ -86,7 +89,7 @@ public:
    * This is the time-abstract probability of the cells being occupied.
    * A probability of 1 represents the cell being occupied.
    *
-   * @return staticOccupancy The static occupancy matrix
+   * @returns The static occupancy matrix
    */
   Eigen::MatrixXd estimateStaticOccupancy();
 
@@ -101,21 +104,21 @@ public:
    * Here the probability in each cell represents the probability of occupation.
    *
    * @param currentBelief a 2D matrix of the current map belief or state
-   * @return nextBelief a 2D matrix of the subsequent map belief
+   * @returns a 2D matrix of the subsequent map belief
    */
   Eigen::MatrixXd forwardStep(const Eigen::MatrixXd &currentBelief) const;
 
   /**
    * Getter for _entryMatrix. Need to retrieve for experimental purposes.
    *
-   * @return entryMatrix A copy of_entryMatrix
+   * @returns A copy of_entryMatrix
    */
   Eigen::MatrixXd getEntryMatrix() const { return this->_entryMatrix; }
 
   /**
    * Getter for _exitMatrix. Need to retrieve for experimental purposes.
    *
-   * @return exitMatrix A copy of_exitMatrix
+   * @returns A copy of_exitMatrix
    */
   Eigen::MatrixXd getExitMatrix() const { return this->_exitMatrix; }
 
@@ -124,7 +127,7 @@ public:
    *
    * Here the probability in each cell represents the probability of occupation.
    *
-   * @return initialBelief The initial belief over the map
+   * @returns The initial belief over the map
    */
   Eigen::MatrixXd getInitialBelief() const { return this->_initialBelief; }
 

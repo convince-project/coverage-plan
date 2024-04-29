@@ -1,5 +1,7 @@
 /**
- * Coverage robot which follows a boustrophedon motion.
+ * @file boustrophedon_coverage_robot.h
+ *
+ * @brief Coverage robot which follows a boustrophedon motion.
  *
  * @author Charlie Street
  */
@@ -17,7 +19,7 @@
  * If no neighbours are free or uncovered, the robot waits.
  *
  * Members: As in superclass, plus:
- * _waitForObstacles A flag to state if the robot should wait for
+ * * _waitForObstacles A flag to state if the robot should wait for
  * obstacles to clear (this means the robot follows a fixed path).
  * This is basically offline Boustrophedon
  */
@@ -39,7 +41,7 @@ private:
    * @param visited The vector of visited locations
    * @param currentObs The most recent observations
    *
-   * @return nextAction The next action to be executed
+   * @returns The next action to be executed
    */
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,

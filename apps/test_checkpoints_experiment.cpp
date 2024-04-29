@@ -1,5 +1,8 @@
 /**
- * Small experiment to test he checkpointed iMac instances.
+ * @file test_checkpoints_experiment.cpp
+ *
+ * @brief Small experiment to test he checkpointed iMac instances.
+ *
  * @author Charlie Street
  */
 
@@ -23,7 +26,7 @@
  * @param dim The x,y dimensions of the map
  * @param numRuns The number of runs to read in
  *
- * @return exec The FixedIMacExecutor
+ * @returns The FixedIMacExecutor
  */
 std::shared_ptr<FixedIMacExecutor>
 getExecutor(const std::filesystem::path &imacDir,

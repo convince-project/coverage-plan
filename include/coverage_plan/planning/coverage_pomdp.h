@@ -1,5 +1,7 @@
 /**
- * Header file for the CoveragePOMDP class.
+ * @file coverage_pomdp.h
+ *
+ * @brief Header file for the CoveragePOMDP class.
  *
  * This class captures the simulated POMDP model used for coverage planning.
  *
@@ -27,12 +29,12 @@
  * POMDP model for coverage planning problems under spatio temporal uncertainty.
  *
  * Members:
- * _memory_pool: A memory pool for allocating CoverageStates
- * _fov: A vector of GridCells relative to the robot's position which capture
+ * * _memory_pool: A memory pool for allocating CoverageStates
+ * * _fov: A vector of GridCells relative to the robot's position which capture
  * its FOV.
- * _imac: The IMac instance used for planning
- * _beliefSampler: The IMac belief sampler used for the simulator
- * _timeBound: The planning horizon in timesteps
+ * * _imac: The IMac instance used for planning
+ * * _beliefSampler: The IMac belief sampler used for the simulator
+ * * _timeBound: The planning horizon in timesteps
  */
 class CoveragePOMDP : public despot::DSPOMDP {
 private:
@@ -71,7 +73,7 @@ public:
    * @param obs The current observation. Should be updated with current
    * step's observation
    *
-   * @return terminal True if the successor state is a terminal state
+   * @returns True if the successor state is a terminal state
    */
   bool Step(despot::State &state, double random_num, despot::ACT_TYPE action,
             double &reward, despot::OBS_TYPE &obs) const;
@@ -84,7 +86,7 @@ public:
    * TODO: In the future, see if I can extend this to be dependent on the state
    * of belief
    *
-   * @return numActions The number of executable actions
+   * @returns The number of executable actions
    */
   int NumActions() const;
 
@@ -96,7 +98,7 @@ public:
    * @param state The state *we ended up at* after executing action
    * @param action The action executed
    *
-   * @return obsProb The probability of making the observation
+   * @returns The probability of making the observation
    */
   double ObsProb(despot::OBS_TYPE obs, const despot::State &state,
                  despot::ACT_TYPE action) const;
@@ -107,7 +109,7 @@ public:
    * @param start A (partial) initial state, e.g. the robot's initial position
    * @param type A parameter which allows to specify the type of the belief
    *
-   * @return initBelief The initial belief
+   * @returns The initial belief
    */
   despot::Belief *InitialBelief(const despot::State *start,
                                 std::string type = "DEFAULT") const;
@@ -115,7 +117,7 @@ public:
   /**
    * Returns the maximal *immediate* reward.
    *
-   * @return maxReward The maximum immediate reward
+   * @returns The maximum immediate reward
    */
   double GetMaxReward() const;
 
@@ -125,7 +127,7 @@ public:
    * R(a', s), and v = \min_{s} R(a, s) (copied from superclass as I can't
    * explain it better).
    *
-   * @return bestAction The action with the largest minimum reward
+   * @returns The action with the largest minimum reward
    */
   despot::ValuedAction GetBestAction() const;
 
@@ -134,7 +136,7 @@ public:
    * @param name 				  Name of the upper bound
    * @param particleBoundName Name of the base ParticleUpperBound
    *
-   * @return upperBound The upper bound
+   * @returns The upper bound
    */
   despot::ScenarioUpperBound *
   CreateScenarioUpperBound(std::string name = "DEFAULT",
@@ -145,7 +147,7 @@ public:
    *
    * @param name Name of the particle lower bound
    *
-   * @return pLowerBound The particle lower bound
+   * @returns The particle lower bound
    */
   despot::ParticleLowerBound *
   CreateParticleLowerBound(std::string name = "DEFAULT") const;
@@ -202,7 +204,7 @@ public:
    * @param state_id The state's ID
    * @param weight   The weight of the allocated state
    *
-   * @return state A pointer to the newly allocated state
+   * @returns A pointer to the newly allocated state
    */
   despot::State *Allocate(int state_id = -1, double weight = 0) const;
 
@@ -211,7 +213,7 @@ public:
    *
    * @param state The state to copy
    *
-   * @return copy A pointer to the state copy
+   * @returns A pointer to the state copy
    */
   despot::State *Copy(const despot::State *state) const;
 
@@ -226,7 +228,7 @@ public:
    * Returns the number of allocated particles (sampled states).
    * All examples set this to the number of particles in the memory pool.
    *
-   * @return numParticles The number of active particles
+   * @returns The number of active particles
    */
   int NumActiveParticles() const;
 };

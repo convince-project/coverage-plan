@@ -1,4 +1,9 @@
 /**
+ *
+ * @file energy_functional_coverage_robot.h
+ *
+ * @brief Implements energy functional coverage approach
+ *
  * Coverage robot which uses the energy functional approach in:
  *
  * New brooms sweep clean - An autonomous robotic cleaning assistant for
@@ -43,7 +48,7 @@
  * gets us closest.
  *
  * Members: As in superclass, plus:
- * _useWallPointTerm: A boolean flag. If true, we use the wall point term that
+ * * _useWallPointTerm: A boolean flag. If true, we use the wall point term that
  * appears in the reference implementation, but not the relevant papers.
  */
 class EnergyFunctionalCoverageRobot : public POMDPCoverageRobot {
@@ -72,7 +77,7 @@ private:
    *
    * @param visited The currently visited nodes
    *
-   * @return uncovered A vector of uncovered cells.
+   * @returns A vector of uncovered cells.
    */
   std::vector<GridCell> _getUncovered(const GridCell &currentCell,
                                       const std::vector<GridCell> &visited);
@@ -83,7 +88,7 @@ private:
    * @param a GridCell one
    * @param b GridCell two
    *
-   * @return dist The manhattan distance between a and b
+   * @returns The manhattan distance between a and b
    */
   int _manhattanDistance(const GridCell &a, const GridCell &b);
 
@@ -95,7 +100,7 @@ private:
    * @param nextCell The possible next GridCell
    * @param visited The vector of visited locations
    *
-   * @return energy The energy value for this current cell/next cell pair
+   * @returns The energy value for this current cell/next cell pair
    */
   double _E(const GridCell &currentCell, const GridCell &nextCell,
             const std::vector<GridCell> &visited);
@@ -113,7 +118,7 @@ private:
    * @param visited The vector of visited locations
    * @param currentObs The most recent observations
    *
-   * @return nextAction The next action to be executed
+   * @returns The next action to be executed
    */
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,

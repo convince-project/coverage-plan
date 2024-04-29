@@ -1,5 +1,7 @@
 /**
- * Header file for the FixedIMacExecutor class.
+ * @file fixed_imac_executor.h
+ *
+ * @brief Header file for the FixedIMacExecutor class.
  *
  * FixedIMacExecutor allows us to run pre-defined MoD traces again and again.
  * This is useful for keeping things consistent in experiments.
@@ -21,12 +23,12 @@
  *
  * Members:
  * As in superclass, plus:
- * _files: A vector of files
- * _episode: The episode number
- * _ts: The current timestep
- * _currentEpisode: The vector of matrices for the current episode
- * _xDim: Size of X dimension of the map
- * _yDim: Size of Y dimension of the map
+ * * _files: A vector of files
+ * * _episode: The episode number
+ * * _ts: The current timestep
+ * * _currentEpisode: The vector of matrices for the current episode
+ * * _xDim: Size of X dimension of the map
+ * * _yDim: Size of Y dimension of the map
  */
 class FixedIMacExecutor : public IMacExecutor {
 
@@ -63,7 +65,7 @@ public:
    *
    * @param observations Not used in this class.
    *
-   * @return initialState the initial state of the new episode
+   * @returns the initial state of the new episode
    */
   Eigen::MatrixXi restart(const std::vector<IMacObservation> &observations =
                               std::vector<IMacObservation>{});
@@ -73,7 +75,7 @@ public:
    *
    * @param observations Notused in this class
    *
-   * @return nextState The successor state in the episode
+   * @returns The successor state in the episode
    *
    * @throw outOfEpisode Thrown if update occurs beyond end of episode
    */

@@ -1,5 +1,8 @@
 /**
- * CoverageWorld class, which wraps IMacExecutor and a bit of bookeeping.
+ * @file coverage_world.h
+ *
+ * @brief CoverageWorld class, which wraps IMacExecutor and a bit of bookeeping.
+ *
  * Used for using IMac simulations with DESPOT.
  *
  * @author Charlie Street
@@ -23,10 +26,10 @@
  *
  * Attributes:
  * As in superclass, plus:
- * _initPos: Initial robot position
- * _initTime: The initial time the robot starts coverage
- * _timeBound: The time bound on coverage planning
- * _exec: An IMacExecutor which we sample through
+ * * _initPos: Initial robot position
+ * * _initTime: The initial time the robot starts coverage
+ * * _timeBound: The time bound on coverage planning
+ * * _exec: An IMacExecutor which we sample through
  */
 class CoverageWorld : public despot::World {
 
@@ -62,21 +65,21 @@ public:
   /**
    * No 'connection' needed here, just returns true.
    *
-   * @return success Always true
+   * @returns Always true
    */
   bool Connect();
 
   /**
    * Resets the IMacExecutor and returns the initial coverage state.
    *
-   * @return initState The initial CoverageState
+   * @returns The initial CoverageState
    */
   despot::State *Initialize();
 
   /**
    * Returns the current CoverageState of the system.
    *
-   * @return currentState The current CoverageState
+   * @returns The current CoverageState
    */
   despot::State *GetCurrentState() const;
 
@@ -94,7 +97,7 @@ public:
    * @param action Action to be executed in the real-world system
    * @param obs    Observation sent back from the real-world system
    *
-   * @return terminal Is the current state a terminal state?
+   * @returns Is the current state a terminal state?
    */
   bool ExecuteAction(despot::ACT_TYPE action, despot::OBS_TYPE &obs);
 };

@@ -1,5 +1,7 @@
 /**
- * Header file for action-based structures and functions.
+ * @file action.h
+ *
+ * @brief Header file for action-based structures and functions.
  *
  * @author Charlie Street
  */
@@ -21,9 +23,9 @@ enum class Action { up, down, left, right, wait };
  * location, and a reminder of the action executed.
  *
  * Members:
- * action: The action executed
- * success: A flag set to true if the action was successful
- * location: The current GridCell of the robot
+ * * action: The action executed
+ * * success: A flag set to true if the action was successful
+ * * location: The current GridCell of the robot
  */
 struct ActionOutcome {
   Action action{};
@@ -38,7 +40,7 @@ namespace ActionHelpers {
  * @param cell The current grid cell
  * @param action The action to be executed
  *
- * @return nextCell The new location
+ * @returns The new location
  */
 GridCell applySuccessfulAction(const GridCell &cell, const Action &action);
 
@@ -47,7 +49,7 @@ GridCell applySuccessfulAction(const GridCell &cell, const Action &action);
  *
  * @param action The action to convert to an int
  *
- * @return actionNum The action as an int
+ * @returns The action as an int
  */
 int toInt(const Action &action);
 
@@ -56,7 +58,7 @@ int toInt(const Action &action);
  *
  * @param num The number to convert
  *
- * @return action The correponding action
+ * @returns The correponding action
  *
  * @exception badNum Raised if an invalid integer passed in
  */

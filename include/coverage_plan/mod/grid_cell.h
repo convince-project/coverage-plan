@@ -1,5 +1,7 @@
 /**
- * Very small header file containing GridCell struct.
+ * @file grid_cell.h
+ *
+ * @brief Very small header file containing GridCell struct.
  *
  * Doesn't feel right putting it elsewhere.
  *
@@ -13,8 +15,8 @@
  * Struct for a 2D grid cell.
  *
  * Members:
- * x: The x coordinate of the cell
- * y: The y coordinate of the cell
+ * * x: The x coordinate of the cell
+ * * y: The y coordinate of the cell
  */
 struct GridCell {
   int x{};
@@ -25,7 +27,7 @@ struct GridCell {
    *
    * @param other The GridCell to compare against
    *
-   * @return lt Is this less than other?
+   * @returns Is this less than other?
    */
   bool operator<(const GridCell &other) const {
     return std::tie(this->x, this->y) < std::tie(other.x, other.y);
@@ -36,7 +38,7 @@ struct GridCell {
    *
    * @param other The GridCell to compare against
    *
-   * @return eq Is this eq to other?
+   * @returns Is this eq to other?
    */
   bool operator==(const GridCell &other) const {
     return this->x == other.x && this->y == other.y;
@@ -47,7 +49,7 @@ struct GridCell {
    *
    * @param other The GridCell to compare against
    *
-   * @return eq Is this not eq to other?
+   * @returns Is this not eq to other?
    */
   bool operator!=(const GridCell &other) const {
     return this->x != other.x or this->y != other.y;
@@ -58,7 +60,7 @@ struct GridCell {
    *
    * @param other The GridCell to add
    *
-   * @return summed The summed grid cell.
+   * @returns The summed grid cell.
    */
   GridCell operator+(const GridCell &other) const {
     return GridCell{this->x + other.x, this->y + other.y};

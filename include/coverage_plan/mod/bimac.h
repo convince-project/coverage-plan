@@ -1,5 +1,7 @@
 /**
- * Header file for the BIMac class.
+ * @file bimac.h
+ *
+ * @brief Header file for the BIMac class.
  *
  * BiMac is an extension of IMac which explicitly maintains the distribution
  * over the IMac parameters (lambda_entry, lambda_exit, initial state
@@ -28,14 +30,14 @@
  * This is so we map to the Cartesian coordinates the robot operates over.
  *
  * Members:
- * cell: The cell on the grid
- * freeToOccupied: Number of observations at (x,y) going from free to occupied
- * freeToFree: Number of observations at (x,y) going from free to free
- * occupiedToFree: Number of observations at (x,y) going from occupied to free
- * occupiedToOccupied: Number of observations at (x,y) going from occupied to
- * occupied
- * initFree: Number of observations of (x,y) being free at time 0
- * initOccupied: Number of observationsof (x,y) being occupied at time 0
+ * * cell: The cell on the grid
+ * * freeToOccupied: Number of observations at (x,y) going from free to occupied
+ * * freeToFree: Number of observations at (x,y) going from free to free
+ * * occupiedToFree: Number of observations at (x,y) going from occupied to free
+ * * occupiedToOccupied: Number of observations at (x,y) going from occupied to
+ * * occupied
+ * * initFree: Number of observations of (x,y) being free at time 0
+ * * initOccupied: Number of observationsof (x,y) being occupied at time 0
  */
 struct BIMacObservation {
   GridCell cell{};
@@ -49,22 +51,24 @@ struct BIMacObservation {
 
 /**
  * A class which maintains our uncertainty over the true IMac model.
+ *
  * @see mod/imac.h
+ *
  * This class maintains a Beta distribution for each transition at each grid
  * cell.
  *
  * Members:
- *  _alphaEntry: The matrix of alpha parameters for the lambda_entry
+ * *  _alphaEntry: The matrix of alpha parameters for the lambda_entry
  * parameter (free->occupied)
- * _betaEntry: The matrix of beta parameters for the lambda_entry parameter
+ * * _betaEntry: The matrix of beta parameters for the lambda_entry parameter
  * (free->occupied)
- * _alphaExit: The matrix of alpha parameters for the lambda_exit parameter
+ * * _alphaExit: The matrix of alpha parameters for the lambda_exit parameter
  * (occupied->free)
- * _betaExit: The matrix of beta parameters for the lambda_exit
+ * * _betaExit: The matrix of beta parameters for the lambda_exit
  * parameter (occupied->free)
- * _alphaInit: The matrix of alpha parameters for the Pr(occupied at time 0)
+ * * _alphaInit: The matrix of alpha parameters for the Pr(occupied at time 0)
  * parameter, i.e. the initial state distribution
- * _betaInit: The matrix of beta parameters for the Pr(occupied at time 0)
+ * * _betaInit: The matrix of beta parameters for the Pr(occupied at time 0)
  * parameter, i.e. the initial state distribution
  */
 class BIMac {
@@ -80,7 +84,7 @@ private:
    * Reads BIMac matrix in from file.
    *
    * @param inFile The Matrix file to read in
-   * @return mat The matrix read from file
+   * @returns The matrix read from file
    */
   Eigen::MatrixXi _readBIMacMatrix(const std::filesystem::path &inFile);
 
@@ -108,7 +112,7 @@ private:
    * @param gen A random number generator
    * @param sampler A sampler from a uniform distribution which uses gen
    *
-   * @return paramSample The sampled IMac parameter value
+   * @returns The sampled IMac parameter value
    */
   double _sampleForCell(int alpha, int beta, std::mt19937_64 &gen,
                         std::uniform_real_distribution<double> &sampler);
@@ -120,7 +124,7 @@ private:
    * @param alpha The alpha value for the corresponding Beta distribtion
    * @param beta The beta value for the corresponding Beta distribution
    *
-   * @return mle The MLE for the parameter
+   * @returns The MLE for the parameter
    */
   double _computeMleForCell(int alpha, int beta);
 
@@ -131,7 +135,7 @@ private:
    * @param alpha The alpha value for the corresponding Beta distribtion
    * @param beta The beta value for the corresponding Beta distribution
    *
-   * @return mean The posterior mean for that parameter
+   * @returns The posterior mean for that parameter
    */
   double _computePosteriorMeanForCell(int alpha, int beta);
 
@@ -143,7 +147,7 @@ private:
    * @param getSingleVal a function which takes an alpha and beta and returns
    * the parameter value
    *
-   * @return iMacMatrix The matrix of parameters for IMac
+   * @returns The matrix of parameters for IMac
    */
   Eigen::MatrixXd
   _createIMacMatrix(const Eigen::MatrixXi &alphaMat,
@@ -182,7 +186,7 @@ public:
   /**
    * Take a posterior sample from BIMac to get a single IMac instance.
    *
-   * @return imac A shared ptr to an IMac instance
+   * @returns A shared ptr to an IMac instance
    */
   std::shared_ptr<IMac> posteriorSample();
 
@@ -192,7 +196,7 @@ public:
    * Given how BiMac is initialised, this corresponds to computing the mode
    * of each beta distribution.
    *
-   * @return imac A shared ptr to an IMac instance
+   * @returns A shared ptr to an IMac instance
    */
   std::shared_ptr<IMac> mle();
 
@@ -202,7 +206,7 @@ public:
    * As the + 1 part is already in the beta distribution, its just:
    * alpha/(alpha + beta)
    *
-   * @return imac A shared ptr to an IMac instance
+   * @returns A shared ptr to an IMac instance
    */
   std::shared_ptr<IMac> posteriorMean();
 

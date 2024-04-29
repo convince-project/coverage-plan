@@ -1,6 +1,7 @@
 /**
- * Conversion functions between readable observations and the representation
- * required by DESPOT.
+ * @file coverage_observation.h
+ *
+ * @brief Conversions between readable observations and DESPOT representations.
  *
  * I would represent observations as a vector of IMacObservations.
  * DESPOT represents all objects as uint64_t (aka OBS_TYPE).
@@ -34,7 +35,7 @@ namespace Observation {
  * @param robotPos The robot's current position, allows the output vector to
  * have absolute positions (optional, we may want the relative observations)
  *
- * @return obs A vector of observations capturing the robot's absolute
+ * @returns A vector of observations capturing the robot's absolute
  * observation paired with an action success flag
  *
  * @exception tooManyCells Raised if > 63 cells in FOV
@@ -51,7 +52,7 @@ fromObsType(const despot::OBS_TYPE &obsInt, const std::vector<GridCell> &fov,
  * or absolute)
  * @param outcome An ActionOutcome struct capturing the robot's action success
  *
- * @return obsInt The observation as an integer
+ * @returns The observation as an integer
  *
  * @exception tooManyCells Raised if > 63 cells in FOV
  */
@@ -66,7 +67,7 @@ despot::OBS_TYPE toObsType(const std::vector<IMacObservation> &obsVector,
  * @param outcome The action outcome
  * @param fov The robot's field of view as a vector of relative grid cells
  *
- * @return obs The observation as a number
+ * @returns The observation as a number
  */
 despot::OBS_TYPE computeObservation(const Eigen::MatrixXi &map,
                                     const GridCell &robotPos,

@@ -1,5 +1,7 @@
 /**
- * A class for representing coverage planning beliefs (using IMac).
+ * @file coverage_belief.h
+ *
+ * @brief A class for representing coverage planning beliefs (using IMac).
  *
  * @author Charlie Street
  */
@@ -21,18 +23,19 @@
 
 /**
  * A class representing beliefs for coverage planning problems.
+ *
  * In a CoverageState, the position, time, and covered locations are known.
  * But the map is uncertain. This class captures the belief using IMac.
  *
  * Members:
- * _robotPosititon: The robot's position
- * _time: The current time
- * _covered: The locations covered by the robot
- * _mapBelief: A distribution over the occupancy map
- * _imac: The IMac model
- * _fov: The robot's FOV represented as a vector of GridCells relative to the
- * robot's position
- * _beliefSampler: A pointer to an IMacBeliefSampler object required for
+ * * _robotPosititon: The robot's position
+ * * _time: The current time
+ * * _covered: The locations covered by the robot
+ * * _mapBelief: A distribution over the occupancy map
+ * * _imac: The IMac model
+ * * _fov: The robot's FOV represented as a vector of GridCells relative to the
+ * * robot's position
+ * * _beliefSampler: A pointer to an IMacBeliefSampler object required for
  * sampling
  */
 class CoverageBelief : public despot::Belief {
@@ -73,7 +76,7 @@ public:
    *
    * @param num Number of states to be sampled
    *
-   * @return sampledStates a vector of sampled states
+   * @returns a vector of sampled states
    */
   std::vector<despot::State *> Sample(int num) const;
 
@@ -89,21 +92,21 @@ public:
   /**
    * Convert belief into a string.
    *
-   * @return beliefStr The belief as a string
+   * @returns The belief as a string
    */
   std::string text() const;
 
   /**
    * Make a copy of the belief.
    *
-   * @return beliefCpy A copy of this
+   * @returns A copy of this
    */
   despot::Belief *MakeCopy() const;
 
   /**
    * Return the occupancy map belief.
    *
-   * @return mapBelief The occupancy map belief
+   * @returns The occupancy map belief
    */
   Eigen::MatrixXd getMapBelief() const;
 };

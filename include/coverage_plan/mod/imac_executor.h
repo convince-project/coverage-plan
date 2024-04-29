@@ -1,5 +1,7 @@
 /**
- * Header file for the IMacExecutor class.
+ * @file imac_executor.h
+ *
+ * @brief Header file for the IMacExecutor class.
  *
  * IMacExecutor is used to sample runs through an IMac model.
  *
@@ -24,8 +26,8 @@
  * This is so we map to the Cartesian coordinates the robot operates over.
  *
  * Members:
- * cell: The cell on the grid
- * occupied: 1 if cell is occupied, otherwise 0
+ * * cell: The cell on the grid
+ * * occupied: 1 if cell is occupied, otherwise 0
  */
 struct IMacObservation {
   GridCell cell{};
@@ -34,13 +36,15 @@ struct IMacObservation {
 
 /**
  * An executor class for an IMac model.
+ *
  * @see mod/imac.h
+ *
  * This class retains an IMac model and samples from it to generate runs of
  * the dynamics.
  *
  * Members:
- * _imac: A shared ptr to an IMac model
- * _currentState: The current MoD state (deterministic, i.e. just 0s and 1s)
+ * * _imac: A shared ptr to an IMac model
+ * * _currentState: The current MoD state (deterministic, i.e. just 0s and 1s)
  *
  */
 class IMacExecutor {
@@ -65,7 +69,7 @@ protected:
    * @param distMatrix a matrix of probabilities. Each probability is the
    * occupation probability for the current timestep.
    *
-   * @return sampledState an MOD state sampled from the distribution
+   * @returns an MOD state sampled from the distribution
    */
   Eigen::MatrixXi _sampleState(const Eigen::MatrixXd &distMatrix);
 
@@ -85,7 +89,7 @@ public:
    * @param observations A vector of IMacObservations (what is seen at t=0).
    * Optional.
    *
-   * @return initialState the initial state of the map of dynamics
+   * @returns the initial state of the map of dynamics
    */
   virtual Eigen::MatrixXi
   restart(const std::vector<IMacObservation> &observations =
@@ -97,7 +101,7 @@ public:
    *
    * @param observations A vector of IMacObservations
    *
-   * @return nextState The successor IMac state
+   * @returns The successor IMac state
    */
   virtual Eigen::MatrixXi
   updateState(const std::vector<IMacObservation> &observations);
@@ -120,7 +124,7 @@ public:
    *
    * @param cell The grid cell to clear
    *
-   * @return updatedState The updated currentState
+   * @returns The updated currentState
    */
   virtual Eigen::MatrixXi clearRobotPosition(const GridCell &cell);
 };

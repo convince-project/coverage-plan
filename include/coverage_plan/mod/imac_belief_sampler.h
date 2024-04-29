@@ -1,5 +1,8 @@
 /**
- * Extension of IMacExecutor which doesn't store a current state.
+ * @file imac_belief_sampler.h
+ *
+ * @brief Extension of IMacExecutor which doesn't store a current state.
+ *
  * This class can effectively just sample from an IMac state, with the option
  * to set the seed, as required by DESPOT.
  *
@@ -36,7 +39,7 @@ public:
    * @param seed The random seed (if 0, use current seed)
    * @param observations Any observations made at the current timestep
    *
-   * @return sampledState The sampled IMac state
+   * @returns The sampled IMac state
    */
   Eigen::MatrixXi
   sampleFromBelief(const Eigen::MatrixXd &distMatrix, const double &seed = 0.0,

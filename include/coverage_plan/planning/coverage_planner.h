@@ -1,5 +1,7 @@
 /**
- * CoveragePlanner class which brings everything together.
+ * @file coverage_planner.h
+ *
+ * @brief CoveragePlanner class which brings everything together.
  *
  * @author Charlie Street
  */
@@ -21,15 +23,15 @@
  *
  * Attributes:
  * Same as superclass, plus:
- * _initPos: The robot's initial location
- * _initTime: The robot's starting time
- * _timeBound: The time bound for planning
- * _fov: The robot's FOV as a vector of relative grid cells
- * _exec: The IMac executor describing how the *real world* operates
- * _planIMac: The IMac model used for planning, which may not match with _exec
- * _boundType: The type of upper and lower bounds to use during planning
- * _pruningConstant: The DESPOT regularisation constant
- * _numScenarios: The number of scenarios to sample in DESPOT
+ * * _initPos: The robot's initial location
+ * * _initTime: The robot's starting time
+ * * _timeBound: The time bound for planning
+ * * _fov: The robot's FOV as a vector of relative grid cells
+ * * _exec: The IMac executor describing how the *real world* operates
+ * * _planIMac: The IMac model used for planning, which may not match with _exec
+ * * _boundType: The type of upper and lower bounds to use during planning
+ * * _pruningConstant: The DESPOT regularisation constant
+ * * _numScenarios: The number of scenarios to sample in DESPOT
  */
 class CoveragePlanner : public despot::Planner {
 
@@ -80,7 +82,7 @@ public:
    *
    * @param options Parsed command line options (not used)
    *
-   * @return pomdp The coverage POMDP
+   * @returns The coverage POMDP
    */
   despot::DSPOMDP *InitializeModel(despot::option::Option *options);
 
@@ -92,7 +94,7 @@ public:
    * @param model      The POMDP model
    * @param options    Parsed command line options
    *
-   * @return world The coverage world
+   * @returns The coverage world
    */
   despot::World *InitializeWorld(std::string &world_type,
                                  despot::DSPOMDP *model,
@@ -115,7 +117,7 @@ public:
    * @param belief_type The type of belief used for planning
    * @param time_limit The time limit for planning
    *
-   * @return options The options fed into the planner
+   * @returns The options fed into the planner
    *
    */
   despot::option::Option *
@@ -126,7 +128,7 @@ public:
   /**
    * Return name of solver to be used (here: DESPOT).
    *
-   * @return solverName The name of the solver
+   * @returns The name of the solver
    */
   virtual std::string ChooseSolver();
 };

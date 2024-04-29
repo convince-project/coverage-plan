@@ -1,5 +1,6 @@
 /**
- * Utility functions for random seeding.
+ * @file seed.h
+ * @brief Utility functions for random seeding.
  *
  * @author Charlie Street
  *
@@ -15,7 +16,7 @@ namespace SeedHelpers {
 /**
  * Generate a 64 bit seed for mt19937_64 using std::random_device.
  *
- * @return seed The 64 bit random seed
+ * @returns The 64 bit random seed
  */
 uint_fast64_t genRandomDeviceSeed();
 
@@ -24,7 +25,7 @@ uint_fast64_t genRandomDeviceSeed();
  *
  * @param randNum The random double
  *
- * @return intSeed The seed converted from randNum
+ * @returns The seed converted from randNum
  */
 uint_fast64_t doubleToUInt64(const double &randNum);
 

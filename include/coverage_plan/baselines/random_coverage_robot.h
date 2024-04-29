@@ -1,5 +1,7 @@
 /**
- * Header file for the RandomCoverageRobot class.
+ * @file random_coverage_robot.h
+ *
+ * @brief Header file for the RandomCoverageRobot class.
  *
  * This is an implementation of CoverageRobot which takes random actions.
  *
@@ -18,8 +20,8 @@
  *
  * Members:
  * As in superclass, plus:
- * _world: The CoverageWorld representing the environment
- * _fov: The robot's FOV represented as a vector of relative grid cells
+ * * _world: The CoverageWorld representing the environment
+ * * _fov: The robot's FOV represented as a vector of relative grid cells
  */
 class RandomCoverageRobot : public CoverageRobot {
 
@@ -39,7 +41,7 @@ private:
    * @param visited The vector of visited locations
    * @param currentObs The most recent observations
    *
-   * @return nextAction The next action to be executed
+   * @returns The next action to be executed
    */
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,
@@ -54,7 +56,7 @@ private:
    * @param currentLoc The robot's current location
    * @param action The action to execute
    *
-   * @return outcome The outcome of the action
+   * @returns The outcome of the action
    */
   ActionOutcome _executeFn(const GridCell &currentLoc, const Action &action);
 
@@ -63,7 +65,7 @@ private:
    *
    * @param currentLoc The robot's current location
    *
-   * @return obsVector A vector of observations
+   * @returns A vector of observations
    */
   std::vector<IMacObservation> _observeFn(const GridCell &currentLoc);
 

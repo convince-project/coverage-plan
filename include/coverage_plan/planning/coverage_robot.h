@@ -1,5 +1,7 @@
 /**
- * Header file for the CoverageRobot class.
+ * @file coverage_robot.h
+ *
+ * @brief Header file for the CoverageRobot class.
  *
  * This class captures the online planning framework.
  *
@@ -37,8 +39,8 @@ enum class ParameterEstimate {
  * Struct for storing the results of coverage planning.
  *
  * Members:
- * endTime: At what time step did the robot finish coverage planning?
- * propCovered: What proportion of the environment was covered? [0,1]
+ * * endTime: At what time step did the robot finish coverage planning?
+ * * propCovered: What proportion of the environment was covered? [0,1]
  */
 struct CoverageResult {
   int endTime{};
@@ -51,15 +53,15 @@ struct CoverageResult {
  * Handles the plan/execute/observe cycle.
  *
  * Members:
- * _initLoc: The robot's initial location for each episode
- * _currentLoc: The robot's current GridCell
- * _visited: A vector of locations visited by the robot (i.e. the history)
- * _timeBound: The maximum number of timesteps given to the robot
- * _xDim: The x dimension of the map
- * _yDim: The y dimension of the map
- * _bimac: The BIMac model the robot is learning
- * _groundTruthIMac: The ground truth IMac model, if specified
- * _estimationType: The type of parameter estimation for each episode's IMac
+ * * _initLoc: The robot's initial location for each episode
+ * * _currentLoc: The robot's current GridCell
+ * * _visited: A vector of locations visited by the robot (i.e. the history)
+ * * _timeBound: The maximum number of timesteps given to the robot
+ * * _xDim: The x dimension of the map
+ * * _yDim: The y dimension of the map
+ * * _bimac: The BIMac model the robot is learning
+ * * _groundTruthIMac: The ground truth IMac model, if specified
+ * * _estimationType: The type of parameter estimation for each episode's IMac
  * instance
  */
 class CoverageRobot {
@@ -76,7 +78,7 @@ private:
    * Function gets the IMac instance to be used for an episode.
    * In this class, it will be set to generate a posterior sample.
    *
-   * @return imac The IMac instance for the coverage episode.
+   * @returns The IMac instance for the coverage episode.
    */
   virtual std::shared_ptr<IMac> _getIMacInstanceForEpisode();
 
@@ -107,7 +109,7 @@ private:
    *
    * @param observations a vector of IMacObservation vectors
    *
-   * @return biMacObsVector A vector of BIMacObservations
+   * @returns A vector of BIMacObservations
    */
   std::vector<BIMacObservation> _generateBIMacObservations(
       const std::vector<std::vector<IMacObservation>> &observations);
@@ -115,7 +117,7 @@ private:
   /**
    * Returns a vector of actions that can be executed from the current location.
    *
-   * @return enabled The enabled actions from the current location
+   * @returns The enabled actions from the current location
    */
   std::vector<Action> _getEnabledActions();
 
@@ -146,7 +148,7 @@ protected:
    * @param visited The vector of visited locations
    * @param currentObs The most recent observations
    *
-   * @return nextAction The next action to be executed
+   * @returns The next action to be executed
    */
   virtual Action _planFn(const GridCell &currentLoc,
                          const std::vector<Action> &enabledActions, int ts,
@@ -162,7 +164,7 @@ protected:
    * @param currentLoc The robot's current location
    * @param action The action to execute
    *
-   * @return outcome The outcome of the action
+   * @returns The outcome of the action
    */
   virtual ActionOutcome _executeFn(const GridCell &currentLoc,
                                    const Action &action) = 0;
@@ -174,7 +176,7 @@ protected:
    *
    * @param currentLoc The robot's current location
    *
-   * @return obsVector A vector of observations
+   * @returns A vector of observations
    */
   virtual std::vector<IMacObservation>
   _observeFn(const GridCell &currentLoc) = 0;
@@ -208,7 +210,7 @@ public:
    * @param imac The current imac estimate generated from _bimac
    * @param obsVector A vector of the current observations made by the robot
    *
-   * @return action The next action for the robot to execute
+   * @returns The next action for the robot to execute
    */
   Action planNextAction(int time, std::shared_ptr<IMac> imac,
                         const std::vector<IMacObservation> &obsVector);
@@ -218,14 +220,14 @@ public:
    *
    * @param action The action the robot should execute
    *
-   * @return outcome The outcome of the action
+   * @returns The outcome of the action
    */
   ActionOutcome executeAction(const Action &action);
 
   /**
    * Wrapper around _observeFn which fills in the gaps from class members.
    *
-   * @return obsVector A vector of observations
+   * @returns A vector of observations
    */
   std::vector<IMacObservation> makeObservations();
 
@@ -241,7 +243,7 @@ public:
    *
    * @param outFile The csv file to output visited locations to
    *
-   * @return result The result (end time and prop covered) of coverage planning
+   * @returns The result (end time and prop covered) of coverage planning
    */
   CoverageResult runCoverageEpisode(const std::filesystem::path &outFile);
 
@@ -267,7 +269,7 @@ public:
    *
    * Getter useful in case user wishes to write to file etc.
    *
-   * @return bimac A shared ptr to a BIMac instance
+   * @returns A shared ptr to a BIMac instance
    */
   std::shared_ptr<BIMac> getBIMac() { return this->_bimac; }
 };

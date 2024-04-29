@@ -1,5 +1,7 @@
 /**
- * Class for robot which chooses actions maximising immediate reward.
+ * @file greedy_coverage_robot.h
+ *
+ * @brief Class for robot which chooses actions maximising immediate reward.
  *
  * @author Charlie Street
  */
@@ -35,7 +37,7 @@ private:
    * @param visited The vector of visited locations
    * @param currentObs The most recent observations
    *
-   * @return nextAction The next action to be executed
+   * @returns The next action to be executed
    */
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,

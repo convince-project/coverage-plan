@@ -1,5 +1,7 @@
 /**
- * Header file for the POMDPCoverageRobot class.
+ * @file pomdp_coverage_robot.h
+ *
+ * @brief Header file for the POMDPCoverageRobot class.
  *
  * This is an implementation of CoverageRobot which uses the POMDP planner.
  *
@@ -25,16 +27,16 @@
  *
  * Members:
  * As in superclass, plus:
- * _exec: The IMac executor capturing the evolution of the environment
- * _fov: The robot's field of view
- * _latestObs: The robot's latest observation
- * _planner: The coverage planner
- * _pomdp: The coverage planning model
- * _world: The world object which wraps around exec
- * _solver: The DESPOT solver
- * _boundType: The type of bounds to use in DESPOT
- * _pruningConstant: The DESPOT pruning constant
- * _numScenarios: The number of scenarios to simulate in DESPOT
+ * * _exec: The IMac executor capturing the evolution of the environment
+ * * _fov: The robot's field of view
+ * * _latestObs: The robot's latest observation
+ * * _planner: The coverage planner
+ * * _pomdp: The coverage planning model
+ * * _world: The world object which wraps around exec
+ * * _solver: The DESPOT solver
+ * * _boundType: The type of bounds to use in DESPOT
+ * * _pruningConstant: The DESPOT pruning constant
+ * * _numScenarios: The number of scenarios to simulate in DESPOT
  */
 class POMDPCoverageRobot : public CoverageRobot {
 
@@ -57,7 +59,7 @@ private:
    * @param currentLoc The robot's current location
    * @param action The action to execute
    *
-   * @return outcome The outcome of the action
+   * @returns The outcome of the action
    */
   ActionOutcome _executeFn(const GridCell &currentLoc, const Action &action);
 
@@ -66,7 +68,7 @@ private:
    *
    * @param currentLoc The robot's current location
    *
-   * @return obsVector A vector of observations
+   * @returns A vector of observations
    */
   std::vector<IMacObservation> _observeFn(const GridCell &currentLoc);
 
@@ -75,7 +77,7 @@ private:
    *
    * @param startLoc The robot's start location
    *
-   * @return initObs The initial observation as a vector of IMacObservations
+   * @returns The initial observation as a vector of IMacObservations
    */
   std::vector<IMacObservation> _initialObservation(const GridCell &startLoc);
 
@@ -94,7 +96,7 @@ protected: // Protected members are needed for subclassing
    * @param visited The vector of visited locations
    * @param currentObs The most recent observations
    *
-   * @return nextAction The next action to be executed
+   * @returns The next action to be executed
    */
   Action _planFn(const GridCell &currentLoc,
                  const std::vector<Action> &enabledActions, int ts,

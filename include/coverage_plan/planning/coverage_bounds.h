@@ -1,5 +1,7 @@
 /**
- * Header file for custom bounds for coverage planning.
+ * @file coverage_bounds.h
+ *
+ * @brief Header file for custom bounds for coverage planning.
  *
  * @author Charlie Street
  */
@@ -26,8 +28,8 @@
  * An upper bound which returns the max cells that can still be covered.
  * This looks like min(num_cells-state.visited.size(),time_bound-state.time)
  * Attributes:
- *  _numCells: The number of cells in the map
- * _timeBound: The max time bound on planning
+ * * _numCells: The number of cells in the map
+ * * _timeBound: The max time bound on planning
  */
 class MaxCellsUpperBound : public despot::ParticleUpperBound {
 private:
@@ -50,7 +52,7 @@ public:
    * Note the coverage planning problem is finite, with no discount factor.
    *
    * @param state The state to evaluate the reward from
-   * @return maxCumulativeReward The max cumulative reward obtainable from state
+   * @returns The max cumulative reward obtainable from state
    */
   double Value(const despot::State &state) const;
 };
@@ -71,7 +73,7 @@ public:
    *
    * @param particles A vector of states
    *
-   * @return valuedAction The corresponding action and value (0.0)
+   * @returns The corresponding action and value (0.0)
    */
   despot::ValuedAction
   Value(const std::vector<despot::State *> &particles) const;
@@ -82,8 +84,8 @@ public:
  *
  * Attributes:
  * As in superclass, plus:
- * _ imacEntry: The IMac entry matrix
- * _imacExit: The IMac exit matrix
+ * * _ imacEntry: The IMac entry matrix
+ * * _imacExit: The IMac exit matrix
  *
  */
 class GreedyCoverageDefaultPolicy : public despot::DefaultPolicy {
