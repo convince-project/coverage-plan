@@ -27,7 +27,7 @@ clean: Makefile
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 # Before running sphinx, run doxygen for C++ code
 %: Makefile
-	mkdir -p build
+	mkdir -p $(BUILDDIR)
 	cd $(SOURCEDIR); doxygen Doxyfile.in
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 	
