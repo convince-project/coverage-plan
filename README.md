@@ -35,18 +35,8 @@ Upon building, example files can be found in the `build/apps` directory.
 1. Install the required packages:
 
     ```bash
+    sudo apt install doxygen
     pip install -r docs/requirements.txt
-    ```
-
-2. Install the package to be documented:
-
-    ```bash
-    pip install refine_plan/
-    ```
-    
-    Or add it to your Python path:
-    ```bash
-    ./setup_dev.sh
     ```
 
 3. Build the documentation:

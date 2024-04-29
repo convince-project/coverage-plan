@@ -2,7 +2,7 @@
 from cgitb import html
 # -- Project information
 
-project = 'CONVINCE Toolchain'
+project = 'COVERAGE-PLAN'
 copyright = '2024'
 author = 'CONVINCE Consortium'
 

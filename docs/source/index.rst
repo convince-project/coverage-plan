@@ -1,11 +1,11 @@
-Welcome to the CONVINCE demo documentation!
+Welcome to the COVERAGE-PLAN documentation!
 ===========================================
 
-Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Welcome to the documentation for COVERAGE-PLAN, a lifelong coverage planner for dynamic and uncertain environments.
+The final release will operate entirely within ROS.
+The current release operates on abstract grid environments in discrete time.
 
-.. note::
-
-   This just a demo.
+Installation instructions can be found `here`_.
 
 Contents
 --------
@@ -14,3 +14,5 @@ Contents
 
    tutorials
    API/api
+   
+.. _here: https://github.com/convince-project/coverage-plan/blob/main/README.md
