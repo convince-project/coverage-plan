@@ -37,3 +37,11 @@ build/
 *.exe
 *.out
 *.app
+
+.vscode
+*.egg-info/
+*/build/
+*.pyc
+
+# Sphinx
+API/
