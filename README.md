@@ -1,11 +1,18 @@
-# CONVINCE coverage-plan
+# CONVINCE COVERAGE-PLAN
 This repo contains the source for the coverage planner in CONVINCE WP3.
 
-## Dependencies
+## Installation
 
-* [Boost](https://linux.how2shout.com/how-to-install-boost-c-on-ubuntu-20-04-or-22-04/)
-* [Catch](https://github.com/catchorg/Catch2)
-* [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) 
+COVERAGE-PLAN has been tested on Ubuntu 22.04 with CMake 3.22.
+
+### Dependencies
+
+COVERAGE-PLAN requires the following dependencies:
+
+* [Boost](https://linux.how2shout.com/how-to-install-boost-c-on-ubuntu-20-04-or-22-04/) (Tested with 1.82)
+* [Catch](https://github.com/catchorg/Catch2) (Tested with 2.13.8-1, installed via `apt install` on Ubuntu 22.04)
+* [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page)  (Tested with 3.3)
+* [Despot](https://github.com/AdaCompNUS/despot) (Tested with API_redesign branch)
 
 Eigen may not work after installing via apt. You may need to create a symlink in `/usr/include`:
 
@@ -15,14 +22,20 @@ sudo ln -sf eigen3/Eigen Eigen
 sudo ln -sf eigen3/unsupported unsupported
 ```
 
+### Building COVERAGE-PLAN
 
-## Building & Installation
-
-In repo root dir, run the following:
+After installing the dependencies, run the following in the root directory:
 
 ```
 cmake -S . -B build
 cmake --build build
+```
+
+## Running Unit Tests
+To run the unit tests, run the following in the root directory:
+```
+cd build/tests
+./unitTests
 ```
 
 ## Examples
