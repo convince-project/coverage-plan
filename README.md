@@ -45,6 +45,9 @@ Upon building, example files can be found in the `build/apps` directory.
 
 ## Build the documentation
 
+The COVERAGE-PLAN documentation can be found [here](https://convince-project.github.io/coverage-plan). 
+If you want to build it locally, do the following:
+
 1. Install the required packages:
 
     ```bash
