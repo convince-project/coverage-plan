@@ -1,6 +1,12 @@
 Tutorials
 =========
 
+.. role:: bash(code)
+   :language: bash
+   
+.. role:: cpp(code)
+   :language: cpp
+
 How to run the POMDP coverage planner in a known environment
 ------------------------------------------------------------
 
@@ -101,6 +107,8 @@ a list of the robot's position at each timestep is written here.
 
 This concludes the tutorial. Though this example is very simplistic, hopefully it gives a rough idea about how to use 
 COVERAGE-PLAN.
+This tutorial code can be adapted to learn an environment with unknown dynamics by not passing in the ground truth iMac model to the :bash:`POMDPCoverageRobot class`.
+Then, as :cpp:`runCoverageEpisode` is run repeatedly over multiple episodes, the robot will learn the environment dynamics.
 
 .. _here: https://github.com/convince-project/coverage-plan/blob/main/apps/pomdp_coverage_example.cpp
 .. _iMac: https://ieeexplore.ieee.org/abstract/document/6385629
